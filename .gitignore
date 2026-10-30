@@ -1,0 +1,34 @@
+# Visual Studio and build outputs
+.vs/
+[Bb]in/
+[Oo]bj/
+TestResults/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.pdb
+*.log
+
+# Local previews, backups, assistant guides and exported deliveries
+.design-preview/
+design-skills/
+AGENTS.md
+scripts/Install-DesignSkills.ps1
+artifacts/
+.agents/
+.codex/
+.aws/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pfx
+*.p12
+*.key
+
+# Operating system
+.DS_Store
+Thumbs.db
+Desktop.ini

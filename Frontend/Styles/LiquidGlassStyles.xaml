@@ -1,0 +1,415 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="../Themes/HotelPalette.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    <LinearGradientBrush x:Key="LogoGoldDiagonal" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#F4DE98" Offset="0.00" />
+        <GradientStop Color="#D8AF5C" Offset="0.28" />
+        <GradientStop Color="#B07F2C" Offset="0.55" />
+        <GradientStop Color="#E0BC6A" Offset="0.78" />
+        <GradientStop Color="#8F6320" Offset="1.00" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="LogoGoldVertical" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#F6DE94" Offset="0.00" />
+        <GradientStop Color="#D6A84E" Offset="0.45" />
+        <GradientStop Color="#A87528" Offset="1.00" />
+    </LinearGradientBrush>
+
+    <ControlTemplate x:Key="CrownSovereignLogoTemplate" TargetType="ContentControl">
+        <Viewbox Stretch="Uniform">
+            <Grid Width="465" Height="465" ClipToBounds="True">
+                <Canvas Width="800" Height="520" Margin="-167.5,-27.5,0,0">
+
+                    <!-- Sol naciente y rayos recortados exactamente detrás de las montañas -->
+                    <Canvas>
+                        <Canvas.Clip>
+                            <CombinedGeometry GeometryCombineMode="Exclude">
+                                <CombinedGeometry.Geometry1>
+                                    <EllipseGeometry Center="400,260" RadiusX="218" RadiusY="218" />
+                                </CombinedGeometry.Geometry1>
+                                <CombinedGeometry.Geometry2>
+                                    <PathGeometry Figures="M 182,500 L 329.6,352.4 L 376.9,399.7 L 400,376.6 L 423.1,399.7 L 470.4,352.4 L 618,500 Z" />
+                                </CombinedGeometry.Geometry2>
+                            </CombinedGeometry>
+                        </Canvas.Clip>
+
+                        <Path Fill="{StaticResource LogoGoldVertical}"
+                              Data="M475.75,388.32 L527.76,373.87 L473.94,378.08 Z M472.78,374.17 L502.35,359.15 L470.05,366.65 Z M468.42,362.9 L510.49,332.61 L463.22,353.9 Z M460.79,350.61 L481.04,328.4 L455.65,344.48 Z M452.84,341.52 L479.43,301.74 L444.87,334.84 Z M441.46,332.58 L450.5,308.93 L434.54,328.58 Z M430.88,326.76 L440.41,285.37 L421.11,323.2 Z M417.14,322.25 L416.52,302.72 L409.26,320.86 Z M405.2,320.4 L400,284.4 L394.8,320.4 Z M390.74,320.86 L383.48,302.72 L382.86,322.25 Z M378.89,323.2 L359.59,285.37 L369.12,326.76 Z M365.46,328.58 L349.5,308.93 L358.54,332.58 Z M355.13,334.84 L320.57,301.74 L347.16,341.52 Z M344.35,344.48 L318.96,328.4 L339.21,350.61 Z M336.78,353.9 L289.51,332.61 L331.58,362.9 Z M329.95,366.65 L297.65,359.15 L327.22,374.17 Z M326.06,378.08 L272.24,373.87 L324.25,388.32 Z" />
+
+                        <Ellipse Canvas.Left="334"
+                                 Canvas.Top="330.4"
+                                 Width="132"
+                                 Height="132"
+                                 Fill="{StaticResource LogoGoldVertical}" />
+                    </Canvas>
+
+                    <!-- Cordillera inferior recortada dentro del medallón -->
+                    <Canvas>
+                        <Canvas.Clip>
+                            <EllipseGeometry Center="400,260" RadiusX="218" RadiusY="218" />
+                        </Canvas.Clip>
+                        <Path Data="M193,500 L329.6,363.4 L376.9,410.7 L400,387.6 L423.1,410.7 L470.4,363.4 L607,500 Z"
+                              Fill="#08162B" />
+                        <Path Data="M193,500 L329.6,363.4 L376.9,410.7 M423.1,410.7 L470.4,363.4 L607,500 M287.6,500 L400,387.6 L512.4,500"
+                              Stroke="#2E5484"
+                              StrokeThickness="7"
+                              StrokeLineJoin="Miter"
+                              StrokeMiterLimit="10" />
+                    </Canvas>
+
+                    <!-- Corona Real Soberana con calados EvenOdd -->
+                    <Path Fill="{StaticResource LogoGoldDiagonal}"
+                          Data="F0 M312,222 C306,196 296,168 286,140 C304,156 322,168 336,178 C340,160 344,142 350,124 C358,142 366,158 376,170 C384,148 392,126 400,104 C408,126 416,148 424,170 C434,158 442,142 450,124 C456,142 460,160 464,178 C478,168 496,156 514,140 C504,168 494,196 488,222 Z M400,136 C407.8,156.72 412,178.92 412,198 C412,205.2 406.6,210 400,210 C393.4,210 388,205.2 388,198 C388,178.92 392.2,156.72 400,136 Z M352,156 C358.18,171.12 361.5,187.32 361.5,200.5 C361.5,206.2 357.23,210 352,210 C346.77,210 342.5,206.2 342.5,200.5 C342.5,187.32 345.82,171.12 352,156 Z M448,156 C454.18,171.12 457.5,187.32 457.5,200.5 C457.5,206.2 453.23,210 448,210 C442.77,210 438.5,206.2 438.5,200.5 C438.5,187.32 441.82,171.12 448,156 Z M371,198 a 4,4 0 1 0 8,0 a 4,4 0 1 0 -8,0 Z M421,198 a 4,4 0 1 0 8,0 a 4,4 0 1 0 -8,0 Z M315.5,203 a 4.5,4.5 0 1 0 9,0 a 4.5,4.5 0 1 0 -9,0 Z M475.5,203 a 4.5,4.5 0 1 0 9,0 a 4.5,4.5 0 1 0 -9,0 Z M276,134 a 7,7 0 1 0 14,0 a 7,7 0 1 0 -14,0 Z M510,134 a 7,7 0 1 0 14,0 a 7,7 0 1 0 -14,0 Z M344,118 a 6,6 0 1 0 12,0 a 6,6 0 1 0 -12,0 Z M444,118 a 6,6 0 1 0 12,0 a 6,6 0 1 0 -12,0 Z M395.5,82 a 4.5,4.5 0 1 0 9,0 a 4.5,4.5 0 1 0 -9,0 Z M400,86 L410,97 L400,108 L390,97 Z" />
+
+                    <Path Fill="{StaticResource LogoGoldDiagonal}"
+                          Data="F0 M308,218 Q400,230 492,218 L492,246 Q400,258 308,246 Z M400,229 L410,238 L400,247 L390,238 Z M356.5,237 a 7.5,5 0 1 0 15,0 a 7.5,5 0 1 0 -15,0 Z M428.5,237 a 7.5,5 0 1 0 15,0 a 7.5,5 0 1 0 -15,0 Z M328,235 a 4,4 0 1 0 8,0 a 4,4 0 1 0 -8,0 Z M464,235 a 4,4 0 1 0 8,0 a 4,4 0 1 0 -8,0 Z" />
+
+                    <Path Fill="{StaticResource LogoGoldDiagonal}"
+                          Data="M314,254 Q400,266 486,254 L486,260 Q400,272 314,260 Z" />
+
+                    <!-- Anillo exterior dorado -->
+                    <Ellipse Canvas.Left="180"
+                             Canvas.Top="40"
+                             Width="440"
+                             Height="440"
+                             Stroke="{StaticResource LogoGoldDiagonal}"
+                             StrokeThickness="9" />
+                </Canvas>
+            </Grid>
+        </Viewbox>
+    </ControlTemplate>
+
+    <!-- Los estados de apariencia usan Page.Tag; no hay lógica de autenticación. -->
+    <Style x:Key="HotelSecondaryText" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{StaticResource Light.Secondary}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                <Setter Property="Foreground" Value="{StaticResource Dark.Secondary}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="HotelFieldLabel" TargetType="Label">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Padding" Value="0,0,0,6" />
+        <Setter Property="Foreground" Value="{StaticResource Light.Ink}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                <Setter Property="Foreground" Value="{StaticResource Dark.Ink}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="HotelField" TargetType="Control">
+        <Setter Property="Height" Value="52" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Padding" Value="16,0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{StaticResource Light.Field}" />
+        <Setter Property="Foreground" Value="{StaticResource Light.Ink}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Light.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                <Setter Property="Background" Value="{StaticResource Dark.Field}" />
+                <Setter Property="Foreground" Value="{StaticResource Dark.Ink}" />
+                <Setter Property="BorderBrush" Value="{StaticResource Dark.Border}" />
+            </DataTrigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderBrush" Value="{StaticResource Light.BorderHover}" />
+            </Trigger>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                <Setter Property="BorderBrush" Value="{StaticResource Light.Focus}" />
+            </Trigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark" />
+                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <Setter Property="BorderBrush" Value="{StaticResource Dark.BorderHover}" />
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark" />
+                    <Condition Binding="{Binding IsKeyboardFocusWithin, RelativeSource={RelativeSource Self}}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <Setter Property="BorderBrush" Value="{StaticResource Dark.Focus}" />
+            </MultiDataTrigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.5" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="HotelTextBox" TargetType="TextBox" BasedOn="{StaticResource HotelField}">
+        <Setter Property="CaretBrush" Value="{Binding Foreground, RelativeSource={RelativeSource Self}}" />
+        <Setter Property="SelectionBrush" Value="{StaticResource Brand.Gold}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Grid>
+                        <Border x:Name="FieldBorder" CornerRadius="12" BorderThickness="{TemplateBinding BorderThickness}"
+                                Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" />
+                        <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}"
+                                      VerticalAlignment="Center" />
+                        <TextBlock x:Name="Placeholder" Text="{TemplateBinding Tag}" Margin="17,0"
+                                   VerticalAlignment="Center" IsHitTestVisible="False" Visibility="Collapsed"
+                                   Style="{StaticResource HotelSecondaryText}" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Text" Value="">
+                            <Setter TargetName="Placeholder" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="FieldBorder" Property="BorderThickness" Value="2" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="HotelPasswordBox" TargetType="PasswordBox" BasedOn="{StaticResource HotelField}">
+        <Setter Property="CaretBrush" Value="{Binding Foreground, RelativeSource={RelativeSource Self}}" />
+        <Setter Property="SelectionBrush" Value="{StaticResource Brand.Gold}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="PasswordBox">
+                    <Grid>
+                        <Border x:Name="FieldBorder" CornerRadius="12" BorderThickness="{TemplateBinding BorderThickness}"
+                                Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" />
+                        <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}"
+                                      VerticalAlignment="Center" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="FieldBorder" Property="BorderThickness" Value="2" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="HotelButton" TargetType="Button">
+        <Setter Property="Height" Value="52" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Padding" Value="18,0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="12" />
+                        <Border x:Name="Hover" Background="{TemplateBinding Foreground}" Opacity="0" CornerRadius="12" />
+                        <ContentPresenter Margin="{TemplateBinding Padding}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="Center" RecognizesAccessKey="True" />
+                        <Border x:Name="Focus" Margin="-4" BorderThickness="2" CornerRadius="15"
+                                BorderBrush="{StaticResource Light.Focus}" Visibility="Collapsed" IsHitTestVisible="False" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                            <Setter TargetName="Focus" Property="BorderBrush" Value="{StaticResource Dark.Focus}" />
+                        </DataTrigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Hover" Property="Opacity" Value="0.07" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Hover" Property="Opacity" Value="0.16" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Focus" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.45" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="HotelPrimaryButton" TargetType="Button" BasedOn="{StaticResource HotelButton}">
+        <Setter Property="Background" Value="{StaticResource Light.Primary}" />
+        <Setter Property="Foreground" Value="{StaticResource Light.OnPrimary}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                <Setter Property="Background" Value="{StaticResource Dark.Primary}" />
+                <Setter Property="Foreground" Value="{StaticResource Dark.OnPrimary}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="HotelSecondaryButton" TargetType="Button" BasedOn="{StaticResource HotelButton}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource Light.Ink}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Light.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                <Setter Property="Foreground" Value="{StaticResource Dark.Ink}" />
+                <Setter Property="BorderBrush" Value="{StaticResource Dark.Border}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="HotelLinkButton" TargetType="Button" BasedOn="{StaticResource HotelSecondaryButton}">
+        <Setter Property="Height" Value="28" />
+        <Setter Property="Padding" Value="4,0" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <Style x:Key="HotelCheckBox" TargetType="CheckBox">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Foreground" Value="{StaticResource Light.Ink}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Light.BorderHover}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <Grid Background="Transparent">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="18" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border x:Name="Box" Width="18" Height="18" CornerRadius="4" BorderThickness="1"
+                                BorderBrush="{TemplateBinding BorderBrush}" VerticalAlignment="Center" />
+                        <Path x:Name="Check" Data="M4,9 L7,12 L14,5" Stroke="{StaticResource Brand.Ivory}"
+                              StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                              Height="18" Width="18" Visibility="Collapsed" VerticalAlignment="Center" />
+                        <ContentPresenter Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center" RecognizesAccessKey="True" />
+                        <Border x:Name="Focus" Grid.ColumnSpan="2" BorderBrush="{StaticResource Light.Focus}"
+                                BorderThickness="2" CornerRadius="5" Margin="-4,0" Visibility="Collapsed" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Box" Property="Background" Value="{StaticResource Light.Primary}" />
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource Light.Primary}" />
+                            <Setter TargetName="Check" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                            <Setter TargetName="Focus" Property="BorderBrush" Value="{StaticResource Dark.Focus}" />
+                        </DataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark" />
+                                <Condition Binding="{Binding IsChecked, RelativeSource={RelativeSource Self}}" Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter TargetName="Box" Property="Background" Value="{StaticResource Brand.Gold}" />
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource Brand.Gold}" />
+                            <Setter TargetName="Check" Property="Stroke" Value="{StaticResource Brand.Navy}" />
+                        </MultiDataTrigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Box" Property="BorderThickness" Value="2" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Focus" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.45" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                <Setter Property="Foreground" Value="{StaticResource Dark.Ink}" />
+                <Setter Property="BorderBrush" Value="{StaticResource Dark.BorderHover}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="HotelThemeToggle" TargetType="ToggleButton">
+        <Setter Property="Height" Value="34" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Grid>
+                        <Border x:Name="Surface" CornerRadius="17" Background="Transparent" Padding="12,0">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Grid Width="16" Height="16" Margin="0,0,8,0">
+                                    <Path x:Name="Sun" Data="M8,1 V3 M8,13 V15 M1,8 H3 M13,8 H15 M3,3 L4.4,4.4 M11.6,11.6 L13,13 M3,13 L4.4,11.6 M11.6,4.4 L13,3 M11.5,8 A3.5,3.5 0 1 1 4.5,8 A3.5,3.5 0 1 1 11.5,8"
+                                          Stroke="{StaticResource Light.Secondary}" StrokeThickness="1.3" />
+                                    <Path x:Name="Moon" Data="M12,11.5 A6,6 0 0 1 5,4 A6,6 0 1 0 12,11.5"
+                                          Stroke="{StaticResource Dark.Secondary}" StrokeThickness="1.3" Visibility="Collapsed" />
+                                </Grid>
+                                <TextBlock x:Name="ThemeLabel" Text="Claro" FontSize="12" Foreground="{StaticResource Light.Secondary}" />
+                            </StackPanel>
+                        </Border>
+                        <Border x:Name="Focus" BorderBrush="{StaticResource Light.Focus}" CornerRadius="17"
+                                BorderThickness="2" Visibility="Collapsed" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Surface" Property="Background" Value="#1017384F" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Sun" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="Moon" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="ThemeLabel" Property="Text" Value="Oscuro" />
+                            <Setter TargetName="ThemeLabel" Property="Foreground" Value="{StaticResource Dark.Secondary}" />
+                            <Setter TargetName="Focus" Property="BorderBrush" Value="{StaticResource Dark.Focus}" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="True" />
+                                <Condition Property="IsMouseOver" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Surface" Property="Background" Value="#16F6F3ED" />
+                        </MultiTrigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Focus" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="HotelMotionToggle" TargetType="ToggleButton">
+        <Setter Property="Width" Value="34" />
+        <Setter Property="Height" Value="34" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Grid>
+                        <Border x:Name="Surface" Background="#800B1922" CornerRadius="17" />
+                        <Path x:Name="PauseIcon" Data="M2,1 V11 M8,1 V11" Width="10" Height="12"
+                              Stroke="#F6F3ED" StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Path x:Name="PlayIcon" Data="M1,0 L10,6 L1,12 Z" Width="10" Height="12" Fill="#F6F3ED"
+                              HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" />
+                        <Border x:Name="Focus" CornerRadius="17" BorderThickness="2" Visibility="Collapsed"
+                                BorderBrush="{StaticResource Brand.Gold}" IsHitTestVisible="False" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="PauseIcon" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="PlayIcon" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Surface" Property="Background" Value="#B00B1922" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Surface" Property="Background" Value="#E00B1922" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Focus" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>
+
