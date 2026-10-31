@@ -21,7 +21,10 @@
                     <Setter Property="Background" Value="{StaticResource Dark.Page}" />
                     <Setter Property="Foreground" Value="{StaticResource Dark.Ink}" />
                 </DataTrigger>
-            </Style.Triggers>
+                <DataTrigger Binding="{Binding Content.Tag, ElementName=LoginFrame}" Value="Brand">
+                    <Setter Property="Background" Value="{StaticResource ThemeBrand.Page}" />
+                    <Setter Property="Foreground" Value="{StaticResource ThemeBrand.Ink}" />
+                </DataTrigger>            </Style.Triggers>
         </Style>
     </Window.Style>
     <Window.Resources>

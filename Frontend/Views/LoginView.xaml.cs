@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Windows;
-using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -11,13 +10,21 @@ namespace Crown__.Frontend.Views
     // Presentation only. No authentication, navigation, persistence, or backend calls.
     public partial class LoginView : Page
     {
-        private readonly Storyboard posterMotion = new Storyboard();
-        private bool videoAvailable;
-        private bool motionRunning;
+        private static readonly string[] Themes = { "Light", "Dark", "Brand" };
+        private static readonly string[] ThemeLabels = { "Claro", "Oscuro", "Marca" };
 
-        public LoginView()
+        private readonly Storyboard posterMotion = new Storyboard();
+        private int themeIndex;
+
+        public LoginView() : this("Light") { }
+
+        // theme: tema heredado del dashboard para mantener la apariencia al volver.
+        public LoginView(string theme)
         {
             InitializeComponent();
+            themeIndex = Array.IndexOf(Themes, theme);
+            if (themeIndex < 0) themeIndex = 0;
+            ApplyTheme();
             AddPosterAnimation(ScaleTransform.ScaleXProperty);
             AddPosterAnimation(ScaleTransform.ScaleYProperty);
         }
@@ -37,9 +44,7 @@ namespace Crown__.Frontend.Views
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            MotionToggle.IsChecked = !SystemParameters.ClientAreaAnimation;
             posterMotion.Begin(this, true);
-            motionRunning = true;
             // An optional local MP4 replaces the photograph. No network requests.
             var videoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
                                         "Frontend", "Assets", "Video", "hospitality.mp4");
@@ -48,16 +53,13 @@ namespace Crown__.Frontend.Views
                 HospitalityVideo.Source = new Uri(videoPath, UriKind.Absolute);
                 HospitalityVideo.Play();
             }
-            ApplyMotionPreference();
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
             posterMotion.Remove(this);
-            motionRunning = false;
             HospitalityVideo.Close();
             HospitalityVideo.Opacity = 0;
-            videoAvailable = false;
         }
 
         private void UpdatePanelClip(object sender, SizeChangedEventArgs e)
@@ -68,47 +70,85 @@ namespace Crown__.Frontend.Views
 
         private void OnVideoOpened(object sender, RoutedEventArgs e)
         {
-            videoAvailable = true;
             HospitalityVideo.Opacity = 1;
             posterMotion.Pause(this);
-            ApplyMotionPreference();
         }
 
         private void OnVideoEnded(object sender, RoutedEventArgs e)
         {
             HospitalityVideo.Position = TimeSpan.Zero;
-            if (MotionToggle.IsChecked != true)
-                HospitalityVideo.Play();
+            HospitalityVideo.Play();
         }
 
         private void OnVideoFailed(object sender, ExceptionRoutedEventArgs e)
         {
-            videoAvailable = false;
             HospitalityVideo.Opacity = 0;
             HospitalityVideo.Close();
-            ApplyMotionPreference();
         }
 
-        private void OnMotionToggle(object sender, RoutedEventArgs e)
+        // --- Tema cíclico: Claro -> Oscuro -> Marca ---
+        private void OnThemeCycle(object sender, RoutedEventArgs e)
         {
-            ApplyMotionPreference();
+            themeIndex = (themeIndex + 1) % Themes.Length;
+            ApplyTheme();
         }
 
-        private void ApplyMotionPreference()
+        private void ApplyTheme()
         {
-            bool paused = MotionToggle.IsChecked == true;
-            AutomationProperties.SetName(MotionToggle,
-                paused ? "Reanudar animación de fondo" : "Pausar animación de fondo");
-            if (motionRunning)
+            Tag = Themes[themeIndex];
+            if (ThemeButton != null)
+                ThemeButton.Content = ThemeLabels[themeIndex];
+        }
+
+        // --- Mostrar / ocultar la contraseña ---
+        private void OnEyeToggle(object sender, RoutedEventArgs e)
+        {
+            if (EyeToggle.IsChecked == true)
             {
-                if (paused || videoAvailable) posterMotion.Pause(this);
-                else posterMotion.Resume(this);
+                RevealBox.Text = TxtContrasena.Password;
+                TxtContrasena.Visibility = Visibility.Collapsed;
+                RevealBox.Visibility = Visibility.Visible;
+                PassPlaceholder.Visibility = Visibility.Collapsed;
+                RevealBox.Focus();
+                RevealBox.CaretIndex = RevealBox.Text.Length;
             }
-            if (videoAvailable)
+            else
             {
-                if (paused) HospitalityVideo.Pause();
-                else HospitalityVideo.Play();
+                if (TxtContrasena.Password != RevealBox.Text)
+                    TxtContrasena.Password = RevealBox.Text;
+                RevealBox.Visibility = Visibility.Collapsed;
+                TxtContrasena.Visibility = Visibility.Visible;
+                UpdatePassPlaceholder();
+                TxtContrasena.Focus();
             }
+        }
+
+        private void OnPasswordChanged(object sender, RoutedEventArgs e)
+        {
+            UpdatePassPlaceholder();
+            if (RevealBox.Visibility == Visibility.Visible && RevealBox.Text != TxtContrasena.Password)
+                RevealBox.Text = TxtContrasena.Password;
+        }
+
+        private void OnRevealTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (TxtContrasena.Password != RevealBox.Text)
+                TxtContrasena.Password = RevealBox.Text;
+        }
+
+        private void UpdatePassPlaceholder()
+        {
+            bool empty = string.IsNullOrEmpty(TxtContrasena.Password);
+            bool revealing = RevealBox.Visibility == Visibility.Visible;
+            PassPlaceholder.Visibility = (empty && !revealing) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        // Navega al panel principal heredando el tema elegido en el login.
+        // Frontend only; no credential validation.
+        private void OnIngresar(object sender, RoutedEventArgs e)
+        {
+            if (NavigationService != null)
+                NavigationService.Navigate(new DashboardView((string)Tag));
         }
     }
 }

@@ -89,6 +89,9 @@
             <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
                 <Setter Property="Foreground" Value="{StaticResource Dark.Secondary}" />
             </DataTrigger>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Brand">
+                <Setter Property="Foreground" Value="{StaticResource ThemeBrand.Secondary}" />
+            </DataTrigger>
         </Style.Triggers>
     </Style>
     <Style x:Key="HotelFieldLabel" TargetType="Label">
@@ -99,6 +102,9 @@
         <Style.Triggers>
             <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
                 <Setter Property="Foreground" Value="{StaticResource Dark.Ink}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Brand">
+                <Setter Property="Foreground" Value="{StaticResource ThemeBrand.Ink}" />
             </DataTrigger>
         </Style.Triggers>
     </Style>
@@ -117,6 +123,11 @@
                 <Setter Property="Background" Value="{StaticResource Dark.Field}" />
                 <Setter Property="Foreground" Value="{StaticResource Dark.Ink}" />
                 <Setter Property="BorderBrush" Value="{StaticResource Dark.Border}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Brand">
+                <Setter Property="Background" Value="{StaticResource ThemeBrand.Field}" />
+                <Setter Property="Foreground" Value="{StaticResource ThemeBrand.Ink}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ThemeBrand.Border}" />
             </DataTrigger>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="BorderBrush" Value="{StaticResource Light.BorderHover}" />
@@ -137,6 +148,20 @@
                     <Condition Binding="{Binding IsKeyboardFocusWithin, RelativeSource={RelativeSource Self}}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <Setter Property="BorderBrush" Value="{StaticResource Dark.Focus}" />
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Brand" />
+                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <Setter Property="BorderBrush" Value="{StaticResource ThemeBrand.BorderHover}" />
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Brand" />
+                    <Condition Binding="{Binding IsKeyboardFocusWithin, RelativeSource={RelativeSource Self}}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <Setter Property="BorderBrush" Value="{StaticResource ThemeBrand.Focus}" />
             </MultiDataTrigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Opacity" Value="0.5" />
@@ -217,6 +242,9 @@
                         <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
                             <Setter TargetName="Focus" Property="BorderBrush" Value="{StaticResource Dark.Focus}" />
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Brand">
+                            <Setter TargetName="Focus" Property="BorderBrush" Value="{StaticResource ThemeBrand.Focus}" />
+                        </DataTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Hover" Property="Opacity" Value="0.07" />
                         </Trigger>
@@ -243,6 +271,10 @@
                 <Setter Property="Background" Value="{StaticResource Dark.Primary}" />
                 <Setter Property="Foreground" Value="{StaticResource Dark.OnPrimary}" />
             </DataTrigger>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Brand">
+                <Setter Property="Background" Value="{StaticResource ThemeBrand.Primary}" />
+                <Setter Property="Foreground" Value="{StaticResource ThemeBrand.OnPrimary}" />
+            </DataTrigger>
         </Style.Triggers>
     </Style>
     <Style x:Key="HotelSecondaryButton" TargetType="Button" BasedOn="{StaticResource HotelButton}">
@@ -256,6 +288,10 @@
             <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
                 <Setter Property="Foreground" Value="{StaticResource Dark.Ink}" />
                 <Setter Property="BorderBrush" Value="{StaticResource Dark.Border}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Brand">
+                <Setter Property="Foreground" Value="{StaticResource ThemeBrand.Primary}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ThemeBrand.Primary}" />
             </DataTrigger>
         </Style.Triggers>
     </Style>
@@ -298,6 +334,9 @@
                         <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
                             <Setter TargetName="Focus" Property="BorderBrush" Value="{StaticResource Dark.Focus}" />
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Brand">
+                            <Setter TargetName="Focus" Property="BorderBrush" Value="{StaticResource ThemeBrand.Focus}" />
+                        </DataTrigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark" />
@@ -306,6 +345,15 @@
                             <Setter TargetName="Box" Property="Background" Value="{StaticResource Brand.Gold}" />
                             <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource Brand.Gold}" />
                             <Setter TargetName="Check" Property="Stroke" Value="{StaticResource Brand.Navy}" />
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Brand" />
+                                <Condition Binding="{Binding IsChecked, RelativeSource={RelativeSource Self}}" Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter TargetName="Box" Property="Background" Value="{StaticResource ThemeBrand.Primary}" />
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource ThemeBrand.Primary}" />
+                            <Setter TargetName="Check" Property="Stroke" Value="{StaticResource ThemeBrand.OnPrimary}" />
                         </MultiDataTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Box" Property="BorderThickness" Value="2" />
@@ -324,6 +372,10 @@
             <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
                 <Setter Property="Foreground" Value="{StaticResource Dark.Ink}" />
                 <Setter Property="BorderBrush" Value="{StaticResource Dark.BorderHover}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Brand">
+                <Setter Property="Foreground" Value="{StaticResource ThemeBrand.Ink}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ThemeBrand.BorderHover}" />
             </DataTrigger>
         </Style.Triggers>
     </Style>
@@ -406,6 +458,42 @@
                         <Trigger Property="IsKeyboardFocused" Value="True">
                             <Setter TargetName="Focus" Property="Visibility" Value="Visible" />
                         </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Botón cíclico de tema: Claro -> Oscuro -> Marca -->
+    <Style x:Key="ThemeCycleButton" TargetType="Button">
+        <Setter Property="Height" Value="34" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Surface" CornerRadius="17" Background="Transparent" Padding="11,0">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Path Width="16" Height="16" Margin="0,0,8,0" Stretch="Uniform"
+                                  Data="M12,2 A10,10 0 1 0 12,22 A10,10 0 1 0 12,2 M12,7 A5,5 0 1 0 12,17 A5,5 0 1 0 12,7"
+                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Page}}"
+                                  StrokeThickness="1.3" />
+                            <ContentPresenter VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Surface" Property="Background" Value="#1017384F" />
+                        </Trigger>
+                        <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                            <Setter TargetName="Surface" Property="Background" Value="Transparent" />
+                        </DataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark" />
+                                <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter TargetName="Surface" Property="Background" Value="#16F6F3ED" />
+                        </MultiDataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

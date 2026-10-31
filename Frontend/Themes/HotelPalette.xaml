@@ -24,4 +24,17 @@
     <SolidColorBrush x:Key="Dark.Focus" Color="#D9BB79" />
     <SolidColorBrush x:Key="Dark.Primary" Color="#D9BB79" />
     <SolidColorBrush x:Key="Dark.OnPrimary" Color="#102B3F" />
+
+    <!-- Tercer modo: "Brand" (paleta institucional teal) -->
+    <SolidColorBrush x:Key="ThemeBrand.Page" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="ThemeBrand.Ink" Color="#0F172A" />
+    <SolidColorBrush x:Key="ThemeBrand.Secondary" Color="#475569" />
+    <SolidColorBrush x:Key="ThemeBrand.Field" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="ThemeBrand.Border" Color="#E2E8F0" />
+    <SolidColorBrush x:Key="ThemeBrand.BorderHover" Color="#94A3B8" />
+    <SolidColorBrush x:Key="ThemeBrand.Focus" Color="#004D40" />
+    <SolidColorBrush x:Key="ThemeBrand.Primary" Color="#004D40" />
+    <SolidColorBrush x:Key="ThemeBrand.OnPrimary" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="ThemeBrand.Bar" Color="#004D40" />
+    <SolidColorBrush x:Key="ThemeBrand.OnBar" Color="#FFFFFF" />
 </ResourceDictionary>
