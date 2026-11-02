@@ -7,7 +7,7 @@ using System.Windows.Media.Animation;
 
 namespace Crown__.Frontend.Views
 {
-    // Presentation only. No authentication, navigation, persistence, or backend calls.
+    // Presentation and demo navigation only. No authentication, persistence or backend calls.
     public partial class LoginView : Page
     {
         private static readonly string[] Themes = { "Light", "Dark", "Brand" };

@@ -2,7 +2,7 @@
 
 ## Punto de partida
 
-La entrega actual es exclusivamente de frontend. No hay usuarios de prueba, autenticación simulada, conexión a base de datos ni credenciales guardadas. Backend/Data, Models, Repositories y Services contienen marcadores para conservar las carpetas en Git.
+La entrega actual es exclusivamente de frontend. Ingresar y el acceso simulado abren un panel de demostración sin comprobar credenciales. No hay sesión autenticada, conexión a base de datos ni credenciales guardadas. Backend/Data, Models, Repositories y Services siguen reservados para la integración del equipo.
 
 La página del login es:
 
@@ -20,11 +20,38 @@ Los controles pertenecen al ámbito de nombres de **LoginView**, no al de MainWi
 | TxtUsuario | TextBox | Usuario; propiedad Text |
 | TxtContrasena | PasswordBox | Contraseña; propiedad Password |
 | ChkRecordarme | CheckBox | Preferencia visual; IsChecked; no persiste datos |
-| BtnIngresar | Button | Ingreso real; sin evento ni comando |
-| BtnLoginSimulado | Button | Acceso de demostración pendiente; sin evento ni comando |
+| BtnIngresar | Button | OnIngresar abre la demostración; reemplazar este paso por autenticación real |
+| BtnLoginSimulado | Button | Comparte OnIngresar para explorar la demostración |
 | BtnSoporteTecnico | Button | Soporte pendiente; sin evento ni comando |
 
-ThemeToggle y MotionToggle pertenecen a presentación. Los eventos existentes administran únicamente el fondo, el tema y los controles de ventana.
+ThemeButton, EyeToggle y los eventos del fondo pertenecen a presentación. El tema se transmite entre LoginView y DashboardView mediante el argumento Light, Dark o Brand.
+
+## Panel hotelero
+
+`DashboardView.xaml` conserva el shell, los estilos, ModuleContent y el panel Overlay. `DashboardView.xaml.cs` genera el contenido de cada sección. `ModuleCatalog.cs` contiene exclusivamente fixtures y metadatos visuales; no usar esas clases como entidades persistentes.
+
+| Clave estable | Contenido | Punto de integración pendiente |
+| --- | --- | --- |
+| Inicio | Indicadores, movimientos y alertas | Resumen operativo por turno |
+| Reservas | Listado, filtro y borrador | Disponibilidad, tarifas y creación de reservas |
+| Habitaciones | Fichas por piso y estado | Inventario, asignación, limpieza y mantenimiento |
+| CheckInOut | Llegadas, salidas y pendientes | Confirmación transaccional del movimiento |
+| Huespedes | Directorio y preferencias | Fichas de huéspedes e historial |
+| Convenios | Empresas, tarifas y vigencias | Contratos y reglas comerciales |
+| FNB | Comandas, minibar y consumos | Pedidos, cargos y stock |
+| GymSpa | Agenda y aforo | Disponibilidad, cupos y citas |
+| Lavanderia | Órdenes, prendas y entrega | Seguimiento de órdenes y cargos |
+| Finanzas | Movimientos y saldos | Caja, cobros, conciliación y facturación |
+| Reportes | Gráfica y catálogo de reportes | Agregaciones y exportación PDF/Excel |
+| Config | Apariencia y preferencias | Configuración, usuarios y permisos |
+
+Los botones de navegación exponen AutomationId `Nav` seguido de la clave del módulo. ShowModule selecciona la vista; RefreshResults combina búsqueda y filtros locales; ShowDetail abre la ficha; OpenForm crea los campos; OnReviewDraft comprueba el formato y muestra un resumen **sin guardar ni enviar**. Para conectar operaciones, sustituir los fixtures por modelos de vista tipados y enlazar los controles a comandos/servicios. Mantener las claves para conservar la navegación y las comprobaciones.
+
+FieldDefinition describe etiqueta, tipo, hint y opciones. Los campos de fecha usan dd/MM/aaaa; las horas, HH:mm. Los importes aceptan punto o coma decimal, hasta dos decimales, sin separadores de miles. La salida de una reserva debe ser posterior a la llegada; el intervalo de reportes permite el mismo día. Backend debe volver a validar todo, incluyendo capacidad, disponibilidad, conflictos de horarios, permisos, moneda e importes reales.
+
+El flujo actual es editor → errores o resumen → volver a editar/cerrar. No se anuncian reservas, cobros o registros completados. Al integrar servicios, coordinar estados de carga, error recuperable y confirmación real; preservar los valores del formulario al fallar. Buscar, filtros, tema y preferencias solo afectan la vista en memoria; navegar a otro módulo restablece los filtros de ese módulo.
+
+Los colores `Ui.*` son recursos dinámicos de la página. No fijar Stroke/Foreground a negro ni usar pinceles Light.* directamente dentro del panel; usar los recursos semánticos para que campos, iconos y ventanas emergentes respondan al cambio de tema.
 
 ## Reparto de responsabilidades sugerido
 
@@ -55,4 +82,4 @@ El `Crown &.csproj` usa formato clásico de .NET Framework: añadir una clase de
 
 Antes de integrar, abrir la solución y comprobar ambos temas, el formulario, los controles de ventana y el tamaño mínimo. El fondo usa una imagen local y no necesita Internet. Para vídeo opcional, seguir `Frontend/Assets/Video/README.md`.
 
-La primera entrega fue compilada correctamente en Debug. El login no envía datos ni cambia de pantalla al pulsar sus botones.
+Ejecutar `scripts/Verify-Frontend.ps1` desde PowerShell. Compila con MSBuild y verifica módulos, temas, tamaños, filtros, validación de formularios, hints del login y sincronización de contraseña. Guarda renders del XAML compilado en `.design-preview`; no sustituye la revisión interactiva ni las pruebas de integración con backend.

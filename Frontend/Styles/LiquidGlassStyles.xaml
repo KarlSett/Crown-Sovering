@@ -467,20 +467,23 @@
     <!-- Botón cíclico de tema: Claro -> Oscuro -> Marca -->
     <Style x:Key="ThemeCycleButton" TargetType="Button">
         <Setter Property="Height" Value="34" />
+        <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Page}}" />
+        <Setter Property="FontSize" Value="12" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border x:Name="Surface" CornerRadius="17" Background="Transparent" Padding="11,0">
+                    <Border x:Name="Surface" CornerRadius="17" Background="Transparent" Padding="11,0" BorderBrush="{StaticResource Brand.Gold}">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Path Width="16" Height="16" Margin="0,0,8,0" Stretch="Uniform"
                                   Data="M12,2 A10,10 0 1 0 12,22 A10,10 0 1 0 12,2 M12,7 A5,5 0 1 0 12,17 A5,5 0 1 0 12,7"
                                   Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Page}}"
                                   StrokeThickness="1.3" />
-                            <ContentPresenter VerticalAlignment="Center" />
+                            <ContentPresenter VerticalAlignment="Center" TextElement.Foreground="{TemplateBinding Foreground}" />
                         </StackPanel>
                     </Border>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Surface" Property="BorderThickness" Value="2" /></Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Surface" Property="Background" Value="#1017384F" />
                         </Trigger>

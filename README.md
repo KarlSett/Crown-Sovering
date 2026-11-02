@@ -2,7 +2,7 @@
 
 Aplicación de escritorio para gestión hotelera, desarrollada en **WPF con C# y .NET Framework 4.7.2**.
 
-Esta primera entrega contiene el **frontend del login** y la estructura para que el equipo de backend integre sus servicios. Los botones de ingreso, acceso simulado y soporte todavía no ejecutan acciones.
+Incluye el **frontend del login y doce módulos del panel hotelero**. Ingresar y el acceso simulado permiten explorar las pantallas con datos de muestra, sin autenticar usuarios. Backend conectará los servicios y las operaciones reales.
 
 ![Login en modo claro](docs/images/login-light.png)
 
@@ -42,10 +42,13 @@ msbuild '.\Crown &.sln' /t:Build /p:Configuration=Debug
 
 - Ventana redondeada, con minimizar, maximizar/restaurar y **Salir**.
 - Formulario con usuario, contraseña, Recordarme, soporte e ingreso.
-- Apariencia clara y oscura, navegación por teclado y estados visuales.
+- Apariencia clara, oscura y Marca, navegación por teclado y estados visuales. Iconos, campos, desplegables y barras de desplazamiento adaptados al tema.
 - Fondo hotelero local con movimiento suave y pausa.
 - Soporte de presentación para un MP4 local opcional; no se incluye vídeo.
-- Sin autenticación, navegación tras ingresar, persistencia, consultas ni conexión a base de datos.
+- Panel con Inicio, Reservas, Habitaciones, Check-in / check-out, Huéspedes, Convenios, F & B, Gym / Spa, Lavandería, Finanzas, Reportes y Ajustes.
+- Búsqueda sin distinguir tildes, filtros por estado y piso, fichas de detalle, agenda de servicios y gráfica de ocupación.
+- Formularios con validación de campos obligatorios, correo, teléfono, fechas y sus intervalos, horas, cantidades e importes. El resumen conserva los valores al volver a editar.
+- Sin autenticación, persistencia, consultas ni conexión a base de datos. Los formularios previsualizan borradores; no ejecutan movimientos reales ni generan documentos.
 
 ## Organización
 
@@ -54,7 +57,7 @@ Frontend/
   Assets/         Emblema, fotografía y vídeo opcional
   Themes/         Colores y tipografía
   Styles/         Estilos y controles reutilizables
-  Views/          LoginView.xaml y su código de presentación
+  Views/          Login, panel, catálogo de módulos y datos de muestra
 Backend/
   Data/           Conexiones y configuración de datos (pendiente)
   Models/         Entidades (pendiente)
@@ -71,7 +74,19 @@ Comenzar por [la guía de integración](docs/INTEGRACION_BACKEND.md), que identi
 
 Las clases nuevas deben registrarse en el archivo `.csproj`: es un proyecto clásico, sin inclusión automática de archivos C#. Visual Studio lo hace al añadir una clase desde el proyecto.
 
-Crear ramas de trabajo desde `main`, por ejemplo `backend/autenticacion`, y revisar los cambios mediante pull requests. Evitar cambiar nombres de controles o archivos visuales sin coordinar con frontend.
+La rama de integración actual es `dev`. Crear ramas de trabajo desde ella, por ejemplo `backend/autenticacion`, y revisar los cambios mediante pull requests. Evitar cambiar nombres de controles o archivos visuales sin coordinar con frontend. El script de publicación inicial descrito arriba solo corresponde a la primera entrega en `main`; no usarlo para publicar en `dev`.
+
+## Verificación del frontend
+
+[Panel claro](docs/images/dashboard-light.png) · [Panel oscuro](docs/images/dashboard-dark.png) · [Habitaciones al tamaño mínimo](docs/images/rooms-dark-minimum.png)
+
+Desde PowerShell con MSBuild de Visual Studio disponible:
+
+```powershell
+.\scripts\Verify-Frontend.ps1
+```
+
+Compila el proyecto y un ejecutable independiente de comprobación. Recorre las doce secciones en tres tamaños y tres temas, prueba filtros, borradores y entradas inválidas, y comprueba la desaparición de los hints del login y la sincronización al revelar contraseñas. Los renders se escriben en `.design-preview`, excluida de Git; no son capturas de una sesión interactiva.
 
 [Ver modo oscuro](docs/images/login-dark.png)
 

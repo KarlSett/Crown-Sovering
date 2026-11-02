@@ -79,6 +79,7 @@
       <DependentUpon>LoginView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Frontend\Views\ModuleCatalog.cs" />
     <Compile Include="Frontend\Views\DashboardView.xaml.cs">
       <DependentUpon>DashboardView.xaml</DependentUpon>
       <SubType>Code</SubType>
