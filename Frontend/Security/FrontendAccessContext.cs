@@ -32,41 +32,84 @@ namespace Crown__.Frontend.Security
             return !string.IsNullOrWhiteSpace(UserId) && permissions.Contains(module + ".View") && permissions.Contains(module + "." + action);
         }
 
-        public static readonly string[] DemoRoles = { "Administrador", "Recepcion", "Housekeeping", "Supervisor", "Mantenimiento", "AlimentosBebidas", "Bienestar", "Lavanderia", "Finanzas", "Transporte" };
-        private static readonly string[] Modules = { "Inicio", "Reservas", "Habitaciones", "CheckInOut", "Huespedes", "Convenios", "FNB", "GymSpa", "Lavanderia", "Finanzas", "Reportes", "Config", "Housekeeping", "Mantenimiento", "Transporte", "Tarifas", "Folios", "Inventario", "Alertas", "Operacion", "Usuarios", "Auditoria" };
+        public static readonly string[] DemoRoles = { "Administrador", "Gerente", "Recepcionista" };
 
-        // Working interpretation of RF responsibilities. Not a production role directory.
+        private static string NormalizeRoleKey(string role)
+        {
+            if (string.Equals(role, "Recepcion", StringComparison.Ordinal))
+                return "Recepcionista";
+            return role ?? "";
+        }
+
+        public static string GetRoleDisplayName(string role)
+        {
+            switch (NormalizeRoleKey(role))
+            {
+                case "Administrador": return "Administrador";
+                case "Gerente": return "Gerente";
+                case "Recepcionista": return "Recepcionista";
+                default: return role ?? "Sin perfil";
+            }
+        }
+
+        // Only 3 roles exist in demonstration: Administrador, Gerente and Recepcionista.
+        // Administrador and Gerente focus on administrative, commercial, event-discount and service-limit modules (not Reservas/front-desk).
         public static FrontendAccessContext CreateDemonstration(string role)
         {
+            string normalized = NormalizeRoleKey(role);
             var grants = new HashSet<string>(StringComparer.Ordinal);
-            string label = role;
-            Action<string, string[]> add = (module, actions) => { grants.Add(module + ".View"); foreach (string action in actions) grants.Add(module + "." + action); };
-            if (role == "Administrador")
-                foreach (string module in Modules) add(module, new[] { "Write", "Cancel", "Approve", "Export", "Manage", "Privacy" });
-            else if (DemoRoles.Contains(role))
+            string label = GetRoleDisplayName(normalized);
+            Action<string, string[]> add = (module, actions) =>
             {
-                add("Inicio", new string[0]); add("Alertas", new[] { "Write" });
-                switch (role)
+                grants.Add(module + ".View");
+                foreach (string action in actions) grants.Add(module + "." + action);
+            };
+
+            if (DemoRoles.Contains(normalized))
+            {
+                add("Inicio", new string[0]);
+                add("Alertas", new[] { "Write" });
+                add("Preferencias", new[] { "Write" });
+
+                switch (normalized)
                 {
-                    case "Recepcion":
-                        label = "Recepción";
-                        foreach (string module in new[] { "Reservas", "CheckInOut", "Huespedes", "Folios", "Operacion", "Transporte" }) add(module, new[] { "Write" });
-                        add("Habitaciones", new string[0]); add("Convenios", new string[0]); add("Reservas", new[] { "Cancel" }); break;
-                    case "Housekeeping": add("Housekeeping", new[] { "Write" }); add("Habitaciones", new string[0]); break;
-                    case "Supervisor":
-                        label = "Supervisión de pisos";
-                        add("Housekeeping", new[] { "Write", "Approve", "Manage" }); add("Habitaciones", new[] { "Write" }); add("Mantenimiento", new[] { "Write" }); break;
-                    case "Mantenimiento": add("Mantenimiento", new[] { "Write" }); add("Habitaciones", new string[0]); break;
-                    case "AlimentosBebidas": label = "Alimentos y bebidas"; add("FNB", new[] { "Write" }); add("Inventario", new[] { "Write" }); break;
-                    case "Bienestar": add("GymSpa", new[] { "Write" }); break;
-                    case "Lavanderia": label = "Lavandería"; add("Lavanderia", new[] { "Write" }); break;
-                    case "Finanzas":
-                        foreach (string module in new[] { "Finanzas", "Folios" }) add(module, new[] { "Write" });
-                        add("Reportes", new[] { "Export" }); break;
-                    case "Transporte": add("Transporte", new[] { "Write" }); break;
+                    case "Administrador":
+                        foreach (string module in new[] { "Eventos", "Tarifas", "Convenios", "Finanzas", "Reportes", "FNB", "GymSpa", "Lavanderia", "Transporte", "Inventario", "Usuarios", "Auditoria", "Config" })
+                            add(module, new[] { "Write", "Cancel", "Approve", "Export", "Manage", "Privacy", "Limit" });
+                        break;
+
+                    case "Gerente":
+                        add("Eventos", new[] { "Write", "Manage" });
+                        add("Tarifas", new[] { "Write", "Manage" });
+                        add("Convenios", new[] { "Write", "Manage" });
+                        add("Finanzas", new[] { "Write", "Approve", "Export" });
+                        add("Reportes", new[] { "Export", "Manage" });
+                        add("FNB", new[] { "Write", "Manage", "Limit" });
+                        add("GymSpa", new[] { "Write", "Manage", "Limit" });
+                        add("Lavanderia", new[] { "Limit" });
+                        add("Transporte", new[] { "Limit" });
+                        add("Inventario", new[] { "Write" });
+                        break;
+
+                    case "Recepcionista":
+                        add("Reservas", new[] { "Write", "Cancel" });
+                        add("Habitaciones", new[] { "Write", "Manage" });
+                        add("CheckInOut", new[] { "Write", "Privacy", "Manage" });
+                        add("Folios", new[] { "Write" });
+                        add("Operacion", new[] { "Write" });
+                        add("Housekeeping", new[] { "Write", "Manage", "Approve" });
+                        foreach (string service in new[] { "FNB", "GymSpa", "Mantenimiento", "Lavanderia", "Transporte" })
+                            add(service, new[] { "Write" });
+                        break;
                 }
             }
-            return new FrontendAccessContext(grants.Count == 0 ? "" : "demo-" + role, "Personal de muestra", label ?? "Sin perfil", grants, true);
+
+            return new FrontendAccessContext(
+                grants.Count == 0 ? "" : "demo-" + normalized,
+                "Personal de muestra",
+                grants.Count == 0 ? "Sin perfil" : label,
+                grants,
+                true);
         }
     }
 }

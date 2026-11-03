@@ -3,9 +3,19 @@ $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path $PSScriptRoot -Parent
 Push-Location $projectRoot
 try {
+    $msbuildCmd = Get-Command MSBuild.exe -ErrorAction SilentlyContinue
+    $msbuild = if ($msbuildCmd) { $msbuildCmd.Source } else {
+        @(
+            'C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe',
+            'C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe',
+            'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe',
+            'C:\Program Files\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe',
+            'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe'
+        ) | Where-Object { Test-Path $_ } | Select-Object -First 1
+    }
     # An isolated output also works while a developer has bin/Debug running.
     $buildOutput = ".design-preview/verified/$Configuration/"
-    & MSBuild.exe 'Crown &.csproj' /t:Build "/p:Configuration=$Configuration" "/p:OutputPath=$buildOutput" '/p:TargetPlatformSdkPath=C:/Program Files (x86)/Windows Kits/8.1/' /p:TargetPlatformDisplayName=Windows /nologo /verbosity:minimal
+    & $msbuild 'Crown &.csproj' /t:Build "/p:Configuration=$Configuration" "/p:OutputPath=$buildOutput" '/p:TargetPlatformSdkPath=C:/Program Files (x86)/Windows Kits/8.1/' /p:TargetPlatformDisplayName=Windows /nologo /verbosity:minimal
     if ($LASTEXITCODE -ne 0) { throw 'Build failed.' }
     $preview = Join-Path $projectRoot '.design-preview'
     New-Item -ItemType Directory -Force -Path $preview | Out-Null

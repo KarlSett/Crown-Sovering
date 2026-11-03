@@ -6,7 +6,7 @@
         Width="1200" Height="760" MinWidth="920" MinHeight="660"
         WindowStartupLocation="CenterScreen" WindowStyle="None" ResizeMode="CanResize"
         UseLayoutRounding="True" SnapsToDevicePixels="True"
-        FontFamily="{StaticResource HotelSansFont}">
+        FontFamily="{StaticResource HotelSansFont}" PreviewKeyDown="OnWindowPreviewKeyDown">
     <shell:WindowChrome.WindowChrome>
         <shell:WindowChrome CaptionHeight="44" ResizeBorderThickness="6"
                             CornerRadius="28" GlassFrameThickness="0"

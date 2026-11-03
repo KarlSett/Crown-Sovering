@@ -2,8 +2,10 @@ using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using Crown__.Frontend.Security;
 
 namespace Crown__.Frontend.Views
 {
@@ -16,12 +18,20 @@ namespace Crown__.Frontend.Views
         private readonly Storyboard posterMotion = new Storyboard();
         private int themeIndex;
 
-        public LoginView() : this("Light") { }
+        public LoginView() : this("Light", "Recepcionista") { }
 
         // theme: tema heredado del dashboard para mantener la apariencia al volver.
-        public LoginView(string theme)
+        public LoginView(string theme) : this(theme, "Recepcionista") { }
+
+        public LoginView(string theme, string roleKey)
         {
             InitializeComponent();
+            CmbRolDemo.ItemsSource = HotelEventsAndLimits.DemoRoleOptions;
+
+            string normalizedRole = string.Equals(roleKey, "Recepcion", StringComparison.Ordinal) ? "Recepcionista" : roleKey;
+            int roleIndex = Array.FindIndex(HotelEventsAndLimits.DemoRoleOptions, r => r.Key == normalizedRole);
+            CmbRolDemo.SelectedIndex = roleIndex >= 0 ? roleIndex : 2;
+
             themeIndex = Array.IndexOf(Themes, theme);
             if (themeIndex < 0) themeIndex = 0;
             ApplyTheme();
@@ -87,10 +97,15 @@ namespace Crown__.Frontend.Views
         }
 
         // --- Tema cíclico: Claro -> Oscuro -> Marca ---
-        private void OnThemeCycle(object sender, RoutedEventArgs e)
+        public void CycleTheme()
         {
             themeIndex = (themeIndex + 1) % Themes.Length;
             ApplyTheme();
+        }
+
+        private void OnThemeCycle(object sender, RoutedEventArgs e)
+        {
+            CycleTheme();
         }
 
         private void ApplyTheme()
@@ -98,6 +113,22 @@ namespace Crown__.Frontend.Views
             Tag = Themes[themeIndex];
             if (ThemeButton != null)
                 ThemeButton.Content = ThemeLabels[themeIndex];
+        }
+
+        public void HandleShortcut(KeyEventArgs e)
+        {
+            if (e.Handled) return;
+            Key key = e.Key == Key.System ? e.SystemKey : e.Key;
+            if (Keyboard.Modifiers == ModifierKeys.Alt && key == Key.T)
+            {
+                CycleTheme();
+                e.Handled = true;
+            }
+        }
+
+        private void OnPageKeyDown(object sender, KeyEventArgs e)
+        {
+            HandleShortcut(e);
         }
 
         // --- Mostrar / ocultar la contraseña ---
@@ -143,12 +174,29 @@ namespace Crown__.Frontend.Views
             PassPlaceholder.Visibility = (empty && !revealing) ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        // Navega al panel principal heredando el tema elegido en el login.
+        private string SelectedDemoRoleKey()
+        {
+            var selected = CmbRolDemo != null ? CmbRolDemo.SelectedItem as RoleOptionItem : null;
+            return selected != null ? selected.Key : "Recepcionista";
+        }
+
+        private void EnterSimulatedWorkspace()
+        {
+            if (NavigationService == null) return;
+            string roleKey = SelectedDemoRoleKey();
+            NavigationService.Navigate(new DashboardView((string)Tag, FrontendAccessContext.CreateDemonstration(roleKey)));
+        }
+
+        // Navega al panel principal heredando el tema y el rol de demostración elegido.
         // Frontend only; no credential validation.
         private void OnIngresar(object sender, RoutedEventArgs e)
         {
-            if (NavigationService != null)
-                NavigationService.Navigate(new DashboardView((string)Tag));
+            EnterSimulatedWorkspace();
+        }
+
+        private void OnIngresarSimulado(object sender, RoutedEventArgs e)
+        {
+            EnterSimulatedWorkspace();
         }
     }
 }

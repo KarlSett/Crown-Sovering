@@ -1,4 +1,4 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <FontFamily x:Key="HotelSansFont">Segoe UI</FontFamily>
     <FontFamily x:Key="HotelSerifFont">Georgia</FontFamily>
@@ -25,16 +25,29 @@
     <SolidColorBrush x:Key="Dark.Primary" Color="#D9BB79" />
     <SolidColorBrush x:Key="Dark.OnPrimary" Color="#102B3F" />
 
-    <!-- Tercer modo: "Brand" (paleta institucional teal) -->
-    <SolidColorBrush x:Key="ThemeBrand.Page" Color="#FFFFFF" />
-    <SolidColorBrush x:Key="ThemeBrand.Ink" Color="#0F172A" />
-    <SolidColorBrush x:Key="ThemeBrand.Secondary" Color="#475569" />
+    <!-- Escala esmeralda institucional del tercer modo "Brand" (Marca) -->
+    <SolidColorBrush x:Key="Brand.Emerald50" Color="#EBFEF7" />
+    <SolidColorBrush x:Key="Brand.Emerald100" Color="#CEFDE9" />
+    <SolidColorBrush x:Key="Brand.Emerald200" Color="#A1F9D9" />
+    <SolidColorBrush x:Key="Brand.Emerald300" Color="#64F1C6" />
+    <SolidColorBrush x:Key="Brand.Emerald400" Color="#27E0AE" />
+    <SolidColorBrush x:Key="Brand.Emerald500" Color="#02C798" />
+    <SolidColorBrush x:Key="Brand.Emerald600" Color="#00A27F" />
+    <SolidColorBrush x:Key="Brand.Emerald700" Color="#008269" />
+    <SolidColorBrush x:Key="Brand.Emerald800" Color="#006653" />
+    <SolidColorBrush x:Key="Brand.Emerald900" Color="#004D40" />
+    <SolidColorBrush x:Key="Brand.Emerald950" Color="#003029" />
+
+    <!-- Tercer modo: "Brand" (UI basada en #EBFEF7..#02C798..#004D40..#003029) -->
+    <SolidColorBrush x:Key="ThemeBrand.Page" Color="#EBFEF7" />
+    <SolidColorBrush x:Key="ThemeBrand.Ink" Color="#003029" />
+    <SolidColorBrush x:Key="ThemeBrand.Secondary" Color="#006653" />
     <SolidColorBrush x:Key="ThemeBrand.Field" Color="#FFFFFF" />
-    <SolidColorBrush x:Key="ThemeBrand.Border" Color="#E2E8F0" />
-    <SolidColorBrush x:Key="ThemeBrand.BorderHover" Color="#94A3B8" />
-    <SolidColorBrush x:Key="ThemeBrand.Focus" Color="#004D40" />
+    <SolidColorBrush x:Key="ThemeBrand.Border" Color="#64F1C6" />
+    <SolidColorBrush x:Key="ThemeBrand.BorderHover" Color="#00A27F" />
+    <SolidColorBrush x:Key="ThemeBrand.Focus" Color="#008269" />
     <SolidColorBrush x:Key="ThemeBrand.Primary" Color="#004D40" />
     <SolidColorBrush x:Key="ThemeBrand.OnPrimary" Color="#FFFFFF" />
-    <SolidColorBrush x:Key="ThemeBrand.Bar" Color="#004D40" />
-    <SolidColorBrush x:Key="ThemeBrand.OnBar" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="ThemeBrand.Bar" Color="#003029" />
+    <SolidColorBrush x:Key="ThemeBrand.OnBar" Color="#EBFEF7" />
 </ResourceDictionary>

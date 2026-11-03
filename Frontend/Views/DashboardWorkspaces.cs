@@ -14,20 +14,22 @@ namespace Crown__.Frontend.Views
     public partial class DashboardView
     {
         private static readonly string[][] NavigationGroups = {
-            new[]{"Mi puesto", "Inicio", "Alertas"},
-            new[]{"Recepción", "Reservas", "Habitaciones", "CheckInOut", "Huespedes", "Folios", "Operacion"},
-            new[]{"Servicios", "Housekeeping", "Mantenimiento", "FNB", "Inventario", "GymSpa", "Lavanderia", "Transporte"},
-            new[]{"Gestión", "Convenios", "Tarifas", "Finanzas", "Reportes"},
-            new[]{"Administración", "Usuarios", "Auditoria", "Config"}
+            new[]{"Mi puesto", "Inicio", "Alertas", "Preferencias"},
+            new[]{"Recepción", "Reservas", "Habitaciones", "CheckInOut", "Folios", "Operacion"},
+            new[]{"Gestión administrativa", "Eventos", "Tarifas", "Convenios", "Finanzas", "Reportes"},
+            new[]{"Servicios", "FNB", "GymSpa", "Housekeeping", "Mantenimiento", "Lavanderia", "Transporte", "Inventario"},
+            new[]{"Sistema", "Usuarios", "Auditoria", "Config"}
         };
         private static string ModuleGroup(string key) { return NavigationGroups.First(g => g.Skip(1).Contains(key))[0]; }
         private static string NavTitle(ModuleDefinition module)
         {
             switch (module.Key) {
                 case "Inicio": return "Mi puesto";
-                case "FNB": return "Alimentos y bebidas";
-                case "GymSpa": return "Gimnasio y spa";
-                case "CheckInOut": return "Check-in / check-out";
+                case "Preferencias": return "Preferencias";
+                case "FNB": return "Comidas y bebidas";
+                case "GymSpa": return "Spa y gimnasio";
+                case "CheckInOut": return "Check-in y huéspedes";
+                case "Eventos": return "Eventos y descuentos";
                 case "Usuarios": return "Usuarios y permisos";
                 default: return module.Title;
             }
@@ -44,6 +46,7 @@ namespace Crown__.Frontend.Views
         private IEnumerable<string[]> VisibleRows()
         {
             if (currentModule == null || !access.Allows(currentModule.Key, "View")) return Enumerable.Empty<string[]>();
+            if (currentModule.Key == "CheckInOut" && receptionViewMode == 1) return HotelEventsAndLimits.GuestRows;
             if (currentModule.Key != "Alertas") return currentModule.Rows ?? new string[0][];
             var areaModules = new Dictionary<string, string> { {"Housekeeping", "Housekeeping"}, {"Mantenimiento", "Mantenimiento"}, {"Transporte", "Transporte"}, {"Finanzas", "Finanzas"}, {"Recepción", "CheckInOut"}, {"Alimentos y bebidas", "FNB"}, {"Bienestar", "GymSpa"}, {"Lavandería", "Lavanderia"} };
             return currentModule.Rows.Where(r => areaModules.ContainsKey(r[2]) && access.Allows(areaModules[r[2]], "View"));
@@ -51,40 +54,90 @@ namespace Crown__.Frontend.Views
 
         private void BuildRoleHome()
         {
-            PageTitle.Text = "Tu jornada en el hotel";
-            PageDescription.Text = access.RoleLabel + " · Sábado, 31 de octubre de 2026 · Datos de muestra";
-            var available = ModuleCatalog.All.Where(m => access.Allows(m.Key, "View") && m.Key != "Inicio" && m.Key != "Alertas").ToArray();
-            var strip = new Grid { Margin = new Thickness(0, 0, 0, 24) };
-            strip.ColumnDefinitions.Add(new ColumnDefinition()); strip.ColumnDefinitions.Add(new ColumnDefinition()); strip.ColumnDefinitions.Add(new ColumnDefinition());
-            string[] metrics = access.Allows("Finanzas", "View")
-                ? new[]{"82%|Ocupación", "$3,920.10|Caja del turno", "3|Saldos por revisar"}
-                : access.Allows("CheckInOut", "View") ? new[]{"14|Llegadas hoy", "11|Salidas hoy", "6|Habitaciones en limpieza"}
-                : new[]{available.Length + "|Áreas de trabajo", "3|Pendientes de muestra", "Turno 1|Jornada actual"};
-            for (int i = 0; i < metrics.Length; i++) {
-                var parts = metrics[i].Split('|'); var item = new StackPanel { Margin = new Thickness(i == 0 ? 0 : 18, 0, 10, 0) };
-                item.Children.Add(Muted(parts[1])); item.Children.Add(Text(parts[0], 25, true));
-                var cell = new Border { Child = item, BorderThickness = new Thickness(i == 0 ? 0 : 1, 0, 0, 0) }; cell.SetResourceReference(Border.BorderBrushProperty, "Ui.Border");
-                Grid.SetColumn(cell, i); strip.Children.Add(cell);
+            bool isManagement = access.Allows("Eventos", "View");
+            PageTitle.Text = isManagement ? "Dashboard gerencial y administrativo" : "Tu jornada en recepción";
+            PageDescription.Text = access.RoleLabel + " · Sábado, 31 de octubre de 2026 · Indicadores en tiempo real simulados (RF-55 · RNF-02)";
+            var available = ModuleCatalog.All.Where(m => access.Allows(m.Key, "View") && m.Key != "Inicio" && m.Key != "Alertas" && m.Key != "Preferencias").ToArray();
+            if (isManagement)
+            {
+                AddMetrics(new[] {
+                    "82%|Ocupación actual",
+                    "$148.50|ADR (Tarifa media)",
+                    "$121.77|RevPAR",
+                    "$3,920.10|Ingresos del día",
+                    "14 / 11|Llegadas y salidas hoy",
+                    "3|Alertas activas del rol"
+                });
             }
-            ModuleContent.Children.Add(strip);
-            AddHeading(ModuleContent, "Pendientes de tu puesto", "Abre un área para revisar sus tareas, fichas y acciones disponibles.");
-            var tasks = new StackPanel();
-            foreach (var module in available.Where(m => !new[]{"Config", "Usuarios", "Auditoria", "Reportes", "Tarifas", "Convenios", "Inventario"}.Contains(m.Key)).Take(5)) {
-                var captured = module;
-                string detail = module.Key == "CheckInOut" ? "14 llegadas y 11 salidas por coordinar" : module.Description;
-                tasks.Children.Add(HomeRow("Turno 1", NavTitle(module), detail, "Pendiente", () => ShowModule(captured.Key)));
+            else
+            {
+                var strip = new Grid { Margin = new Thickness(0, 0, 0, 24) };
+                strip.ColumnDefinitions.Add(new ColumnDefinition()); strip.ColumnDefinitions.Add(new ColumnDefinition()); strip.ColumnDefinitions.Add(new ColumnDefinition());
+                string[] metrics = access.Allows("CheckInOut", "View")
+                    ? new[] { "14|Llegadas hoy", "11|Salidas hoy", "96|Huéspedes in-house" }
+                    : new[] { available.Length + "|Áreas de trabajo", "3|Pendientes de muestra", "Turno 1|Jornada actual" };
+                for (int i = 0; i < metrics.Length; i++) {
+                    var parts = metrics[i].Split('|'); var item = new StackPanel { Margin = new Thickness(i == 0 ? 0 : 18, 0, 10, 0) };
+                    item.Children.Add(Muted(parts[1])); item.Children.Add(Text(parts[0], 25, true));
+                    var cell = new Border { Child = item, BorderThickness = new Thickness(i == 0 ? 0 : 1, 0, 0, 0) }; cell.SetResourceReference(Border.BorderBrushProperty, "Ui.Border");
+                    Grid.SetColumn(cell, i); strip.Children.Add(cell);
+                }
+                ModuleContent.Children.Add(strip);
             }
-            ModuleContent.Children.Add(Panel(tasks, 0));
+
+            if (isManagement)
+            {
+                AddHeading(ModuleContent, "Próximos eventos y descuentos sugeridos", "Exclusivo de Administración y Gerencia para anticipar campañas comerciales y ajustar servicios.");
+                var upcomingList = new StackPanel();
+                foreach (var evt in HotelEventsAndLimits.UpcomingEvents.Take(3))
+                {
+                    var capturedEvt = evt;
+                    string dates = evt.Start.ToString("dd MMM", CultureInfo.GetCultureInfo("es-BO")) + " – " + evt.End.ToString("dd MMM", CultureInfo.GetCultureInfo("es-BO"));
+                    upcomingList.Children.Add(HomeRow("-" + evt.SuggestedDiscount, evt.Title + " (" + dates + ")", evt.TargetServices + " · " + evt.DemandLevel, evt.Status, () => {
+                        ShowModule("Eventos");
+                        OpenEventDiscountContext(capturedEvt);
+                    }));
+                }
+                ModuleContent.Children.Add(Panel(upcomingList, 0));
+
+                AddHeading(ModuleContent, "Gestión administrativa y control de servicios", "Supervisión financiera, tarifas, límites de servicios y parámetros del hotel.");
+                var adminTasks = new StackPanel();
+                string[] adminPriorityKeys = { "Finanzas", "Tarifas", "FNB", "GymSpa", "Usuarios", "Config" };
+                foreach (var module in adminPriorityKeys.Select(k => available.FirstOrDefault(m => m.Key == k)).Where(m => m != null).Take(5))
+                {
+                    var captured = module;
+                    string detail = module.Key == "FNB"
+                        ? "Control gerencial de horarios y cupos de comidas y restaurante"
+                        : module.Key == "GymSpa"
+                        ? "Control gerencial de horarios y aforo máximo de spa y gimnasio"
+                        : module.Description;
+                    adminTasks.Children.Add(HomeRow("Gestión", NavTitle(module), detail, "Activo", () => ShowModule(captured.Key)));
+                }
+                ModuleContent.Children.Add(Panel(adminTasks, 0));
+            }
+            else
+            {
+                AddHeading(ModuleContent, "Pendientes de tu puesto", "Abre un área para revisar llegadas, reservas, habitaciones y servicios de huéspedes.");
+                var tasks = new StackPanel();
+                foreach (var module in available.Take(5)) {
+                    var captured = module;
+                    string detail = module.Key == "CheckInOut" ? "14 llegadas, 11 salidas y directorio de huéspedes unificado" : module.Description;
+                    tasks.Children.Add(HomeRow("Turno 1", NavTitle(module), detail, "Pendiente", () => ShowModule(captured.Key)));
+                }
+                ModuleContent.Children.Add(Panel(tasks, 0));
+            }
+
             var quick = new WrapPanel();
             foreach (var module in available.Take(6)) { string key = module.Key; quick.Children.Add(Action(NavTitle(module), () => ShowModule(key))); }
+            quick.Children.Add(Action("Preferencias y tema", () => ShowModule("Preferencias")));
             AddHeading(ModuleContent, "Accesos de trabajo", "Solo aparecen las áreas asignadas a tu perfil."); ModuleContent.Children.Add(quick);
             if (access.Allows("Reservas", "Write")) ModuleContent.Children.Add(Action("Nueva reserva", () => { ShowModule("Reservas"); OpenForm(); }, true));
-            if (access.Allows("Reportes", "View")) { AddHeading(ModuleContent, "Ocupación del hotel", "Evolución ilustrativa para la revisión del turno."); BuildOccupancyChart(); }
+            if (access.Allows("Reportes", "View")) { AddHeading(ModuleContent, "Ocupación del hotel", "Evolución ilustrativa para la revisión gerencial y administrativa."); BuildOccupancyChart(); }
         }
 
         private void BuildWorkspace()
         {
-            ModuleContent.Children.Clear(); searchBox = null; stateFilter = null; floorFilter = null; results = null;
+            ModuleContent.Children.Clear(); activeThemeCombo = null; offlinePreferenceCheck = null; searchBox = null; stateFilter = null; floorFilter = null; subAreaFilter = null; results = null;
             var flows = OperationsCatalog.Workflows.Where(w => w.Module == currentModule.Key && access.Allows(w.Module, w.Permission)).ToArray();
             if (flows.Length > 0) {
                 var tools = new Grid { Margin = new Thickness(0, 0, 0, 22) };
@@ -115,10 +168,214 @@ namespace Crown__.Frontend.Views
                 ModuleContent.Children.Add(legend);
             }
             if (currentModule.Key == "Housekeeping") AddNotice("Inspección antes de liberar", "En hoteles de 4, 5 estrellas y lujo, la limpieza diaria y la inspección de supervisión son obligatorias. Una habitación con alerta no debe marcarse inspeccionada.");
-            if (currentModule.Key == "GymSpa") AddNotice("Gimnasio: 18 de 20 plazas", "Horario de muestra: 06:00–22:00. La disponibilidad y el aforo real se revisan antes de confirmar.");
+            if (new[]{"FNB", "GymSpa", "Lavanderia", "Transporte"}.Contains(currentModule.Key))
+                BuildServiceLimitsStrip(currentModule.Key);
+            if (currentModule.Key == "Eventos")
+                BuildEventsCalendarSection();
             if (currentModule.Key == "Reportes") BuildOccupancyChart();
-            if (currentModule.Key == "CheckInOut") AddNotice("Un movimiento, tres revisiones", "Selecciona Check-in guiado o Check-out guiado para revisar identidad, estancia y entrega, o folio, pago y cierre.");
+            if (currentModule.Key == "CheckInOut")
+                BuildReceptionSubViewSwitcher();
             BuildModuleList();
+        }
+
+        private void BuildReceptionSubViewSwitcher()
+        {
+            var bar = new WrapPanel { Margin = new Thickness(0, 0, 0, 14) };
+            var movBtn = Action("Movimientos Check-in / out (" + currentModule.Rows.Length + ")", () => { receptionViewMode = 0; BuildWorkspace(); }, receptionViewMode == 0);
+            AutomationProperties.SetAutomationId(movBtn, "TabMovimientos");
+            var guestBtn = Action("Directorio de huéspedes (" + HotelEventsAndLimits.GuestRows.Length + ")", () => { receptionViewMode = 1; BuildWorkspace(); }, receptionViewMode == 1);
+            AutomationProperties.SetAutomationId(guestBtn, "TabHuespedes");
+            bar.Children.Add(movBtn);
+            bar.Children.Add(guestBtn);
+            ModuleContent.Children.Add(bar);
+            AddNotice(
+                receptionViewMode == 0 ? "Recepción unificada · Llegadas y salidas" : "Recepción unificada · Directorio de huéspedes",
+                receptionViewMode == 0
+                    ? "Consulta llegadas y salidas previstas o cambia a Directorio de huéspedes sin salir de este menú."
+                    : "Consulta fichas, estancias y preferencias de atención; usa Área de trabajo para historial, consentimiento o duplicados.");
+        }
+
+        private void BuildServiceLimitsStrip(string moduleKey)
+        {
+            var items = HotelEventsAndLimits.ServiceLimits.Where(s => s.ModuleKey == moduleKey).ToArray();
+            if (items.Length == 0) return;
+            bool canLimit = access.Allows(moduleKey, "Limit");
+            var host = new StackPanel();
+            var headerRow = new Grid { Margin = new Thickness(0, 0, 0, 10) };
+            headerRow.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            headerRow.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            var titleStack = new StackPanel();
+            titleStack.Children.Add(Text(moduleKey == "FNB" ? "Disponibilidad de comidas y restaurante" : moduleKey == "GymSpa" ? "Horarios y aforo de Spa y Gimnasio" : "Estado operativo del servicio", 16, true));
+            titleStack.Children.Add(Muted(canLimit ? "Tu perfil (Administración / Gerencia) puede limitar horarios, cupos o suspender servicios temporalmente." : "Límites operativos vigentes establecidos por Gerencia y Administración."));
+            headerRow.Children.Add(titleStack);
+            host.Children.Add(headerRow);
+
+            var cards = new System.Windows.Controls.Primitives.UniformGrid { Columns = items.Length > 1 ? 2 : 1, Margin = new Thickness(0, 4, -10, 0) };
+            foreach (var item in items)
+            {
+                var captured = item;
+                var cardStack = new StackPanel();
+                var topLine = new Grid();
+                topLine.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                topLine.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                topLine.Children.Add(Text(item.ServiceName, 14, true));
+                var statusText = Status(item.State);
+                statusText.Margin = new Thickness(8, 0, 0, 0);
+                Grid.SetColumn(statusText, 1);
+                topLine.Children.Add(statusText);
+                cardStack.Children.Add(topLine);
+                cardStack.Children.Add(Muted("Horario: " + item.Schedule + " · Cupo: " + item.Capacity));
+                cardStack.Children.Add(Muted(item.Reason));
+                if (canLimit)
+                {
+                    var limitBtn = Action("Limitar servicio", () => OpenQuickServiceLimitForm(captured));
+                    limitBtn.Margin = new Thickness(0, 8, 0, 0);
+                    AutomationProperties.SetAutomationId(limitBtn, "LimitServiceBtn_" + item.Code);
+                    cardStack.Children.Add(limitBtn);
+                }
+                var card = Panel(cardStack, 14);
+                card.SetResourceReference(Border.BackgroundProperty, "Ui.Soft");
+                card.Margin = new Thickness(0, 0, 10, 10);
+                cards.Children.Add(card);
+            }
+            host.Children.Add(cards);
+            ModuleContent.Children.Add(Panel(host, 16));
+        }
+
+        private void OpenQuickServiceLimitForm(ServiceLimitItem item)
+        {
+            if (!access.Allows(currentModule.Key, "Limit")) { DenyAccess(); return; }
+            var defs = new[] {
+                new FieldDefinition("Estado operativo", "choice", "", "Operativo", "Aforo limitado", "Horario limitado", "Suspendido temporalmente"),
+                new FieldDefinition("Horario permitido", "text", "Ej. 07:00–21:00"),
+                new FieldDefinition("Cupo o aforo máximo", "text", "Ej. 15 plazas"),
+                new FieldDefinition("Motivo gerencial", "notes", "Indica la razón del ajuste operativo")
+            };
+            OpenCustomForm("Limitar · " + item.ServiceName, defs, "Limit", () => {
+                string state = formFields[0].Value;
+                string schedule = formFields[1].Value;
+                string capacity = formFields[2].Value;
+                string reason = formFields[3].Value;
+                HotelEventsAndLimits.ApplySimulatedLimit(item.ServiceName, state, schedule, capacity, reason);
+                BuildWorkspace();
+            });
+            Prefill("Estado operativo", item.State);
+            Prefill("Horario permitido", item.Schedule);
+            Prefill("Cupo o aforo máximo", item.Capacity);
+            Prefill("Motivo gerencial", item.Reason);
+        }
+
+        private int eventMonthOffset; // 0 = Nov 2026, 1 = Dic 2026, 2 = Ene 2027
+        private void BuildEventsCalendarSection()
+        {
+            if (!access.Allows("Eventos", "View")) { DenyAccess(); return; }
+            DateTime baseMonth = new DateTime(2026, 11, 1).AddMonths(eventMonthOffset);
+            var culture = CultureInfo.GetCultureInfo("es-BO");
+
+            var container = new StackPanel();
+            var header = new WrapPanel { Margin = new Thickness(0, 0, 0, 12) };
+            var monthChoices = new[] { "Noviembre 2026", "Diciembre 2026", "Enero 2027" };
+            var monthPicker = Choice(monthChoices, "Mes del calendario de eventos");
+            monthPicker.Width = 176; monthPicker.SelectedIndex = eventMonthOffset; monthPicker.Margin = new Thickness(0, 0, 8, 8);
+            AutomationProperties.SetAutomationId(monthPicker, "EventsMonthPicker");
+            monthPicker.SelectionChanged += (s, e) => { if (monthPicker.SelectedIndex >= 0 && monthPicker.SelectedIndex != eventMonthOffset) { eventMonthOffset = monthPicker.SelectedIndex; BuildWorkspace(); } };
+            header.Children.Add(monthPicker);
+            header.Children.Add(Action("Mes anterior", () => { eventMonthOffset = (eventMonthOffset + 2) % 3; BuildWorkspace(); }));
+            header.Children.Add(Action("Mes siguiente", () => { eventMonthOffset = (eventMonthOffset + 1) % 3; BuildWorkspace(); }));
+            if (access.Allows("FNB", "Limit"))
+                header.Children.Add(Action("Limitar comidas / spa", () => ShowModule("GymSpa")));
+            container.Children.Add(header);
+
+            container.Children.Add(Text("Calendario comercial · " + culture.TextInfo.ToTitleCase(baseMonth.ToString("MMMM yyyy", culture)), 17, true));
+            container.Children.Add(Muted("Selecciona un día destacado para consultar el impacto previsto y preparar el descuento correspondiente."));
+
+            var calGrid = new Grid { Margin = new Thickness(0, 12, 0, 6) };
+            for (int c = 0; c < 7; c++) calGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            string[] weekDays = { "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom" };
+            calGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            for (int c = 0; c < 7; c++)
+            {
+                var wd = Text(weekDays[c], 11, true);
+                wd.Margin = new Thickness(6, 4, 6, 8);
+                wd.SetResourceReference(TextBlock.ForegroundProperty, "Ui.Secondary");
+                Grid.SetColumn(wd, c); calGrid.Children.Add(wd);
+            }
+
+            int daysInMonth = DateTime.DaysInMonth(baseMonth.Year, baseMonth.Month);
+            int firstOffset = ((int)baseMonth.DayOfWeek + 6) % 7; // Monday = 0
+            int totalCells = firstOffset + daysInMonth;
+            int weeks = (totalCells + 6) / 7;
+            for (int r = 0; r < weeks; r++) calGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+            for (int day = 1; day <= daysInMonth; day++)
+            {
+                DateTime date = new DateTime(baseMonth.Year, baseMonth.Month, day);
+                int index = firstOffset + day - 1;
+                int row = (index / 7) + 1;
+                int col = index % 7;
+                var evt = HotelEventsAndLimits.UpcomingEvents.FirstOrDefault(ev => date >= ev.Start && date <= ev.End);
+                if (evt != null)
+                {
+                    var capturedEvt = evt;
+                    var cellStack = new StackPanel();
+                    cellStack.Children.Add(Text(day + " · -" + evt.SuggestedDiscount, 11, true));
+                    var shortName = Text(evt.Title.Split('·')[0].Trim(), 10, false);
+                    shortName.TextTrimming = TextTrimming.CharacterEllipsis;
+                    shortName.MaxHeight = 28;
+                    cellStack.Children.Add(shortName);
+
+                    var btn = Action("", () => OpenEventDiscountContext(capturedEvt));
+                    btn.Content = cellStack;
+                    btn.HorizontalContentAlignment = HorizontalAlignment.Left;
+                    btn.Margin = new Thickness(2);
+                    btn.Padding = new Thickness(6, 5, 6, 5);
+                    btn.MinHeight = 52;
+                    btn.SetResourceReference(BackgroundProperty, "Ui.Soft");
+                    btn.ToolTip = evt.Title + " (" + evt.SuggestedDiscount + " sugerido · " + evt.TargetServices + ")";
+                    AutomationProperties.SetName(btn, day + " " + evt.Title + ", descuento sugerido " + evt.SuggestedDiscount);
+                    AutomationProperties.SetAutomationId(btn, "EventDay_" + evt.Code + "_" + day);
+                    Grid.SetRow(btn, row); Grid.SetColumn(btn, col);
+                    calGrid.Children.Add(btn);
+                }
+                else
+                {
+                    var dayText = Muted(day.ToString());
+                    dayText.Margin = new Thickness(8, 6, 4, 6);
+                    var emptyCell = new Border { Child = dayText, Margin = new Thickness(2), MinHeight = 52, CornerRadius = new CornerRadius(6), BorderThickness = new Thickness(1) };
+                    emptyCell.SetResourceReference(Border.BorderBrushProperty, "Ui.Border");
+                    Grid.SetRow(emptyCell, row); Grid.SetColumn(emptyCell, col);
+                    calGrid.Children.Add(emptyCell);
+                }
+            }
+            container.Children.Add(calGrid);
+            ModuleContent.Children.Add(Panel(container, 16));
+        }
+
+        private void OpenEventDiscountContext(HotelEventItem evt)
+        {
+            if (!access.Allows("Eventos", "View")) { DenyAccess(); return; }
+            OpenInfo(evt.Title,
+                "Código: " + evt.Code + " · " + evt.Category +
+                "\nVigencia: " + evt.Start.ToString("dd/MM/yyyy") + " – " + evt.End.ToString("dd/MM/yyyy") +
+                "\nPrevisión: " + evt.DemandLevel +
+                "\nDescuento recomendado: " + evt.SuggestedDiscount + " (" + evt.TargetServices + ")" +
+                "\n\nEstrategia sugerida: " + evt.Notes);
+            if (access.Allows("Eventos", "Write"))
+            {
+                var prepare = Action("Preparar descuento del evento", () => {
+                    SelectWorkflow(null);
+                    OpenForm();
+                    Prefill("Evento asociado", evt.Title);
+                    Prefill("Desde", evt.Start.ToString("dd/MM/yyyy"));
+                    Prefill("Hasta", evt.End.ToString("dd/MM/yyyy"));
+                    Prefill("Descuento sugerido (%)", evt.SuggestedDiscount.TrimEnd('%'));
+                    Prefill("Alcance del descuento", evt.TargetServices);
+                    Prefill("Condición comercial", evt.Notes);
+                }, true);
+                prepare.Margin = new Thickness(0, 14, 8, 0);
+                AutomationProperties.SetAutomationId(prepare, "EventPrepareDiscount");
+                DialogBody.Children.Add(prepare);
+            }
         }
 
         private void SelectWorkflow(string key)
@@ -132,7 +389,10 @@ namespace Crown__.Frontend.Views
         private void BuildWorkflow()
         {
             if (!access.Allows(currentWorkflow.Module, currentWorkflow.Permission)) { DenyAccess(); return; }
-            AddHeading(ModuleContent, currentWorkflow.Title, currentWorkflow.Description);
+            string subtitle = string.IsNullOrEmpty(currentWorkflow.Requirements)
+                ? currentWorkflow.Description
+                : currentWorkflow.Description + " (" + currentWorkflow.Requirements + ")";
+            AddHeading(ModuleContent, currentWorkflow.Title, subtitle);
             if (currentWorkflow.Key == "Calendario") { BuildCalendar(); return; }
             if (currentWorkflow.Key == "Importar") { BuildImportPreview(); return; }
             if (currentModule.Key == "Usuarios" && currentWorkflow.Key == "Roles") { BuildPermissionMatrix(); return; }
@@ -147,7 +407,7 @@ namespace Crown__.Frontend.Views
             var description = Muted(fieldNames); description.Margin = new Thickness(0, 8, 0, 20); summary.Children.Add(description);
             summary.Children.Add(Action(currentWorkflow.Guided ? "Comenzar revisión" : "Preparar borrador", OpenForm, true));
             ModuleContent.Children.Add(Panel(summary));
-            if (new[]{"Approve", "Cancel", "Privacy"}.Contains(currentWorkflow.Permission)) AddNotice("Operación con autorización", "El borrador solicita motivo y referencia de autorización. La aprobación y el registro de auditoría deben verificarse al ejecutar la operación real.");
+            if (new[]{"Approve", "Cancel", "Privacy", "Limit"}.Contains(currentWorkflow.Permission)) AddNotice("Operación supervisada", "El borrador documenta motivo y alcance operativo. La autorización definitiva y el registro de auditoría corresponden al servicio.");
             var related = new StackPanel();
             foreach (var row in VisibleRows().Take(3)) { var captured = row; related.Children.Add(HomeRow(row[0], row[1], row[2] + " · " + row[3], row[4], () => ShowDetail(captured))); }
             if (related.Children.Count > 0) { AddHeading(ModuleContent, "Referencias del área", "Registros de muestra para orientar la revisión."); ModuleContent.Children.Add(Panel(related, 0)); }
@@ -156,10 +416,13 @@ namespace Crown__.Frontend.Views
         private void BuildAdministration()
         {
             AddHeading(ModuleContent, "Administración del hotel", "Selecciona un flujo para preparar datos, reglas o plantillas. Los cambios se revisan sin guardarse.");
-            var appearance = new StackPanel(); appearance.Children.Add(Text("Apariencia del puesto", 17, true));
-            var themes = new WrapPanel { Margin = new Thickness(0, 16, 0, 0) };
-            for (int i = 0; i < Themes.Length; i++) { int index = i; themes.Children.Add(Action(ThemeLabels[i], () => { themeIndex = index; ApplyTheme(); })); }
-            appearance.Children.Add(themes); ModuleContent.Children.Add(Panel(appearance));
+            var appearance = new StackPanel();
+            appearance.Children.Add(Text("Apariencia del puesto", 17, true));
+            appearance.Children.Add(Muted("También disponible para todos los roles en el menú Preferencias o con el atajo Alt + T."));
+            var combo = CreateStyledThemeComboBox("Tema desde administración");
+            combo.Margin = new Thickness(0, 12, 0, 0);
+            appearance.Children.Add(combo);
+            ModuleContent.Children.Add(Panel(appearance));
             foreach (var flow in OperationsCatalog.Workflows.Where(w => w.Module == "Config" && access.Allows(w.Module, w.Permission))) {
                 var captured = flow;
                 var row = new StackPanel { Margin = new Thickness(0, 0, 0, 18) };
@@ -174,8 +437,14 @@ namespace Crown__.Frontend.Views
             switch (currentModule.Key) {
                 case "Habitaciones":
                     AddHelp(DialogBody, "Ficha de muestra: cama matrimonial, vista interior, libre de humo. Accesibilidad y cuna sujetas a confirmación. Historial: Sucia → En limpieza → Inspección pendiente; cada cambio requiere responsable, fecha y motivo."); break;
-                case "Huespedes":
-                    AddHelp(DialogBody, "Atención de muestra: prefiere piso alto y habitación sin humo. Alergias: consultar con el huésped. Consentimiento: pendiente de verificar. Historial y segmentación deben recuperarse del servicio."); break;
+                case "CheckInOut":
+                    if (receptionViewMode == 1)
+                        AddHelp(DialogBody, "Atención de muestra: prefiere piso alto y habitación sin humo. Alergias: consultar con el huésped. Consentimiento: pendiente de verificar. Historial y segmentación deben recuperarse del servicio.");
+                    break;
+                case "Eventos":
+                    var match = HotelEventsAndLimits.UpcomingEvents.FirstOrDefault(ev => ev.Code == row[0]);
+                    if (match != null) AddHelp(DialogBody, " Estrategia comercial sugerida: " + match.Notes + " (" + match.DemandLevel + ").");
+                    break;
                 case "Folios":
                     AddHelp(DialogBody, "Desglose ilustrativo: alojamiento $445.50; F&B $33.00; abono $300.00. Cada concepto debe mostrar usuario, fecha, impuesto y documento de origen. El saldo de muestra no es un cálculo en tiempo real."); break;
                 case "Auditoria":
@@ -212,19 +481,22 @@ namespace Crown__.Frontend.Views
 
         private void BuildPermissionMatrix()
         {
-            var role = Choice(FrontendAccessContext.DemoRoles, "Perfil para consultar permisos"); role.MaxWidth = 360; role.HorizontalAlignment = HorizontalAlignment.Left; role.Width = 320;
+            var roleLabels = FrontendAccessContext.DemoRoles.Select(r => FrontendAccessContext.GetRoleDisplayName(r) + " (" + r + ")").ToArray();
+            var role = Choice(roleLabels, "Perfil para consultar permisos"); role.MaxWidth = 360; role.HorizontalAlignment = HorizontalAlignment.Left; role.Width = 320;
             var matrix = new StackPanel();
             Action refresh = () => {
-                matrix.Children.Clear(); var context = FrontendAccessContext.CreateDemonstration((string)role.SelectedItem);
+                matrix.Children.Clear();
+                string selectedRoleKey = FrontendAccessContext.DemoRoles[Math.Max(0, role.SelectedIndex)];
+                var context = FrontendAccessContext.CreateDemonstration(selectedRoleKey);
                 foreach (var module in ModuleCatalog.All) {
-                    var actions = new[]{"View", "Write", "Cancel", "Approve", "Manage", "Export", "Privacy"}.Where(a => context.Allows(module.Key, a)).ToArray();
+                    var actions = new[]{"View", "Write", "Cancel", "Approve", "Manage", "Limit", "Export", "Privacy"}.Where(a => context.Allows(module.Key, a)).ToArray();
                     if (actions.Length == 0) continue;
-                    var translations = new Dictionary<string,string> { {"View","Ver"}, {"Write","Preparar"}, {"Cancel","Cancelar"}, {"Approve","Autorizar"}, {"Manage","Administrar"}, {"Export","Exportar"}, {"Privacy","Privacidad"} };
+                    var translations = new Dictionary<string,string> { {"View","Ver"}, {"Write","Preparar"}, {"Cancel","Cancelar"}, {"Approve","Autorizar"}, {"Manage","Administrar"}, {"Limit","Limitar servicios"}, {"Export","Exportar"}, {"Privacy","Privacidad"} };
                     var line = new StackPanel { Margin = new Thickness(0, 14, 0, 0) }; line.Children.Add(Text(NavTitle(module), 14, true)); line.Children.Add(Muted(string.Join(" · ", actions.Select(a => translations[a])))); matrix.Children.Add(line);
                 }
             };
             role.SelectionChanged += (s, e) => refresh(); refresh(); ModuleContent.Children.Add(role); ModuleContent.Children.Add(matrix);
-            AddHelp(ModuleContent, "Esta consulta no cambia el perfil de tu sesión. La matriz es la propuesta de presentación derivada de los requisitos.");
+            AddHelp(ModuleContent, "Esta consulta no cambia el perfil de tu sesión. Puedes probar cada perfil directamente desde el selector de rol en el Login.");
         }
 
         private void OnHelpClick(object sender, RoutedEventArgs e)
@@ -232,11 +504,12 @@ namespace Crown__.Frontend.Views
             // Help must not replace an unfinished editor or its values.
             if (Overlay.Visibility == Visibility.Visible) return;
             OpenInfo("Ayuda de " + (currentModule == null ? "acceso" : currentModule.Title),
-                "1. Elige un área en el menú. Solo aparecen las asignadas a tu perfil.\n\n2. Usa Área de trabajo para consultar los flujos disponibles. Buscar y los filtros actúan sobre la lista visible.\n\n3. Prepara los datos, corrige los campos indicados y revisa el resumen. Los borradores no registran operaciones reales.\n\nAtajos: Ctrl+F busca en el listado; F1 abre esta ayuda; Esc cierra el panel. Tab recorre los controles.\n\nSi necesitas otra área o acción, solicita un cambio de permisos al administrador.");
+                "1. Elige un área en el menú. Solo aparecen las asignadas a tu perfil.\n\n2. Usa Área de trabajo para consultar los flujos disponibles. Buscar y los filtros actúan sobre la lista visible.\n\n3. Prepara los datos, corrige los campos indicados y revisa el resumen. Los borradores no registran operaciones reales.\n\nAtajos de teclado:\n• Alt+T: cambiar tema visual (Claro, Oscuro, Marca).\n• Ctrl+Shift+↑ / Ctrl+Shift+↓: cambiar al menú anterior o siguiente.\n• Ctrl+F: buscar en el listado actual.\n• F1: abrir esta ayuda · Esc: cerrar diálogo.\n\nSi necesitas otra área o acción, solicita un cambio de permisos al administrador.");
         }
 
         private DateTime calendarStart = new DateTime(2026, 10, 31);
         private int calendarMode = 1;
+        private int calendarRoomTypeIndex;
         private void BuildCalendar()
         {
             var controls = new WrapPanel { Margin = new Thickness(0, 0, 0, 16) };
@@ -244,6 +517,12 @@ namespace Crown__.Frontend.Views
             AutomationProperties.SetAutomationId(mode, "CalendarPeriod");
             mode.SelectionChanged += (s, e) => { calendarMode = mode.SelectedIndex; BuildWorkspace(); };
             controls.Children.Add(mode);
+            var roomTypeChoices = new[]{"Todos los tipos", "Doble", "Deluxe", "Triple", "Suite"};
+            var typeFilter = Choice(roomTypeChoices, "Filtrar calendario por tipo de habitación");
+            typeFilter.SelectedIndex = calendarRoomTypeIndex; typeFilter.Width = 156; typeFilter.Margin = new Thickness(0, 0, 8, 8);
+            AutomationProperties.SetAutomationId(typeFilter, "CalendarRoomType");
+            typeFilter.SelectionChanged += (s, e) => { calendarRoomTypeIndex = typeFilter.SelectedIndex; BuildWorkspace(); };
+            controls.Children.Add(typeFilter);
             controls.Children.Add(Action("Anterior", () => { calendarStart = calendarMode == 2 ? calendarStart.AddMonths(-1) : calendarStart.AddDays(calendarMode == 0 ? -1 : -7); BuildWorkspace(); }));
             controls.Children.Add(Action("Siguiente", () => { calendarStart = calendarMode == 2 ? calendarStart.AddMonths(1) : calendarStart.AddDays(calendarMode == 0 ? 1 : 7); BuildWorkspace(); }));
             ModuleContent.Children.Add(controls);
@@ -253,40 +532,43 @@ namespace Crown__.Frontend.Views
             var grid = new Grid { MinWidth = 150 + days * (calendarMode == 2 ? 42 : 100), Margin = new Thickness(0, 16, 0, 0) };
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(150) });
             for (int day = 0; day < days; day++) grid.ColumnDefinitions.Add(new ColumnDefinition());
-            string[] rooms = { "118 · Doble", "204 · Deluxe", "210 · Deluxe", "307 · Triple", "415 · Suite" };
-            for (int i = 0; i <= rooms.Length; i++) grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(i == 0 ? 42 : 64) });
+            string[] allRooms = { "118 · Doble", "204 · Deluxe", "210 · Deluxe", "307 · Triple", "415 · Suite" };
+            int[] allLengths = { 2, 3, 1, 4, 5 };
+            string[] allGuests = { "Carlos Rojas", "María Fernández", "Lucía Gómez", "Eco Tours", "Diego Salazar" };
+            string[] allReservationIds = { "RES-1049", "RES-1048", "RES-1051", "RES-1050", "RES-1052" };
+            string selectedType = calendarRoomTypeIndex > 0 ? roomTypeChoices[calendarRoomTypeIndex] : null;
+            var visibleIndices = Enumerable.Range(0, allRooms.Length).Where(idx => selectedType == null || allRooms[idx].Contains(selectedType)).ToArray();
+            for (int i = 0; i <= visibleIndices.Length; i++) grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(i == 0 ? 42 : 64) });
             AddCalendarCell(grid, "Habitación", 0, 0, true);
             for (int day = 0; day < days; day++) AddCalendarCell(grid, first.AddDays(day).ToString("ddd dd", CultureInfo.GetCultureInfo("es-BO")), 0, day + 1, true);
-            int[] lengths = { 2, 3, 1, 4, 5 };
-            string[] guests = { "Carlos Rojas", "María Fernández", "Lucía Gómez", "Eco Tours", "Diego Salazar" };
-            string[] reservationIds = { "RES-1049", "RES-1048", "RES-1051", "RES-1050", "RES-1052" };
-            for (int room = 0; room < rooms.Length; room++) {
-                AddCalendarCell(grid, rooms[room], room + 1, 0, true);
-                DateTime arrival = new DateTime(2026, 10, 31), departure = arrival.AddDays(lengths[room]);
+            for (int rowPos = 0; rowPos < visibleIndices.Length; rowPos++) {
+                int room = visibleIndices[rowPos];
+                AddCalendarCell(grid, allRooms[room], rowPos + 1, 0, true);
+                DateTime arrival = new DateTime(2026, 10, 31), departure = arrival.AddDays(allLengths[room]);
                 int capturedRoom = room;
                 for (int day = 0; day < days; day++) {
                     DateTime date = first.AddDays(day);
                     if (date >= arrival && date < departure) continue;
-                    var button = Action("Libre", () => CalendarContext(rooms[capturedRoom], date, date.AddDays(1), null, null));
+                    var button = Action("Libre", () => CalendarContext(allRooms[capturedRoom], date, date.AddDays(1), null, null));
                     button.Margin = new Thickness(1, 8, 1, 8); button.Padding = new Thickness(4); button.FontSize = 11;
-                    AutomationProperties.SetName(button, rooms[room] + ", " + date.ToString("dd/MM/yyyy") + ", Libre");
-                    AutomationProperties.SetAutomationId(button, "CalendarFree" + rooms[room].Split(' ')[0] + "-" + date.ToString("yyyyMMdd"));
-                    Grid.SetRow(button, room + 1); Grid.SetColumn(button, day + 1); grid.Children.Add(button);
+                    AutomationProperties.SetName(button, allRooms[room] + ", " + date.ToString("dd/MM/yyyy") + ", Libre");
+                    AutomationProperties.SetAutomationId(button, "CalendarFree" + allRooms[room].Split(' ')[0] + "-" + date.ToString("yyyyMMdd"));
+                    Grid.SetRow(button, rowPos + 1); Grid.SetColumn(button, day + 1); grid.Children.Add(button);
                 }
                 int start = Math.Max(0, (arrival - first).Days), end = Math.Min(days, (departure - first).Days);
                 if (end > start) {
-                    var stay = Action(calendarMode == 2 && end - start < 3 ? "RES" : guests[room] + " · " + reservationIds[room],
-                        () => CalendarContext(rooms[capturedRoom], arrival, departure, reservationIds[capturedRoom], guests[capturedRoom]));
+                    var stay = Action(calendarMode == 2 && end - start < 3 ? "RES" : allGuests[room] + " · " + allReservationIds[room],
+                        () => CalendarContext(allRooms[capturedRoom], arrival, departure, allReservationIds[capturedRoom], allGuests[capturedRoom]));
                     stay.Margin = new Thickness(2, 8, 2, 8); stay.Padding = new Thickness(6); stay.FontSize = 11;
                     stay.SetResourceReference(BackgroundProperty, "Ui.Soft");
-                    stay.ToolTip = guests[room] + " · " + reservationIds[room] + " · " + arrival.ToString("dd/MM") + " – " + departure.ToString("dd/MM");
+                    stay.ToolTip = allGuests[room] + " · " + allReservationIds[room] + " · " + arrival.ToString("dd/MM") + " – " + departure.ToString("dd/MM");
                     AutomationProperties.SetName(stay, (string)stay.ToolTip);
-                    AutomationProperties.SetAutomationId(stay, "CalendarStay" + rooms[room].Split(' ')[0]);
-                    Grid.SetRow(stay, room + 1); Grid.SetColumn(stay, start + 1); Grid.SetColumnSpan(stay, end - start); grid.Children.Add(stay);
+                    AutomationProperties.SetAutomationId(stay, "CalendarStay" + allRooms[room].Split(' ')[0]);
+                    Grid.SetRow(stay, rowPos + 1); Grid.SetColumn(stay, start + 1); Grid.SetColumnSpan(stay, end - start); grid.Children.Add(stay);
                 }
             }
             ModuleContent.Children.Add(new ScrollViewer { Content = grid, HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Disabled });
-            AddHelp(ModuleContent, "Ocupación ilustrativa, sin sincronización en tiempo real. Selecciona una celda para consultar o preparar una reserva según tus permisos. Cancelación y no-show están en su propio flujo.");
+            AddHelp(ModuleContent, "Ocupación ilustrativa por día, semana o mes filtrable por tipo de habitación (RF-04). Selecciona una celda para consultar o preparar una reserva o cambio.");
         }
         private void CalendarContext(string room, DateTime arrival, DateTime departure, string reservation, string guest)
         {
@@ -297,7 +579,9 @@ namespace Crown__.Frontend.Views
                     SelectWorkflow(reservation == null ? null : "Modificar"); OpenForm();
                     Prefill("Reserva", reservation); Prefill(reservation == null ? "Llegada" : "Nueva llegada", arrival.ToString("dd/MM/yyyy"));
                     Prefill(reservation == null ? "Salida" : "Nueva salida", departure.ToString("dd/MM/yyyy"));
-                    Prefill("Habitación preferida", room.Split(' ')[0]); Prefill("Asignación", "Manual");
+                    Prefill("Habitación preferida", room.Split(' ')[0]); Prefill("Modo de asignación", "Manual");
+                    Prefill("Modalidad de reserva", "Individual");
+                    Prefill("Canal de origen (manual)", "Mostrador");
                     Prefill("Tipo de habitación", room.Contains("Suite") ? "Suite" : room.Contains("Triple") ? "Triple" : "Doble");
                 }, true);
                 AutomationProperties.SetAutomationId(prepare, "CalendarPrepare"); DialogBody.Children.Add(prepare);

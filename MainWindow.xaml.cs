@@ -1,4 +1,6 @@
 using System.Windows;
+using System.Windows.Input;
+using Crown__.Frontend.Views;
 
 namespace Crown__
 {
@@ -7,6 +9,19 @@ namespace Crown__
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void OnWindowPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            var login = LoginFrame.Content as LoginView;
+            if (login != null)
+            {
+                login.HandleShortcut(e);
+                return;
+            }
+            var dashboard = LoginFrame.Content as DashboardView;
+            if (dashboard != null)
+                dashboard.HandleShortcut(e);
         }
 
         // Window presentation only. Authentication is intentionally absent.

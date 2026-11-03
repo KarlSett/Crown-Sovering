@@ -1,34 +1,25 @@
 # Frontend por roles e integración de backend
 
-Aplicación **WPF con .NET Framework 4.7.2**. La entrega incorpora 22 áreas y flujos visuales derivados de `RF del proyecto grupal corregido.docx`. El login y sus estilos compartidos no se modificaron.
+Aplicación **WPF con .NET Framework 4.7.2**. La entrega incorpora 23 áreas unificadas y flujos visuales derivados de `RF del proyecto grupal corregido.docx`, incluyendo selector de rol simulado en Login, menú de `Preferencias` con `ComboBox` de temas, calendario de `Eventos y descuentos` y limitación de servicios del hotel.
 
 **Solo frontend:** datos sintéticos, filtros en memoria, lectura local de CSV/XLSX y borradores revisables. No hay autenticación, Supabase, persistencia, cobros, facturación, exportaciones ni envío de mensajes. Ningún formulario anuncia una operación real completada.
 
-## Roles encontrados e interpretación
+## Roles de demostración
 
-El Word **no enumera un catálogo completo de roles ni una matriz de permisos**. Menciona recepción/recepcionista, housekeeping, supervisor y administrador; RNF-09 exige permisos granulares. Los perfiles de servicios se deducen de sus responsabilidades. El administrador con acceso completo viene también de la instrucción del usuario.
+El selector de acceso simulado y el sistema utilizan únicamente **3 roles**:
 
-Esta es la interpretación de trabajo implementada para la demostración; backend y el responsable funcional deben ratificarla antes de trabajar con datos reales.
-
-| Perfil demo | Áreas visibles | Acciones además de consultar |
+| Rol | Áreas visibles | Acciones principales |
 | --- | --- | --- |
-| `Administrador` | Las 22 áreas | Todas las acciones de presentación |
-| `Recepcion` | Inicio, alertas, reservas, habitaciones, check-in/out, huéspedes, folios, operación, transporte, convenios | Preparar operaciones de recepción, cargos y traslados; cancelar/no-show. Habitaciones y convenios solo lectura |
-| `Housekeeping` | Inicio, alertas, housekeeping, habitaciones | Preparar limpieza/turndown; sin asignar ni inspeccionar |
-| `Supervisor` | Inicio, alertas, housekeeping, habitaciones, mantenimiento | Asignar tareas, revisar inspecciones, preparar estados e incidencias |
-| `Mantenimiento` | Inicio, alertas, mantenimiento, habitaciones | Preparar incidencias y seguimiento; habitaciones solo lectura |
-| `AlimentosBebidas` | Inicio, alertas, F&B, inventario | Preparar comandas, desayunos, consumos y stock; sin administrar menú/tarifas |
-| `Bienestar` | Inicio, alertas, gimnasio/spa | Preparar citas y entradas/salidas; sin administrar catálogo/tarifas |
-| `Lavanderia` | Inicio, alertas, lavandería | Preparar órdenes, seguimiento y entrega |
-| `Finanzas` | Inicio, alertas, finanzas, folios, reportes | Preparar pagos, facturas, caja y parámetros de reportes; sin autorizar devoluciones, notas de crédito ni transferencias |
-| `Transporte` | Inicio, alertas, transporte | Preparar traslados y seguimiento |
+| `Administrador` | Inicio, alertas, preferencias, **eventos y descuentos**, tarifas, convenios, finanzas, reportes, comidas y bebidas, spa y gimnasio, lavandería, transporte, inventario, usuarios, auditoría y ajustes (**sin Reservas ni mostrador**) | Gestión administrativa completa, calendario de eventos/descuentos, **limitación de servicios** y configuración del sistema |
+| `Gerente` | Inicio, alertas, preferencias, **eventos y descuentos**, tarifas, convenios, finanzas, reportes, comidas y bebidas, spa y gimnasio, lavandería, transporte e inventario (**sin Reservas ni mostrador, ni usuarios/sistema**) | Gestión comercial y administrativa, calendario de eventos/descuentos y **limitación de servicios** |
+| `Recepcionista` | Inicio, alertas, preferencias, **reservas**, habitaciones, **check-in y huéspedes (unificado)**, folios, operación del turno, comidas y bebidas, spa y gimnasio, housekeeping, mantenimiento, lavandería y transporte | Atención de reservas, llegadas/salidas, directorio de huéspedes y servicios al huésped (sin eventos/descuentos ni limitación de servicios) |
 | Huésped, desconocido o contexto nulo | Ninguna | Denegación por defecto, conforme a RNF-14 |
 
-Todos los perfiles de personal preparan avisos y seguimiento en Alertas. Los avisos se filtran por áreas visibles. `Supervisor` representa supervisión de pisos, no gerencia general.
+Todos los perfiles de personal ven `Preferencias` y preparan avisos en `Alertas`. `Eventos` y la acción `Limit` son exclusivos de `Administrador` y `Gerente`; `Reservas` y `CheckInOut` son propios de `Recepcionista`.
 
 ## Permisos que consume el panel
 
-[Security/FrontendAccessContext.cs](Security/FrontendAccessContext.cs) recibe permisos explícitos como `Reservas.View` o `Folios.Approve`:
+[Security/FrontendAccessContext.cs](Security/FrontendAccessContext.cs) recibe permisos explícitos como `Reservas.View` o `GymSpa.Limit`:
 
 | Acción | Presentación |
 | --- | --- |
@@ -37,12 +28,19 @@ Todos los perfiles de personal preparan avisos y seguimiento en Alertas. Los avi
 | `Cancel` | Preparar cancelaciones/no-show |
 | `Approve` | Revisar inspecciones, transferencias, devoluciones, notas de crédito y cierre remoto |
 | `Manage` | Preparar configuración, asignaciones, usuarios y catálogos |
+| `Limit` | Limitar horarios, cupo/aforo o estado operativo de servicios del hotel (`Administrador` y `Gerente`) |
 | `Export` | Preparar parámetros de reportes; no descarga archivos |
 | `Privacy` | Preparar solicitudes de consentimiento/anonimización |
 
 Cada acción necesita también `Modulo.View`. Las cadenas distinguen mayúsculas. No hay comodines ni privilegios derivados del nombre del rol: una etiqueta “Administrador” sin permisos no concede acceso. Un usuario sin identificador tampoco obtiene acceso. La colección se copia al construir el contexto y al exponerla.
 
-Claves estables: `Inicio`, `Reservas`, `Habitaciones`, `CheckInOut`, `Huespedes`, `Convenios`, `FNB`, `GymSpa`, `Lavanderia`, `Finanzas`, `Reportes`, `Config`, `Housekeeping`, `Mantenimiento`, `Transporte`, `Tarifas`, `Folios`, `Inventario`, `Alertas`, `Operacion`, `Usuarios`, `Auditoria`.
+Claves estables: `Inicio`, `Alertas`, `Preferencias`, `Reservas`, `Habitaciones`, `CheckInOut` (integra movimientos y directorio de huéspedes), `Convenios`, `Eventos`, `FNB`, `GymSpa`, `Lavanderia`, `Finanzas`, `Reportes`, `Config`, `Housekeeping`, `Mantenimiento`, `Transporte`, `Tarifas`, `Folios`, `Inventario`, `Operacion`, `Usuarios`, `Auditoria`.
+
+## Atajos de teclado de interfaz
+
+- `Alt + T`: alterna el tema visual (`Claro` -> `Oscuro` -> `Marca`) tanto en `LoginView` como en `DashboardView`, sincronizado con el `ComboBox` de temas.
+- `Ctrl + Shift + ↑` / `Ctrl + Shift + ↓`: cambia al menú anterior o siguiente visible para el rol activo en `DashboardView`.
+- `F1` / `Esc`: abre ayuda contextual y cierra paneles modales de borrador.
 
 Menú, flujos y acciones ocultan lo no permitido. `ShowModule`, `SelectWorkflow`, `ShowDetail`, `OpenForm` y `OnReviewDraft` comprueban el acceso nuevamente. Mi puesto solo muestra accesos y cifras autorizados. La consulta de la matriz en Usuarios **no cambia el perfil de la sesión**.
 
@@ -93,9 +91,9 @@ Importación: CSV UTF-8 con coma/punto y coma, campos entre comillas y `.xlsx` s
 
 ## Cobertura y límites de esta entrega
 
-El [mapa de requisitos](../docs/REQUISITOS_FRONTEND.md) relaciona RF-01–118 con pantallas. Un formulario que representa un RF **no significa que esté implementado de extremo a extremo**. Cálculo de tarifas, firma verificable, disponibilidad, notificaciones, factura y persistencia requieren backend.
+El [mapa de requisitos](../docs/REQUISITOS_FRONTEND.md) relaciona `RF-01`–`RF-66` y `RNF-01`–`RNF-33` con las pantallas y flujos del frontend. Un formulario que representa un RF **no significa que esté implementado de extremo a extremo**. Cálculo de tarifas en servidor, firma verificable, disponibilidad concurrente, notificaciones, factura electrónica real y persistencia requieren backend.
 
-**RNF-27 pendiente:** la interfaz está en español. “Idioma previsto” es un dato del borrador y no traduce la aplicación al inglés. La búsqueda ignora acentos, pero no implementa búsqueda difusa cloud ni directorio externo. No se afirma cumplimiento normativo, rendimiento cloud, cifrado ni accesibilidad certificada por esta entrega visual.
+**Alcance visual vs. integración real:** la interfaz incluye selector de plantillas ES/EN, estado de conexión cloud simulado (`RNF-02`), tolerancia tipográfica local y vista de directorio externo de muestra (`RF-27`), pero la traducción integral de interfaz, consultas difusas en Supabase y conectores HTTP reales corresponden a la integración posterior.
 
 ## Verificar y previsualizar perfiles
 
@@ -103,7 +101,7 @@ Desde la raíz del proyecto:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Preview-Role.ps1 -Role Administrador
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Preview-Role.ps1 -Role Housekeeping -Theme Dark
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Preview-Role.ps1 -Role Gerente -Theme Brand
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Verify-Frontend.ps1
 ```
 

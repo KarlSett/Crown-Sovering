@@ -82,6 +82,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Frontend\Views\ModuleCatalog.cs" />
+    <Compile Include="Frontend\Views\HotelEventsAndLimits.cs" />
     <Compile Include="Frontend\Security\FrontendAccessContext.cs" />
     <Compile Include="Frontend\Views\OperationsCatalog.cs" />
     <Compile Include="Frontend\Views\DashboardWorkspaces.cs" />

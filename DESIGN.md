@@ -31,12 +31,14 @@ colors:
   dark-warning: "#E5C780"
   dark-danger: "#FFAAAA"
   brand-primary: "#004D40"
-  brand-page: "#EFF5F2"
-  brand-ink: "#0F172A"
-  brand-secondary: "#475569"
-  brand-nav: "#203C39"
-  brand-selected: "#365E58"
-  brand-soft: "#E7F1EE"
+  brand-page: "#EBFEF7"
+  brand-ink: "#003029"
+  brand-secondary: "#006653"
+  brand-nav: "#003029"
+  brand-selected: "#006653"
+  brand-soft: "#CEFDE9"
+  brand-border: "#64F1C6"
+  brand-accent: "#27E0AE"
 typography:
   panel-title:
     fontFamily: Segoe UI

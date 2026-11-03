@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
@@ -16,7 +17,14 @@ using System.Windows.Threading;
 internal static class FrontendSmoke
 {
     private static int checks;
-    private static readonly string[] Modules = { "Inicio", "Reservas", "Habitaciones", "CheckInOut", "Huespedes", "Convenios", "FNB", "GymSpa", "Lavanderia", "Finanzas", "Reportes", "Config", "Housekeeping", "Mantenimiento", "Transporte", "Tarifas", "Folios", "Inventario", "Alertas", "Operacion", "Usuarios", "Auditoria" };
+    private static readonly string[] Modules = {
+        "Inicio", "Alertas", "Preferencias",
+        "Reservas", "Habitaciones", "CheckInOut", "Folios", "Operacion",
+        "Housekeeping", "Mantenimiento", "FNB", "Inventario", "GymSpa", "Lavanderia", "Transporte",
+        "Eventos", "Convenios", "Tarifas", "Finanzas", "Reportes",
+        "Usuarios", "Auditoria", "Config"
+    };
+
     [STAThread]
     private static int Main()
     {
@@ -25,16 +33,25 @@ internal static class FrontendSmoke
         };
         try { return Run(); } catch (Exception error) { Console.Error.WriteLine(error); return 1; }
     }
+
     private static int Run()
     {
         var assembly = Assembly.LoadFrom(Environment.GetEnvironmentVariable("CROWN_FRONTEND_ASSEMBLY"));
         var app = (Application)Activator.CreateInstance(assembly.GetType("Crown__.App")); Call(app, "InitializeComponent");
         var dashboardType = assembly.GetType("Crown__.Frontend.Views.DashboardView");
         var contextType = assembly.GetType("Crown__.Frontend.Security.FrontendAccessContext");
+        var limitsType = assembly.GetType("Crown__.Frontend.Views.HotelEventsAndLimits");
         Func<string, object> demo = role => contextType.GetMethod("CreateDemonstration").Invoke(null, new object[]{role});
+        var allPermissions = new List<string>();
+        foreach (string m in Modules)
+            foreach (string a in new[] { "View", "Write", "Cancel", "Approve", "Export", "Manage", "Privacy", "Limit" })
+                allPermissions.Add(m + "." + a);
+        Func<object> fullTestContext = () => Activator.CreateInstance(contextType, new object[] { "smoke-all", "Verificación", "Verificación", allPermissions });
+
         foreach (string theme in new[] { "Light", "Dark", "Brand" })
         {
-            var page = (Page)Activator.CreateInstance(dashboardType, new object[] { theme, demo("Administrador") });
+            limitsType.GetMethod("ResetServiceLimits", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, null);
+            var page = (Page)Activator.CreateInstance(dashboardType, new object[] { theme, fullTestContext() });
             foreach (int width in new[] { 892, 1172, 1885 })
             {
                 int height = width == 892 ? 602 : width == 1172 ? 702 : 1000;
@@ -44,15 +61,85 @@ internal static class FrontendSmoke
                     Assert(((Panel)page.FindName("ModuleContent")).Children.Count > 0, "Module has no content: " + module);
                     Assert(((TextBlock)page.FindName("PageTitle")).ActualHeight > 20, "Title is clipped: " + module);
                     Assert(page.DesiredSize.Width <= width + 1, "Page overflows minimum width: " + module + ", desired " + page.DesiredSize.Width);
-                    if (width == 1172 || (width == 892 && (module == "Inicio" || module == "Habitaciones" || module == "Config")))
+                    if (width == 1172 || (width == 892 && (module == "Inicio" || module == "Habitaciones" || module == "Config" || module == "Preferencias" || module == "Eventos" || module == "CheckInOut")))
                         Save(page, "dashboard-" + module + "-" + theme + "-" + width + ".png", width, height);
                 }
             }
+
             var nav = (Panel)page.FindName("NavigationItems");
             Assert(Descendants<Button>(nav).Count() == Modules.Length, "Missing navigation module.");
+            Assert(!Descendants<Button>(nav).Any(b => AutomationProperties.GetAutomationId(b) == "NavHuespedes"), "Separate Huespedes menu was not unified.");
             foreach (var path in Descendants<System.Windows.Shapes.Path>(nav))
                 Assert(path.Stroke is SolidColorBrush && ((SolidColorBrush)path.Stroke).Color == Colors.White, "Navigation icon does not match theme.");
-            foreach (string module in Modules.Where(m => m != "Inicio" && m != "Config"))
+
+            if (theme == "Brand")
+            {
+                var brandPageBrush = (SolidColorBrush)page.Resources["Ui.Page"];
+                var brandNavBrush = (SolidColorBrush)page.Resources["Ui.Nav"];
+                var brandPrimaryBrush = (SolidColorBrush)page.Resources["Ui.Primary"];
+                Assert(brandPageBrush.Color == Color.FromRgb(0xEB, 0xFE, 0xF7), "Brand page background must be #EBFEF7.");
+                Assert(brandNavBrush.Color == Color.FromRgb(0x00, 0x30, 0x29), "Brand sidebar background must be #003029.");
+                Assert(brandPrimaryBrush.Color == Color.FromRgb(0x00, 0x4D, 0x40), "Brand primary color must be #004D40.");
+            }
+
+            // Verify unified CheckInOut + Huespedes sub-views + RF-27 fuzzy & external directory search
+            Call(page, "ShowModule", "CheckInOut"); Layout(page, 1172, 702);
+            var tabHuespedes = Descendants<Button>((Panel)page.FindName("ModuleContent")).FirstOrDefault(b => AutomationProperties.GetAutomationId(b) == "TabHuespedes");
+            Assert(tabHuespedes != null, "Unified guest directory tab missing.");
+            Click(tabHuespedes); Layout(page, 1172, 702);
+            var guestSearch = (TextBox)Field(page, "searchBox");
+            Assert(((TextBlock)Field(page, "resultCount")).Text.StartsWith("5 "), "Guest directory count incorrect.");
+            guestSearch.Text = "maria"; Pump();
+            Assert(((TextBlock)Field(page, "resultCount")).Text.StartsWith("1 "), "Accent-insensitive guest search failed.");
+            guestSearch.Text = "fernadnez"; Pump();
+            Assert(((TextBlock)Field(page, "resultCount")).Text.StartsWith("1 "), "RF-27 typo-tolerant fuzzy guest search failed.");
+            guestSearch.Text = "inexistente-xyz-999"; Pump();
+            var extBtn = Descendants<Button>((Panel)page.FindName("ModuleContent")).FirstOrDefault(b => AutomationProperties.GetAutomationId(b) == "BtnDirectorioExterno");
+            Assert(extBtn != null, "RF-27 external directory button missing on empty guest search.");
+            Click(extBtn); Layout(page, 1172, 702);
+            Assert(((TextBlock)Field(page, "resultCount")).Text.Contains("RF-27"), "RF-27 external directory results did not load.");
+            guestSearch.Clear();
+            if (theme == "Light" || theme == "Brand") Save(page, "dashboard-CheckInOut-Guests-" + theme + "-1172.png", 1172, 702);
+            var tabMovimientos = Descendants<Button>((Panel)page.FindName("ModuleContent")).First(b => AutomationProperties.GetAutomationId(b) == "TabMovimientos");
+            Click(tabMovimientos); Layout(page, 1172, 702);
+            Assert(((TextBlock)Field(page, "resultCount")).Text.StartsWith("7 "), "Check-in/out movements count incorrect.");
+
+            // Verify Preferencias ComboBox + Alt+T shortcut cycle
+            Call(page, "ShowModule", "Preferencias"); Layout(page, 1172, 702);
+            var themeCombo = Descendants<ComboBox>((Panel)page.FindName("ModuleContent")).FirstOrDefault(c => AutomationProperties.GetAutomationId(c) == "ThemeComboBox");
+            Assert(themeCombo != null && themeCombo.Items.Count == 3 && themeCombo.ItemTemplate != null, "Preferences theme ComboBox missing or unstyled.");
+            int initialThemeIdx = themeCombo.SelectedIndex;
+            Call(page, "CycleTheme"); Layout(page, 1172, 702);
+            Assert(themeCombo.SelectedIndex == (initialThemeIdx + 1) % 3, "Alt+T CycleTheme did not sync Preferences ComboBox.");
+            themeCombo.SelectedIndex = initialThemeIdx; Layout(page, 1172, 702);
+            Assert((string)page.Tag == theme, "Selecting theme via ComboBox did not restore active theme.");
+
+            // Verify Ctrl+Shift+Up / Ctrl+Shift+Down relative menu navigation
+            Call(page, "ShowModule", "Inicio");
+            Call(page, "NavigateRelativeMenu", 1);
+            Assert((string)Field(Field(page, "currentModule"), "Key") == "Alertas", "Ctrl+Shift+Down failed to advance menu.");
+            Call(page, "NavigateRelativeMenu", 1);
+            Assert((string)Field(Field(page, "currentModule"), "Key") == "Preferencias", "Ctrl+Shift+Down failed to reach Preferencias.");
+            Call(page, "NavigateRelativeMenu", -1);
+            Assert((string)Field(Field(page, "currentModule"), "Key") == "Alertas", "Ctrl+Shift+Up failed to step back.");
+            Call(page, "ShowModule", "Inicio");
+            Call(page, "NavigateRelativeMenu", -1);
+            Assert((string)Field(Field(page, "currentModule"), "Key") == "Config", "Ctrl+Shift+Up wrap-around failed.");
+
+            // Verify Eventos upcoming calendar & prefilled discount draft
+            Call(page, "ShowModule", "Eventos"); Layout(page, 1172, 702);
+            var eventBtn = Descendants<Button>((Panel)page.FindName("ModuleContent")).FirstOrDefault(b => AutomationProperties.GetAutomationId(b) == "EventDay_EVT-202_12");
+            Assert(eventBtn != null, "Upcoming event calendar button missing.");
+            Click(eventBtn); Layout(page, 1172, 702);
+            var prepEventBtn = Descendants<Button>((Panel)page.FindName("DialogBody")).FirstOrDefault(b => AutomationProperties.GetAutomationId(b) == "EventPrepareDiscount");
+            Assert(prepEventBtn != null, "Event contextual discount button missing.");
+            Click(prepEventBtn); Layout(page, 1172, 702);
+            var evtFields = ((IEnumerable)Field(page, "formFields")).Cast<object>().ToArray();
+            Assert(((TextBox)Field(evtFields[0], "Input")).Text.Contains("Congreso"), "Event discount form did not prefill event title.");
+            Assert(((TextBox)Field(evtFields[3], "Input")).Text == "12", "Event discount form did not prefill suggested percentage.");
+            Call(page, "OnCloseDialog", null, new RoutedEventArgs());
+
+            foreach (string module in Modules.Where(m => m != "Inicio" && m != "Preferencias" && m != "Config"))
             {
                 Call(page, "ShowModule", module); Layout(page, 1172, 702);
                 var search = (TextBox)Field(page, "searchBox"); var state = (ComboBox)Field(page, "stateFilter");
@@ -61,7 +148,14 @@ internal static class FrontendSmoke
                 search.Clear(); state.SelectedIndex = 1; Pump();
                 Assert(!((TextBlock)Field(page, "resultCount")).Text.StartsWith("0 "), "State filter failed: " + module);
                 state.SelectedIndex = 0;
-                if (module == "Huespedes") { search.Text = "maria"; Assert(((TextBlock)Field(page, "resultCount")).Text.StartsWith("1 "), "Accent-insensitive search failed."); search.Clear(); }
+                if (module == "FNB" || module == "GymSpa")
+                {
+                    var sub = (ComboBox)Field(page, "subAreaFilter");
+                    Assert(sub != null, "Sub-area filter missing for " + module);
+                    sub.SelectedIndex = 1; Pump();
+                    Assert(!((TextBlock)Field(page, "resultCount")).Text.StartsWith("0 "), "Sub-area filter failed: " + module);
+                    sub.SelectedIndex = 0;
+                }
                 Call(page, "OpenForm"); Layout(page, 1172, 702);
                 Click((Button)page.FindName("DialogSubmit"));
                 Layout(page, 892, 602);
@@ -89,6 +183,17 @@ internal static class FrontendSmoke
                 if (module == "Reservas") Save(page, "reservation-draft-" + theme + ".png", 1172, 702);
                 Click((Button)page.FindName("DialogSubmit"));
                 Assert(!(bool)Field(page, "reviewingDraft"), "Return to editing failed.");
+                if (module == "Reservas")
+                {
+                    // RNF-02: simulated network loss blocks submission while preserving typed inputs
+                    Call(page, "SetSimulatedOffline", true);
+                    Assert(((Border)page.FindName("OfflineBanner")).Visibility == Visibility.Visible, "RNF-02 OfflineBanner did not appear.");
+                    Click((Button)page.FindName("DialogSubmit")); Layout(page, 1172, 702);
+                    Assert(!(bool)Field(page, "reviewingDraft") && ((TextBlock)page.FindName("DialogError")).Visibility == Visibility.Visible, "RNF-02 offline guard did not block critical submission.");
+                    Assert(((TextBox)Field(fields[1], "Input")).Text == "María de Prueba", "RNF-02 offline guard lost typed form input.");
+                    Call(page, "SetSimulatedOffline", false);
+                    Assert(((Border)page.FindName("OfflineBanner")).Visibility == Visibility.Collapsed, "RNF-02 OfflineBanner did not hide on network restore.");
+                }
                 foreach (var field in fields)
                 {
                     string kind = (string)Field(Field(field, "Definition"), "Kind"); var input = Field(field, "Input") as TextBox;
@@ -99,7 +204,7 @@ internal static class FrontendSmoke
                     Assert(!(bool)Field(page, "reviewingDraft"), "Invalid " + kind + " accepted: " + module);
                     input.Text = valid;
                 }
-                if (module == "Reservas" || module == "Reportes") {
+                if (module == "Reservas" || module == "Reportes" || module == "Eventos") {
                     var dates = fields.Where(f => (string)Field(Field(f, "Definition"), "Kind") == "date").ToArray();
                     ((TextBox)Field(dates[1], "Input")).Text = "30/10/2026"; Click((Button)page.FindName("DialogSubmit"));
                     Assert(!(bool)Field(page, "reviewingDraft"), "Inverted date range accepted.");
@@ -107,23 +212,35 @@ internal static class FrontendSmoke
                 Call(page, "OnCloseDialog", null, new RoutedEventArgs());
                 Assert(((Grid)page.FindName("Workspace")).IsEnabled, "Workspace left disabled.");
             }
+
             Call(page, "ShowModule", "Reservas");
             var persistentSearch = (TextBox)Field(page, "searchBox"); persistentSearch.Text = "María";
             for (int i = 0; i < 3; i++) {
-                Click((Button)page.FindName("ThemeButton")); Layout(page, 1172, 702);
+                Call(page, "CycleTheme"); Layout(page, 1172, 702);
                 Assert(persistentSearch.Text == "María", "Theme switch reset user input.");
                 foreach (var path in Descendants<System.Windows.Shapes.Path>(nav))
                     Assert(path.Stroke is SolidColorBrush && ((SolidColorBrush)path.Stroke).Color == Colors.White, "Icon failed to update after theme switch.");
             }
             VerifyWorkflows(page, assembly, theme);
-            Console.WriteLine("PASS: " + theme + ", 22 modules at 3 sizes, workflows, filters, forms, validation and draft editing.");
+            Console.WriteLine("PASS: " + theme + ", 23 modules at 3 sizes, unified CheckInOut/Guests, Eventos, Preferencias, shortcuts, workflows and validation.");
         }
-        VerifyRoles(assembly, dashboardType, contextType, demo);
+
+        VerifyRoles(assembly, dashboardType, contextType, limitsType, demo);
         VerifyImports(assembly);
+
         foreach (string theme in new[] { "Light", "Dark", "Brand" })
         {
             var login = (Page)Activator.CreateInstance(assembly.GetType("Crown__.Frontend.Views.LoginView"), new object[] { theme }); Layout(login, 1172, 702);
-            Assert(((SolidColorBrush)((Button)login.FindName("ThemeButton")).Foreground).Color == ((SolidColorBrush)login.Foreground).Color, "Login theme label contrast regression.");
+            var roleCombo = (ComboBox)login.FindName("CmbRolDemo");
+            var loginThemeBtn = (Button)login.FindName("ThemeButton");
+            Assert(roleCombo != null && roleCombo.Items.Count == 3, "Login role selector ComboBox must have exactly 3 roles (Administrador, Gerente, Recepcionista).");
+            Assert(loginThemeBtn != null, "Original Login ThemeButton missing.");
+            string beforeLabel = (string)loginThemeBtn.Content;
+            Call(login, "CycleTheme"); Layout(login, 1172, 702);
+            Assert((string)loginThemeBtn.Content != beforeLabel, "Login Alt+T CycleTheme did not update ThemeButton.");
+            Call(login, "CycleTheme"); Call(login, "CycleTheme"); Layout(login, 1172, 702);
+            Assert((string)login.Tag == theme && (string)loginThemeBtn.Content == beforeLabel, "Theme cycle did not restore initial Login theme.");
+
             var user = (TextBox)login.FindName("TxtUsuario");
             foreach (string value in new[] { "", "Tu Usuario", "áéíóú prueba", "", "admin" }) {
                 user.Text = value; Pump(); user.ApplyTemplate();
@@ -141,6 +258,7 @@ internal static class FrontendSmoke
         Console.WriteLine("PASS: " + checks + " assertions. Compiled WPF renders saved to .design-preview. No interactive-window screenshots.");
         return 0;
     }
+
     private static void VerifyWorkflows(Page page, Assembly assembly, string theme)
     {
         var catalog = assembly.GetType("Crown__.Frontend.Views.OperationsCatalog");
@@ -156,6 +274,14 @@ internal static class FrontendSmoke
             }
             Call(page, "OpenForm"); Layout(page, 892, 602);
             Assert(((Grid)page.FindName("Overlay")).Visibility == Visibility.Visible, "Workflow form did not open: " + key);
+            if (key == "CheckIn")
+            {
+                var autoBtn = Descendants<Button>((Panel)page.FindName("DialogBody")).FirstOrDefault(b => AutomationProperties.GetAutomationId(b) == "AutocompleteGuest_H-001");
+                Assert(autoBtn != null, "RF-17/RF-18 guest history autocomplete button missing in CheckIn.");
+                Click(autoBtn); Layout(page, 892, 602);
+                var prefilledFields = ((IEnumerable)Field(page, "formFields")).Cast<object>().ToArray();
+                Assert(((TextBox)Field(prefilledFields[2], "Input")).Text == "María Fernández", "RF-17 autocomplete did not prefill Huésped titular.");
+            }
             Click((Button)page.FindName("DialogSubmit"));
             Assert(!(bool)Field(page, "reviewingDraft"), "Empty workflow accepted: " + key);
             var fields = ((IEnumerable)Field(page, "formFields")).Cast<object>().ToArray(); int date = 0;
@@ -175,12 +301,12 @@ internal static class FrontendSmoke
             Call(page, "OnCloseDialog", null, new RoutedEventArgs());
         }
         Call(page, "ShowModule", "Reservas"); Call(page, "SelectWorkflow", "Calendario");
-        var period = Descendants<ComboBox>((Panel)page.FindName("ModuleContent")).First(c => System.Windows.Automation.AutomationProperties.GetAutomationId(c) == "CalendarPeriod");
+        var period = Descendants<ComboBox>((Panel)page.FindName("ModuleContent")).First(c => AutomationProperties.GetAutomationId(c) == "CalendarPeriod");
         period.SelectedIndex = 2; Layout(page, 892, 602);
         Assert(page.DesiredSize.Width <= 893, "Monthly calendar overflows minimum width.");
-        var stay = Descendants<Button>((Panel)page.FindName("ModuleContent")).FirstOrDefault(b => System.Windows.Automation.AutomationProperties.GetAutomationId(b) == "CalendarStay204");
+        var stay = Descendants<Button>((Panel)page.FindName("ModuleContent")).FirstOrDefault(b => AutomationProperties.GetAutomationId(b) == "CalendarStay204");
         Assert(stay != null, "Calendar stay button was not found."); Click(stay);
-        var prepare = Descendants<Button>((Panel)page.FindName("DialogBody")).FirstOrDefault(b => System.Windows.Automation.AutomationProperties.GetAutomationId(b) == "CalendarPrepare");
+        var prepare = Descendants<Button>((Panel)page.FindName("DialogBody")).FirstOrDefault(b => AutomationProperties.GetAutomationId(b) == "CalendarPrepare");
         Assert(prepare != null, "Calendar contextual prepare button was not found."); Click(prepare);
         var calendarFields = ((IEnumerable)Field(page,"formFields")).Cast<object>().ToArray();
         Assert(((TextBox)Field(calendarFields.First(f => (string)Field(Field(f,"Definition"),"Label") == "Reserva"),"Input")).Text == "RES-1048", "Calendar lost selected reservation.");
@@ -188,64 +314,85 @@ internal static class FrontendSmoke
         Assert(((TextBox)Field(calendarFields.First(f => (string)Field(Field(f,"Definition"),"Label") == "Nueva salida"),"Input")).Text == "03/11/2026", "Calendar lost selected dates.");
         Call(page, "OnCloseDialog", null, new RoutedEventArgs());
         Call(page, "SelectWorkflow", "Calendario"); Layout(page, 892, 602);
-        Click(Descendants<Button>((Panel)page.FindName("ModuleContent")).First(b => System.Windows.Automation.AutomationProperties.GetAutomationId(b).StartsWith("CalendarFree204-")));
+        Click(Descendants<Button>((Panel)page.FindName("ModuleContent")).First(b => AutomationProperties.GetAutomationId(b).StartsWith("CalendarFree204-")));
         Layout(page, 892, 602);
-        Click(Descendants<Button>((Panel)page.FindName("DialogBody")).First(b => System.Windows.Automation.AutomationProperties.GetAutomationId(b) == "CalendarPrepare"));
+        Click(Descendants<Button>((Panel)page.FindName("DialogBody")).First(b => AutomationProperties.GetAutomationId(b) == "CalendarPrepare"));
         var freeFields = ((IEnumerable)Field(page,"formFields")).Cast<object>().ToArray();
         Assert(((TextBox)Field(freeFields.First(f => (string)Field(Field(f,"Definition"),"Label") == "Habitación preferida"),"Input")).Text == "204", "Free calendar cell lost selected room.");
         Call(page, "OnCloseDialog", null, new RoutedEventArgs());
     }
-    private static void VerifyRoles(Assembly assembly, Type dashboardType, Type contextType, Func<string, object> demo)
+
+    private static void VerifyRoles(Assembly assembly, Type dashboardType, Type contextType, Type limitsType, Func<string, object> demo)
     {
+        limitsType.GetMethod("ResetServiceLimits", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, null);
+        var demoRolesField = (string[])contextType.GetField("DemoRoles", BindingFlags.Static | BindingFlags.Public).GetValue(null);
+        Assert(demoRolesField.Length == 3 && demoRolesField[0] == "Administrador" && demoRolesField[1] == "Gerente" && demoRolesField[2] == "Recepcionista",
+            "DemoRoles must contain only Administrador, Gerente and Recepcionista.");
+
         var expected = new Dictionary<string, string[]> {
-            {"Administrador", Modules},
-            {"Recepcion", new[]{"Inicio","Alertas","Reservas","CheckInOut","Huespedes","Folios","Operacion","Transporte","Habitaciones","Convenios"}},
-            {"Housekeeping", new[]{"Inicio","Alertas","Housekeeping","Habitaciones"}},
-            {"Supervisor", new[]{"Inicio","Alertas","Housekeeping","Habitaciones","Mantenimiento"}},
-            {"Mantenimiento", new[]{"Inicio","Alertas","Mantenimiento","Habitaciones"}},
-            {"AlimentosBebidas", new[]{"Inicio","Alertas","FNB","Inventario"}},
-            {"Bienestar", new[]{"Inicio","Alertas","GymSpa"}},
-            {"Lavanderia", new[]{"Inicio","Alertas","Lavanderia"}},
-            {"Finanzas", new[]{"Inicio","Alertas","Finanzas","Folios","Reportes"}},
-            {"Transporte", new[]{"Inicio","Alertas","Transporte"}},
+            {"Administrador", new[]{"Inicio","Alertas","Preferencias","Eventos","Tarifas","Convenios","Finanzas","Reportes","FNB","GymSpa","Lavanderia","Transporte","Inventario","Usuarios","Auditoria","Config"}},
+            {"Gerente", new[]{"Inicio","Alertas","Preferencias","Eventos","Tarifas","Convenios","Finanzas","Reportes","FNB","GymSpa","Lavanderia","Transporte","Inventario"}},
+            {"Recepcionista", new[]{"Inicio","Alertas","Preferencias","Reservas","Habitaciones","CheckInOut","Folios","Operacion","FNB","GymSpa","Housekeeping","Mantenimiento","Lavanderia","Transporte"}},
             {"Huesped", new string[0]}, {"desconocido", new string[0]}
         };
         foreach (var pair in expected) {
             var page = (Page)Activator.CreateInstance(dashboardType, new object[]{"Light", demo(pair.Key)}); Layout(page, 892, 602);
-            var ids = Descendants<Button>((Panel)page.FindName("NavigationItems")).Select(b => System.Windows.Automation.AutomationProperties.GetAutomationId(b)).ToArray();
+            var ids = Descendants<Button>((Panel)page.FindName("NavigationItems")).Select(b => AutomationProperties.GetAutomationId(b)).ToArray();
             Assert(ids.Length == pair.Value.Length && pair.Value.All(key => ids.Contains("Nav" + key)), "Role navigation incorrect: " + pair.Key);
+
+            // Admin and Gerente must NOT see Reservas; only Recepcionista sees Reservas
+            bool shouldSeeReservas = pair.Key == "Recepcionista";
+            Assert(ids.Contains("NavReservas") == shouldSeeReservas, "Reservas visibility violated for role: " + pair.Key);
+
+            // Eventos must ONLY be visible to Administrador and Gerente
+            bool shouldSeeEventos = pair.Key == "Administrador" || pair.Key == "Gerente";
+            Assert(ids.Contains("NavEventos") == shouldSeeEventos, "Eventos visibility violated for role: " + pair.Key);
+
             foreach (string forbidden in Modules.Except(pair.Value)) {
                 object before = Field(page, "currentModule"); Call(page, "ShowModule", forbidden);
                 Assert(Field(page, "currentModule") == before, "Direct navigation bypass: " + pair.Key + "/" + forbidden);
                 Assert(((TextBlock)page.FindName("DialogTitle")).Text == "Acceso no disponible", "Missing denial feedback.");
                 Call(page, "OnCloseDialog", null, new RoutedEventArgs());
             }
-            if (pair.Value.Contains("Folios") && pair.Key != "Administrador") {
-                Call(page, "ShowModule", "Folios"); Call(page, "SelectWorkflow", "Transferir");
-                Assert(Field(page, "currentWorkflow") == null, "Unauthorized transfer opened.");
-                Call(page, "OnCloseDialog", null, new RoutedEventArgs());
-                Call(page, "ShowModule", "Finanzas"); // Receiver must remain in its previous module when denied.
-                if (pair.Key == "Finanzas") {
-                    Call(page, "SelectWorkflow", "Devolucion"); Assert(Field(page, "currentWorkflow") == null, "Unauthorized refund opened.");
+
+            // Gerente and Administrador can limit services; Recepcionista cannot
+            if (pair.Value.Contains("GymSpa"))
+            {
+                Call(page, "ShowModule", "GymSpa"); Layout(page, 1172, 702);
+                var limitBtn = Descendants<Button>((Panel)page.FindName("ModuleContent")).FirstOrDefault(b => AutomationProperties.GetAutomationId(b) == "LimitServiceBtn_SRV-SPA-1");
+                if (pair.Key == "Administrador" || pair.Key == "Gerente")
+                {
+                    Assert(limitBtn != null, "Manager/Admin missing service limit button in GymSpa: " + pair.Key);
+                    if (pair.Key == "Gerente")
+                    {
+                        Click(limitBtn); Layout(page, 1172, 702);
+                        var limitFields = ((IEnumerable)Field(page, "formFields")).Cast<object>().ToArray();
+                        ((ComboBox)Field(limitFields[0], "Input")).SelectedItem = "Horario limitado";
+                        ((TextBox)Field(limitFields[1], "Input")).Text = "10:00–19:00";
+                        Click((Button)page.FindName("DialogSubmit")); Layout(page, 1172, 702);
+                        Assert((bool)Field(page, "reviewingDraft"), "Gerente service limit form failed to review.");
+                        Call(page, "OnCloseDialog", null, new RoutedEventArgs());
+                    }
+                }
+                else
+                {
+                    Assert(limitBtn == null, "Recepcionista exposed to service limit button: " + pair.Key);
+                    Call(page, "SelectWorkflow", "LimitarGymSpa");
+                    Assert(Field(page, "currentWorkflow") == null, "Unauthorized service limit workflow opened: " + pair.Key);
                     Call(page, "OnCloseDialog", null, new RoutedEventArgs());
                 }
             }
-            if (pair.Value.Contains("Alertas")) {
-                Call(page, "ShowModule", "Alertas");
-                var rows = ((IEnumerable)Call(page, "VisibleRows")).Cast<string[]>().ToArray();
-                if (pair.Key == "Bienestar") Assert(rows.All(r => r[2] == "Bienestar"), "Cross-department alerts leaked.");
-            }
-            if (pair.Key == "Housekeeping") {
-                Call(page, "ShowModule", "Housekeeping"); Call(page, "OpenForm");
-                Assert(((TextBlock)page.FindName("DialogTitle")).Text == "Acceso no disponible", "Housekeeping could assign a task through the base form.");
-                Call(page, "OnCloseDialog", null, new RoutedEventArgs());
-                Call(page, "SelectWorkflow", "Checklist"); Call(page, "OpenForm");
-                Assert(((TextBlock)page.FindName("DialogTitle")).Text == "Limpieza y turndown", "Housekeeping could not review own cleaning work.");
+
+            if (pair.Key == "Recepcionista") {
+                Call(page, "ShowModule", "Folios"); Call(page, "SelectWorkflow", "Transferir");
+                Assert(Field(page, "currentWorkflow") == null, "Unauthorized transfer opened for Recepcionista.");
                 Call(page, "OnCloseDialog", null, new RoutedEventArgs());
             }
+
             Call(page, "ShowModule", pair.Value.Length > 0 ? "Inicio" : "Usuarios");
             Layout(page, 1172, 702); Save(page, "role-" + pair.Key + ".png", 1172, 702);
-            if (pair.Key == "Housekeeping") Assert(!Descendants<TextBlock>(page).Any(t => t.Text.Contains("$3,920") || t.Text == "Finanzas"), "Financial content leaked to housekeeping.");
+            if (pair.Key == "Administrador" || pair.Key == "Gerente")
+                Assert(!Descendants<TextBlock>(page).Any(t => t.Text == "Reservas" || t.Text == "Nueva reserva"), "Reservas leaked onto Administrative/Managerial home: " + pair.Key);
         }
         var empty = (Page)Activator.CreateInstance(dashboardType, new object[]{"Light", null});
         Assert(!Descendants<Button>((Panel)empty.FindName("NavigationItems")).Any(), "Null access context must deny access.");
@@ -256,8 +403,9 @@ internal static class FrontendSmoke
         var readOnly = (Page)Activator.CreateInstance(dashboardType, new object[]{"Light", custom});
         Call(readOnly, "ShowModule", "Reservas"); Call(readOnly, "OpenForm");
         Assert(((TextBlock)readOnly.FindName("DialogTitle")).Text == "Acceso no disponible", "Read-only profile opened write form.");
-        Console.WriteLine("PASS: role navigation, module/action guards, unknown/guest/null denial, alert segmentation and role-label spoofing.");
+        Console.WriteLine("PASS: 3 roles only (Administrador, Gerente, Recepcionista), Admin/Gerente without Reservas, Eventos & service limits enforced.");
     }
+
     private static void VerifyImports(Assembly assembly)
     {
         var reader = assembly.GetType("Crown__.Frontend.Views.ReservationImportPreview");
@@ -285,6 +433,7 @@ internal static class FrontendSmoke
         Assert(((string)((IList)Field(excel,"Errors"))[0]).StartsWith("Fila 3:"), "XLSX error row incorrect.");
         Console.WriteLine("PASS: CSV quoting and XLSX worksheet relationship, dates, tariff validation and row errors.");
     }
+
     private static void WritePart(ZipArchive zip, string name, string value) { using (var writer = new StreamWriter(zip.CreateEntry(name).Open())) writer.Write(value); }
     private static object Field(object target, string name) { return target.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(target); }
     private static object Call(object target, string method, params object[] args) { return target.GetType().GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).Invoke(target, args); }

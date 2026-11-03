@@ -7,7 +7,8 @@
       Title="Crown &amp; Sovereign — Inicio de sesión"
       FontFamily="{StaticResource HotelSansFont}"
       UseLayoutRounding="True" SnapsToDevicePixels="True"
-      TextOptions.TextFormattingMode="Display" Loaded="OnLoaded" Unloaded="OnUnloaded">
+      TextOptions.TextFormattingMode="Display"
+      Loaded="OnLoaded" Unloaded="OnUnloaded" PreviewKeyDown="OnPageKeyDown">
     <Page.Style>
         <Style TargetType="Page">
             <Setter Property="Tag" Value="Light" />
@@ -29,6 +30,7 @@
         <!-- Iconos de los campos -->
         <Geometry x:Key="IconUser">M12,7 A4,4 0 1 0 12,15 A4,4 0 1 0 12,7 M5,21 C5,17 8,15 12,15 C16,15 19,17 19,21</Geometry>
         <Geometry x:Key="IconLock">M7,11 V8 A5,5 0 0 1 17,8 V11 M5,11 H19 V20 H5 Z M12,14.5 V17</Geometry>
+        <Geometry x:Key="IconRole">M12,3 L19,6 V11.5 C19,16.2 16,19.8 12,21 C8,19.8 5,16.2 5,11.5 V6 Z M9.2,12.2 L11.1,14.1 L15,10.2</Geometry>
         <Geometry x:Key="IconEyeOpen">M1,12 C4,7 8,5 12,5 C16,5 20,7 23,12 C20,17 16,19 12,19 C8,19 4,17 1,12 Z M12,9 A3,3 0 1 0 12,15 A3,3 0 1 0 12,9</Geometry>
         <Geometry x:Key="IconEyeOff">M3,3 L21,21 M1,12 C4,7 8,5 12,5 C16,5 20,7 23,12 C20,17 16,19 12,19 C8,19 4,17 1,12 M9.5,9.7 A3,3 0 0 0 12,15 M14.5,14.3 A3,3 0 0 0 12,9</Geometry>
 
@@ -96,7 +98,7 @@
             </Setter>
         </Style>
 
-        <!-- Campo de contraseña revelada (texto plano) -->
+        <!-- Campo de contraseña revelada -->
         <Style x:Key="LoginRevealBox" TargetType="TextBox" BasedOn="{StaticResource HotelField}">
             <Setter Property="Padding" Value="0" />
             <Setter Property="CaretBrush" Value="{Binding Foreground, RelativeSource={RelativeSource Self}}" />
@@ -170,6 +172,162 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- Ítem desplegable para los 3 roles de demostración -->
+        <Style x:Key="LoginComboItemStyle" TargetType="ComboBoxItem">
+            <Setter Property="Padding" Value="12,9" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{StaticResource Light.Ink}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border x:Name="ItemBorder" Background="{TemplateBinding Background}" CornerRadius="10" Margin="4,2" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#1417384F" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#1E17384F" />
+                            </Trigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark" />
+                                    <Condition Binding="{Binding IsHighlighted, RelativeSource={RelativeSource Self}}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#26F6F3ED" />
+                            </MultiDataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark" />
+                                    <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#33D9BB79" />
+                            </MultiDataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                    <Setter Property="Foreground" Value="{StaticResource Dark.Ink}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Brand">
+                    <Setter Property="Foreground" Value="{StaticResource ThemeBrand.Ink}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Selector de rol para el inicio de sesión simulado (Administrador, Gerente, Recepcionista) -->
+        <Style x:Key="LoginRoleComboStyle" TargetType="ComboBox" BasedOn="{StaticResource HotelField}">
+            <Setter Property="Height" Value="48" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="ItemContainerStyle" Value="{StaticResource LoginComboItemStyle}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton Focusable="False" Cursor="Hand"
+                                          IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border x:Name="Surface" CornerRadius="12"
+                                                Background="{Binding Background, RelativeSource={RelativeSource AncestorType=ComboBox}}"
+                                                BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ComboBox}}"
+                                                BorderThickness="1">
+                                            <Path Data="M0,0 L4.5,4.5 L9,0" Width="9" Height="5" Stretch="Uniform"
+                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ComboBox}}"
+                                                  StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                                  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,15,0" Opacity="0.75" />
+                                        </Border>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <Path Width="18" Height="18" Stretch="Uniform"
+                                  Data="{StaticResource IconRole}"
+                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Page}}"
+                                  StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                  HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0"
+                                  Opacity="0.65" IsHitTestVisible="False" />
+                            <TextBlock Text="{Binding SelectedItem.Title, RelativeSource={RelativeSource TemplatedParent}}"
+                                       Foreground="{TemplateBinding Foreground}" FontSize="14" FontWeight="Medium"
+                                       Margin="44,0,36,0" VerticalAlignment="Center" IsHitTestVisible="False" TextTrimming="CharacterEllipsis" />
+                            <Border x:Name="FocusRing" CornerRadius="12" BorderThickness="2"
+                                    BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource TemplatedParent}}"
+                                    Visibility="Collapsed" IsHitTestVisible="False" />
+                            <Popup x:Name="PART_Popup" Placement="Bottom" VerticalOffset="4"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade">
+                                <Border Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="14" Padding="2,4"
+                                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}">
+                                    <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+                                </Border>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                <Setter TargetName="FocusRing" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Barra de desplazamiento discreta y redondeada en resoluciones compactas -->
+        <Style x:Key="LoginScrollThumb" TargetType="Thumb">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Thumb">
+                        <Border x:Name="Grip" Background="#405D6872" CornerRadius="3" Margin="1" />
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Grip" Property="Background" Value="#755D6872" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="ScrollBar">
+            <Setter Property="Width" Value="6" />
+            <Setter Property="MinWidth" Value="6" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid Background="Transparent">
+                            <Track x:Name="PART_Track" IsDirectionReversed="True" Orientation="{TemplateBinding Orientation}">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageUpCommand" Focusable="False">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Background="Transparent" />
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.DecreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Style="{StaticResource LoginScrollThumb}" />
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageDownCommand" Focusable="False">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Background="Transparent" />
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Page.Resources>
     <!-- Frontend only: no credentials are validated, saved, or sent. -->
     <Grid Background="{Binding Background, RelativeSource={RelativeSource AncestorType=Page}}">
@@ -230,26 +388,26 @@
         </Grid>
         <Grid Grid.Column="1" Margin="0,0,8,0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="64" />
+                <RowDefinition Height="58" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="48" />
+                <RowDefinition Height="42" />
             </Grid.RowDefinitions>
             <Button x:Name="ThemeButton" Click="OnThemeCycle" Style="{StaticResource ThemeCycleButton}"
                     Margin="0,0,20,0" HorizontalAlignment="Right" VerticalAlignment="Center"
-                    Content="Claro" ToolTip="Cambiar tema: Claro, Oscuro, Marca"
-                    AutomationProperties.Name="Cambiar tema" KeyboardNavigation.TabIndex="6" />
+                    Content="Claro" ToolTip="Cambiar tema: Claro, Oscuro, Marca (Alt+T)"
+                    AutomationProperties.Name="Cambiar tema" KeyboardNavigation.TabIndex="7" />
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
-                          Focusable="False" Padding="0,8,0,12">
+                          Focusable="False" Padding="0,4,0,8">
                 <Grid Margin="36,0" MaxWidth="344" VerticalAlignment="Center">
                     <StackPanel>
                         <TextBlock Text="Bienvenido de nuevo" FontSize="29" FontWeight="SemiBold"
-                                   TextWrapping="Wrap" Margin="0,0,0,10" />
+                                   TextWrapping="Wrap" Margin="0,0,0,8" />
                         <TextBlock Text="Ingresa a tu espacio de trabajo." Style="{StaticResource HotelSecondaryText}"
-                                   TextWrapping="Wrap" Margin="0,0,0,34" />
+                                   TextWrapping="Wrap" Margin="0,0,0,24" />
                         <Label Content="_Usuario" Target="{Binding ElementName=TxtUsuario}"
                                Style="{StaticResource HotelFieldLabel}" />
                         <TextBox x:Name="TxtUsuario" Tag="Tu usuario" Style="{StaticResource LoginUserBox}"
-                                 Margin="0,0,0,20" AutomationProperties.Name="Usuario" KeyboardNavigation.TabIndex="0" />
+                                 Margin="0,0,0,16" AutomationProperties.Name="Usuario" KeyboardNavigation.TabIndex="0" />
                         <Label Content="_Contraseña" Target="{Binding ElementName=TxtContrasena}"
                                Style="{StaticResource HotelFieldLabel}" />
                         <Grid>
@@ -267,7 +425,7 @@
                                           Margin="0,0,4,0" Style="{StaticResource EyeToggleStyle}"
                                           Click="OnEyeToggle" ToolTip="Mostrar u ocultar la contraseña" />
                         </Grid>
-                        <Grid Margin="0,18,0,28">
+                        <Grid Margin="0,14,0,20">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -288,10 +446,25 @@
                                       HorizontalAlignment="Right" VerticalAlignment="Center" />
                             </Grid>
                         </Button>
+                        <Label Content="_Rol de demostración" Target="{Binding ElementName=CmbRolDemo}"
+                               Style="{StaticResource HotelFieldLabel}" Margin="0,16,0,0" />
+                        <ComboBox x:Name="CmbRolDemo" Style="{StaticResource LoginRoleComboStyle}"
+                                  ToolTip="Elige entre Administrador, Gerente o Recepcionista para simular el acceso"
+                                  AutomationProperties.Name="Rol de demostración"
+                                  KeyboardNavigation.TabIndex="5">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Title}" FontSize="13.5" FontWeight="SemiBold" />
+                                        <TextBlock Text="{Binding Summary}" FontSize="11" Opacity="0.72" Margin="0,2,0,0" TextWrapping="Wrap" MaxWidth="280" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
                         <Button x:Name="BtnLoginSimulado" Content="Inicio de sesión simulado"
-                                Style="{StaticResource HotelSecondaryButton}" Margin="0,12,0,0"
-                                Click="OnIngresar"
-                                KeyboardNavigation.TabIndex="5" />
+                                Style="{StaticResource HotelSecondaryButton}" Margin="0,10,0,0"
+                                Click="OnIngresarSimulado"
+                                KeyboardNavigation.TabIndex="6" />
                     </StackPanel>
                 </Grid>
             </ScrollViewer>

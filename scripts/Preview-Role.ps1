@@ -1,13 +1,23 @@
 param(
-    [ValidateSet('Administrador','Recepcion','Housekeeping','Supervisor','Mantenimiento','AlimentosBebidas','Bienestar','Lavanderia','Finanzas','Transporte','Huesped')][string]$Role = 'Recepcion',
+    [ValidateSet('Administrador','Gerente','Recepcionista','Huesped')][string]$Role = 'Recepcionista',
     [ValidateSet('Light','Dark','Brand')][string]$Theme = 'Light'
 )
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path $PSScriptRoot -Parent
 Push-Location $projectRoot
 try {
+    $msbuildCmd = Get-Command MSBuild.exe -ErrorAction SilentlyContinue
+    $msbuild = if ($msbuildCmd) { $msbuildCmd.Source } else {
+        @(
+            'C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe',
+            'C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe',
+            'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe',
+            'C:\Program Files\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe',
+            'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe'
+        ) | Where-Object { Test-Path $_ } | Select-Object -First 1
+    }
     $previewOutput = '.design-preview/verified/RolePreview/'
-    & MSBuild.exe 'Crown &.csproj' /t:Build /p:Configuration=Debug "/p:OutputPath=$previewOutput" '/p:TargetPlatformSdkPath=C:/Program Files (x86)/Windows Kits/8.1/' /p:TargetPlatformDisplayName=Windows /nologo /verbosity:minimal
+    & $msbuild 'Crown &.csproj' /t:Build /p:Configuration=Debug "/p:OutputPath=$previewOutput" '/p:TargetPlatformSdkPath=C:/Program Files (x86)/Windows Kits/8.1/' /p:TargetPlatformDisplayName=Windows /nologo /verbosity:minimal
     if ($LASTEXITCODE -ne 0) { throw 'No se pudo compilar el frontend.' }
     $env:CROWN_FRONTEND_ASSEMBLY = Join-Path $projectRoot ($previewOutput + 'Crown &.exe')
     $frameworkDirectory = Join-Path $env:WINDIR 'Microsoft.NET/Framework64/v4.0.30319'
