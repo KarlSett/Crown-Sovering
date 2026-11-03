@@ -12,6 +12,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Crown__.Frontend.Security;
 
 namespace Crown__.Frontend.Views
 {
@@ -32,6 +33,12 @@ namespace Crown__.Frontend.Views
         private FrameworkElement previousFocus;
         private StackPanel formEditor, draftPreview;
         private bool reviewingDraft;
+        private readonly FrontendAccessContext access;
+        private WorkflowDefinition currentWorkflow;
+        private string formModule, formPermission;
+        private int formStep;
+        private Button stepBack;
+        private TextBlock stepLabel;
 
         private sealed class FormField
         {
@@ -42,13 +49,25 @@ namespace Crown__.Frontend.Views
         }
 
         public DashboardView() : this("Light") { }
-        public DashboardView(string theme)
+        public DashboardView(string theme) : this(theme, FrontendAccessContext.CreateDemonstration("Recepcion")) { }
+        public DashboardView(string theme, FrontendAccessContext accessContext)
         {
+            access = accessContext ?? new FrontendAccessContext(null, null, null, null);
             InitializeComponent();
             themeIndex = Math.Max(0, Array.IndexOf(Themes, theme));
             ApplyTheme();
-            foreach (var module in ModuleCatalog.All)
+            RoleName.Text = access.RoleLabel;
+            SessionNotice.Text = access.IsDemonstration ? "Demostración con datos de muestra. Los borradores no se guardan." : "Datos de muestra. Las operaciones reales aún no están conectadas.";
+            string lastGroup = null;
+            foreach (var module in NavigationGroups.SelectMany(g => g.Skip(1)).Select(key => ModuleCatalog.All.First(m => m.Key == key)).Where(m => access.Allows(m.Key, "View")))
             {
+                string group = ModuleGroup(module.Key);
+                if (group != lastGroup)
+                {
+                    var groupLabel = Text(group, 11, true); groupLabel.Margin = new Thickness(12, 18, 0, 6);
+                    groupLabel.SetResourceReference(TextBlock.ForegroundProperty, "Ui.NavMuted");
+                    NavigationItems.Children.Add(groupLabel); lastGroup = group;
+                }
                 var button = new Button { Tag = module.Key, Style = (Style)FindResource("Nav"), ToolTip = module.Title };
                 AutomationProperties.SetAutomationId(button, "Nav" + module.Key);
                 AutomationProperties.SetName(button, module.Title);
@@ -57,7 +76,7 @@ namespace Crown__.Frontend.Views
                     StrokeThickness = 1.5, StrokeStartLineCap = PenLineCap.Round, StrokeEndLineCap = PenLineCap.Round, Margin = new Thickness(0, 0, 11, 0) };
                 icon.SetBinding(Shape.StrokeProperty, new Binding("Foreground") { Source = button });
                 content.Children.Add(icon);
-                var label = Text(module.Key == "Inicio" ? "Inicio" : module.Key == "FNB" ? "F & B" : module.Key == "GymSpa" ? "Gym / Spa" : module.Key == "Config" ? "Ajustes" : module.Key == "CheckInOut" ? "Check-in / out" : module.Title);
+                var label = Text(NavTitle(module), 12);
                 label.SetBinding(TextBlock.ForegroundProperty, new Binding("Foreground") { Source = button });
                 content.Children.Add(label);
                 button.Content = content;
@@ -65,7 +84,8 @@ namespace Crown__.Frontend.Views
                 navigation.Add(module.Key, button);
                 NavigationItems.Children.Add(button);
             }
-            ShowModule("Inicio");
+            if (navigation.Count > 0) ShowModule(navigation.ContainsKey("Inicio") ? "Inicio" : navigation.Keys.First());
+            else { PageTitle.Text = "Sin acceso asignado"; PageDescription.Text = "Solicita al administrador un perfil de personal autorizado."; }
         }
 
         private void OnThemeCycle(object sender, RoutedEventArgs e)
@@ -81,6 +101,10 @@ namespace Crown__.Frontend.Views
             foreach (var name in new[] { "Page", "Ink", "Secondary", "Field", "Border", "Primary", "OnPrimary", "Focus" })
                 Resources["Ui." + name] = FindResource(prefix + "." + name);
             bool dark = themeIndex == 1;
+            Resources["Ui.Page"] = Brush(dark ? "#14232F" : themeIndex == 2 ? "#EFF5F2" : "#F3F6F8");
+            Resources["Ui.Border"] = Brush(dark ? "#506674" : "#CBD5DC");
+            Resources["Ui.Nav"] = Brush(dark ? "#10202C" : themeIndex == 2 ? "#203C39" : "#17384F");
+            Resources["Ui.NavSelected"] = Brush(themeIndex == 2 ? "#365E58" : "#31566D");
             Resources["Ui.Soft"] = Brush(dark ? "#2A3D4C" : themeIndex == 2 ? "#E7F1EE" : "#EDF0F2");
             Resources["Ui.Good"] = Brush(dark ? "#9AD7B3" : "#276447");
             Resources["Ui.Warning"] = Brush(dark ? "#E5C780" : "#805C1C");
@@ -99,28 +123,24 @@ namespace Crown__.Frontend.Views
 
         private void ShowModule(string key)
         {
-            currentModule = ModuleCatalog.All.First(m => m.Key == key);
+            if (!access.Allows(key, "View")) { DenyAccess(); return; }
+            var target = ModuleCatalog.All.FirstOrDefault(m => m.Key == key);
+            if (target == null) { DenyAccess(); return; }
+            Overlay.Visibility = Visibility.Collapsed; Workspace.IsEnabled = true; formFields.Clear();
+            currentModule = target; currentWorkflow = null;
             PageTitle.Text = currentModule.Title;
             PageDescription.Text = currentModule.Description;
             foreach (var item in navigation)
             {
-                item.Value.SetResourceReference(BackgroundProperty, item.Key == key ? "Ui.Soft" : "Ui.Field");
+                item.Value.SetResourceReference(BackgroundProperty, item.Key == key ? "Ui.NavSelected" : "Ui.Nav");
                 item.Value.FontWeight = item.Key == key ? FontWeights.SemiBold : FontWeights.Normal;
                 AutomationProperties.SetHelpText(item.Value, item.Key == key ? "Sección actual" : "Abrir sección");
             }
             ModuleContent.Children.Clear();
             searchBox = null; stateFilter = null; floorFilter = null; results = null;
             ContentScroll.ScrollToTop();
-            if (key == "Inicio") BuildHome();
-            else if (key == "Config") BuildSettings();
-            else
-            {
-                AddMetrics(currentModule.Metrics);
-                if (key == "Reportes") BuildOccupancyChart();
-                if (key == "GymSpa") AddNotice("Gimnasio · 18 de 20 plazas ocupadas", "Horario de muestra: 06:00–22:00. Spa: 09:00–20:00. Revisa la disponibilidad antes de confirmar una cita.");
-                if (key == "CheckInOut") AddNotice("Antes de completar un movimiento", "Check-in: documento, datos y habitación. Check-out: consumos, saldo y devolución de llaves. Esta vista no registra entradas ni salidas.");
-                BuildModuleList();
-            }
+            if (key == "Inicio") BuildRoleHome();
+            else BuildWorkspace();
         }
 
         private void BuildHome()
@@ -182,7 +202,7 @@ namespace Crown__.Frontend.Views
             searchBox = new TextBox { Width = 250, Tag = "Buscar en " + currentModule.Title.ToLowerInvariant(), Margin = new Thickness(0, 0, 10, 8) };
             AutomationProperties.SetName(searchBox, "Buscar en " + currentModule.Title);
             toolbar.Children.Add(searchBox);
-            var states = new[] { "Todos los estados" }.Concat(currentModule.Rows.Select(r => r[4]).Distinct()).ToArray();
+            var states = new[] { "Todos los estados" }.Concat(VisibleRows().Select(r => r[4]).Distinct()).ToArray();
             stateFilter = Choice(states, "Filtrar por estado"); stateFilter.Width = 178; stateFilter.Margin = new Thickness(0, 0, 10, 8);
             toolbar.Children.Add(stateFilter);
             if (currentModule.Key == "Habitaciones")
@@ -190,7 +210,7 @@ namespace Crown__.Frontend.Views
                 floorFilter = Choice(new[] { "Todos los pisos", "Piso 1", "Piso 2", "Piso 3", "Piso 4" }, "Filtrar por piso");
                 floorFilter.Width = 150; floorFilter.Margin = new Thickness(0, 0, 10, 8); toolbar.Children.Add(floorFilter);
             }
-            toolbar.Children.Add(Action(currentModule.Action, OpenForm, true));
+            if (access.Allows(currentModule.Key, BasePermission(currentModule.Key))) toolbar.Children.Add(Action(currentModule.Action, OpenForm, true));
             ModuleContent.Children.Add(toolbar);
             resultCount = Muted(""); resultCount.Margin = new Thickness(0, 0, 0, 12); AutomationProperties.SetLiveSetting(resultCount, AutomationLiveSetting.Polite);
             ModuleContent.Children.Add(resultCount);
@@ -215,7 +235,7 @@ namespace Crown__.Frontend.Views
             string term = Normalize(searchBox.Text.Trim());
             string state = stateFilter.SelectedIndex > 0 ? (string)stateFilter.SelectedItem : null;
             string floor = floorFilter != null && floorFilter.SelectedIndex > 0 ? (string)floorFilter.SelectedItem : null;
-            var rows = currentModule.Rows.Where(r => Normalize(string.Join(" ", r)).Contains(term) && (state == null || r[4] == state) && (floor == null || r[2] == floor)).ToArray();
+            var rows = VisibleRows().Where(r => Normalize(string.Join(" ", r)).Contains(term) && (state == null || r[4] == state) && (floor == null || r[2] == floor)).ToArray();
             results.Children.Clear();
             resultCount.Text = rows.Length + (rows.Length == 1 ? " registro de muestra" : " registros de muestra") + (currentModule.Key == "Habitaciones" ? " · Vista parcial del hotel" : "");
             if (rows.Length == 0)
@@ -333,6 +353,7 @@ namespace Crown__.Frontend.Views
 
         private void ShowDetail(string[] row)
         {
+            if (currentModule == null || !access.Allows(currentModule.Key, "View") || !VisibleRows().Any(r => r.SequenceEqual(row))) { DenyAccess(); return; }
             OpenDialog(currentModule.Key == "Habitaciones" ? "Habitación " + row[0] : row[0], currentModule.Title + " · Ficha de muestra");
             for (int i = 0; i < currentModule.Columns.Length; i++)
             {
@@ -343,7 +364,8 @@ namespace Crown__.Frontend.Views
                 AddHelp(DialogBody, row[4] == "Llegada" ? "Antes del check-in: verificar identidad, reserva, ocupantes y disponibilidad de la habitación." : "Antes del check-out: revisar consumos, saldo, factura y devolución de llaves.");
             if (currentModule.Key == "Habitaciones") AddHelp(DialogBody, "La asignación y el cambio de estado se confirmarán con disponibilidad real al integrar backend.");
             DialogSubmit.Visibility = Visibility.Collapsed;
-            DialogBody.Children.Add(Action(currentModule.Action, OpenForm, true));
+            AddDetailContext(row);
+            if (currentModule.Key != "Auditoria" && access.Allows(currentModule.Key, BasePermission(currentModule.Key))) DialogBody.Children.Add(Action(currentModule.Action, OpenForm, true));
         }
 
         private void OpenInfo(string title, string body)
@@ -353,10 +375,17 @@ namespace Crown__.Frontend.Views
 
         private void OpenForm()
         {
-            OpenDialog(currentModule.Action, "Completa los campos para revisar un borrador de muestra. No se enviará ni se guardará.");
+            if (currentModule == null) { DenyAccess(); return; }
+            string permission = currentWorkflow == null ? BasePermission(currentModule.Key) : currentWorkflow.Permission;
+            if (!access.Allows(currentModule.Key, permission)) { DenyAccess(); return; }
+            if (currentWorkflow != null && currentWorkflow.Fields.Length == 0) return;
+            var definitions = currentWorkflow == null ? currentModule.Fields : currentWorkflow.Fields;
+            if (definitions == null) return;
+            OpenDialog(currentWorkflow == null ? currentModule.Action : currentWorkflow.Title, "Completa los datos y revisa el borrador. No se guarda ni se envía.");
+            formModule = currentModule.Key; formPermission = permission; formStep = 0;
             formEditor = new StackPanel(); draftPreview = new StackPanel { Visibility = Visibility.Collapsed };
             DialogBody.Children.Add(formEditor); DialogBody.Children.Add(draftPreview);
-            foreach (var definition in currentModule.Fields)
+            foreach (var definition in definitions)
             {
                 Control input;
                 if (definition.Kind == "choice")
@@ -382,6 +411,7 @@ namespace Crown__.Frontend.Views
                 if (input is TextBox) ((TextBox)input).TextChanged += (s, e) => ClearFieldError(field);
                 else ((ComboBox)input).SelectionChanged += (s, e) => ClearFieldError(field);
             }
+            if (currentWorkflow != null && currentWorkflow.Guided) PrepareGuidedForm();
             if (formFields.Count > 0)
             {
                 var firstInput = formFields[0].Input;
@@ -397,6 +427,7 @@ namespace Crown__.Frontend.Views
 
         private void OpenDialog(string title, string description)
         {
+            formModule = null; formPermission = null; stepBack = null; stepLabel = null;
             if (Overlay.Visibility != Visibility.Visible) previousFocus = Keyboard.FocusedElement as FrameworkElement;
             formFields.Clear(); reviewingDraft = false; DialogBody.Children.Clear(); DialogError.Visibility = Visibility.Collapsed;
             DialogTitle.Text = title; DialogDescription.Text = description; DialogSubmit.Visibility = Visibility.Visible; DialogSubmit.Content = "Revisar borrador";
@@ -407,36 +438,41 @@ namespace Crown__.Frontend.Views
         private void OnCloseDialog(object sender, RoutedEventArgs e)
         {
             Overlay.Visibility = Visibility.Collapsed; Workspace.IsEnabled = true;
+            formModule = null; formPermission = null; formFields.Clear();
             if (previousFocus != null && previousFocus.IsVisible && previousFocus.IsEnabled) previousFocus.Focus();
-            else navigation[currentModule.Key].Focus();
+            else if (currentModule != null && navigation.ContainsKey(currentModule.Key)) navigation[currentModule.Key].Focus();
         }
 
         private void OnPageKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape && Overlay.Visibility == Visibility.Visible) { OnCloseDialog(sender, e); e.Handled = true; }
+            else if (e.Key == Key.F1) { OnHelpClick(sender, e); e.Handled = true; }
+            else if (e.Key == Key.F && Keyboard.Modifiers == ModifierKeys.Control && Overlay.Visibility != Visibility.Visible && searchBox != null) { searchBox.Focus(); e.Handled = true; }
         }
 
         private void OnReviewDraft(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrEmpty(formModule) || currentModule == null || currentModule.Key != formModule || !access.Allows(formModule, formPermission)) { DenyAccess(); return; }
             if (reviewingDraft)
             {
                 reviewingDraft = false; draftPreview.Visibility = Visibility.Collapsed; formEditor.Visibility = Visibility.Visible;
-                DialogSubmit.Content = "Revisar borrador"; if (formFields.Count > 0) formFields[0].Input.Focus(); return;
+                DialogSubmit.Content = "Revisar borrador"; if (currentWorkflow != null && currentWorkflow.Guided) UpdateGuidedForm();
+                if (formFields.Count > 0) (currentWorkflow != null && currentWorkflow.Guided ? formFields.First(f => FieldStep(f) == formStep) : formFields[0]).Input.Focus(); return;
             }
             FormField firstInvalid = null;
-            foreach (var field in formFields)
+            foreach (var field in formFields.Where(f => currentWorkflow == null || !currentWorkflow.Guided || FieldStep(f) <= formStep))
             {
                 string error = Validate(field);
                 field.Error.Text = error ?? ""; field.Error.Visibility = error == null ? Visibility.Collapsed : Visibility.Visible;
                 field.Input.SetResourceReference(Control.BorderBrushProperty, error == null ? "Ui.Border" : "Ui.Danger");
                 if (error != null && firstInvalid == null) firstInvalid = field;
             }
-            if (firstInvalid == null && (currentModule.Key == "Reservas" || currentModule.Key == "Reportes"))
+            if (firstInvalid == null && formFields.Count(f => f.Definition.Kind == "date") >= 2)
             {
                 var dates = formFields.Where(f => f.Definition.Kind == "date").ToArray();
                 var start = DateTime.ParseExact(dates[0].Value, "dd/MM/yyyy", CultureInfo.InvariantCulture);
                 var end = DateTime.ParseExact(dates[1].Value, "dd/MM/yyyy", CultureInfo.InvariantCulture);
-                if (end < start || (currentModule.Key == "Reservas" && end == start))
+                if (end < start || ((currentModule.Key == "Reservas" || currentModule.Key == "Tarifas") && currentWorkflow != null && currentWorkflow.Key == "Simulador" && end == start) || (currentModule.Key == "Reservas" && end == start))
                 {
                     firstInvalid = dates[1]; firstInvalid.Error.Text = currentModule.Key == "Reservas" ? "La salida debe ser posterior a la llegada." : "La fecha final no puede ser anterior a la inicial.";
                     firstInvalid.Error.Visibility = Visibility.Visible; firstInvalid.Input.SetResourceReference(Control.BorderBrushProperty, "Ui.Danger");
@@ -447,6 +483,21 @@ namespace Crown__.Frontend.Views
                 DialogError.Text = "Revisa los campos indicados antes de continuar."; DialogError.Visibility = Visibility.Visible;
                 firstInvalid.Input.Focus(); firstInvalid.Input.BringIntoView(); return;
             }
+            if (currentWorkflow != null && currentWorkflow.Key == "CheckOut" && formStep >= 1)
+            {
+                var balance = formFields.First(f => f.Definition.Label == "Saldo de referencia");
+                var payment = formFields.First(f => f.Definition.Label == "Pago");
+                var reference = formFields.First(f => f.Definition.Label == "Referencia de pago");
+                bool paid = decimal.Parse(balance.Value.Replace(',', '.'), CultureInfo.InvariantCulture) > 0;
+                if ((paid && payment.Value == "Sin pago pendiente") || (paid && reference.Value.Length == 0))
+                {
+                    var invalid = payment.Value == "Sin pago pendiente" ? payment : reference;
+                    invalid.Error.Text = invalid == payment ? "Selecciona el método para revisar el saldo pendiente." : "Indica una referencia del pago pendiente.";
+                    invalid.Error.Visibility = Visibility.Visible; invalid.Input.SetResourceReference(Control.BorderBrushProperty, "Ui.Danger");
+                    DialogError.Text = "Revisa el pago del saldo antes de continuar."; DialogError.Visibility = Visibility.Visible; invalid.Input.Focus(); return;
+                }
+            }
+            if (currentWorkflow != null && currentWorkflow.Guided && formStep < GuidedStepCount - 1) { formStep++; UpdateGuidedForm(); return; }
             draftPreview.Children.Clear();
             draftPreview.Children.Add(Text("Borrador para revisión", 18, true));
             AddHelp(draftPreview, "Estos datos solo se previsualizan. No se ha registrado ninguna operación.");
@@ -456,6 +507,7 @@ namespace Crown__.Frontend.Views
                 value.Margin = new Thickness(0, 3, 0, 14); draftPreview.Children.Add(value);
             }
             reviewingDraft = true; formEditor.Visibility = Visibility.Collapsed; draftPreview.Visibility = Visibility.Visible; DialogSubmit.Content = "Volver a editar";
+            if (stepBack != null) stepBack.Visibility = Visibility.Collapsed;
         }
 
         private static string Validate(FormField field)
@@ -470,11 +522,11 @@ namespace Crown__.Frontend.Views
             }
             if (kind == "date") { DateTime date; if (!DateTime.TryParseExact(value, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out date)) return "Usa una fecha válida en formato dd/MM/aaaa."; }
             if (kind == "time") { DateTime time; if (!DateTime.TryParseExact(value, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out time)) return "Usa una hora entre 00:00 y 23:59 (HH:mm)."; }
-            if (kind == "amount")
+            if (kind == "amount" || kind == "nonnegative")
             {
                 decimal amount;
-                if (!Regex.IsMatch(value, @"^\d{1,7}([.,]\d{1,2})?$") || !decimal.TryParse(value.Replace(',', '.'), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out amount) || amount <= 0)
-                    return "Introduce un importe mayor que 0, con hasta 2 decimales y sin separadores de miles.";
+                if (!Regex.IsMatch(value, @"^\d{1,7}([.,]\d{1,2})?$") || !decimal.TryParse(value.Replace(',', '.'), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out amount) || (kind == "nonnegative" ? amount < 0 : amount <= 0))
+                    return kind == "nonnegative" ? "Introduce un importe igual o mayor que 0, con hasta 2 decimales y sin separadores de miles." : "Introduce un importe mayor que 0, con hasta 2 decimales y sin separadores de miles.";
             }
             if (kind == "integer") { int count; int max = field.Definition.Label.Contains("huéspedes") ? 6 : 100; if (!int.TryParse(value, out count) || count < 1 || count > max) return "Introduce un número entero entre 1 y " + max + "."; }
             if (kind == "phone" && (!Regex.IsMatch(value, @"^\+?[\d\s()\-]{7,22}$") || value.Count(char.IsDigit) < 7)) return "Introduce un teléfono de al menos 7 dígitos.";
@@ -510,9 +562,9 @@ namespace Crown__.Frontend.Views
         }
         private static string StatusColor(string status)
         {
-            if (new[] { "Cancelada", "Vencido", "Mantenimiento", "Por cobrar", "Alta" }.Contains(status)) return "Ui.Danger";
-            if (new[] { "Por confirmar", "En limpieza", "Por renovar", "Por revisar", "En preparación", "En planchado", "En lavado", "Por facturar" }.Contains(status)) return "Ui.Warning";
-            return "Ui.Good";
+            if (new[] { "Cancelada", "Vencido", "Mantenimiento", "Por cobrar", "Alta", "Bloqueada", "Crítica", "Bajo mínimo" }.Contains(status)) return "Ui.Danger";
+            if (new[] { "Por confirmar", "En limpieza", "Por renovar", "Por revisar", "En preparación", "En planchado", "En lavado", "Por facturar", "Pendiente", "Inspección pendiente", "En revisión" }.Contains(status)) return "Ui.Warning";
+            return new[] { "Disponible", "Activo", "Activa", "Confirmada", "Completado", "Conciliado", "Finalizada", "Entregada", "Inspeccionada", "Limpia" }.Contains(status) ? "Ui.Good" : "Ui.Secondary";
         }
         private static TextBlock Status(string value)
         {

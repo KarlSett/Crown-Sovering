@@ -1,0 +1,650 @@
+{
+    "schemaVersion":  2,
+    "generatedAt":  "2026-11-03T00:47:50.5359092Z",
+    "title":  "Design System: Crown \u0026 Sovereign",
+    "extensions":  {
+                       "colorMeta":  {
+                                         "petroleum":  {
+                                                           "role":  "primary",
+                                                           "displayName":  "petroleum",
+                                                           "tonalRamp":  [
+                                                                             "oklch(0.15 0.0241 241.7)",
+                                                                             "oklch(0.26 0.0418 241.7)",
+                                                                             "oklch(0.38 0.0562 241.7)",
+                                                                             "oklch(0.49 0.0562 241.7)",
+                                                                             "oklch(0.61 0.0562 241.7)",
+                                                                             "oklch(0.72 0.0562 241.7)",
+                                                                             "oklch(0.84 0.0360 241.7)",
+                                                                             "oklch(0.95 0.0112 241.7)"
+                                                                         ]
+                                                       },
+                                         "petroleum-selected":  {
+                                                                    "role":  "neutral",
+                                                                    "displayName":  "petroleum selected",
+                                                                    "tonalRamp":  [
+                                                                                      "oklch(0.15 0.0245 237.3)",
+                                                                                      "oklch(0.26 0.0424 237.3)",
+                                                                                      "oklch(0.38 0.0571 237.3)",
+                                                                                      "oklch(0.49 0.0571 237.3)",
+                                                                                      "oklch(0.61 0.0571 237.3)",
+                                                                                      "oklch(0.72 0.0571 237.3)",
+                                                                                      "oklch(0.84 0.0365 237.3)",
+                                                                                      "oklch(0.95 0.0114 237.3)"
+                                                                                  ]
+                                                                },
+                                         "navy":  {
+                                                      "role":  "neutral",
+                                                      "displayName":  "navy",
+                                                      "tonalRamp":  [
+                                                                        "oklch(0.15 0.0212 243.4)",
+                                                                        "oklch(0.26 0.0368 243.4)",
+                                                                        "oklch(0.38 0.0495 243.4)",
+                                                                        "oklch(0.49 0.0495 243.4)",
+                                                                        "oklch(0.61 0.0495 243.4)",
+                                                                        "oklch(0.72 0.0495 243.4)",
+                                                                        "oklch(0.84 0.0317 243.4)",
+                                                                        "oklch(0.95 0.0099 243.4)"
+                                                                    ]
+                                                  },
+                                         "gold":  {
+                                                      "role":  "primary",
+                                                      "displayName":  "gold",
+                                                      "tonalRamp":  [
+                                                                        "oklch(0.15 0.0391 86.0)",
+                                                                        "oklch(0.26 0.0677 86.0)",
+                                                                        "oklch(0.38 0.0912 86.0)",
+                                                                        "oklch(0.49 0.0912 86.0)",
+                                                                        "oklch(0.61 0.0912 86.0)",
+                                                                        "oklch(0.72 0.0912 86.0)",
+                                                                        "oklch(0.84 0.0584 86.0)",
+                                                                        "oklch(0.95 0.0182 86.0)"
+                                                                    ]
+                                                  },
+                                         "ivory":  {
+                                                       "role":  "neutral",
+                                                       "displayName":  "ivory",
+                                                       "tonalRamp":  [
+                                                                         "oklch(0.15 0.0037 84.6)",
+                                                                         "oklch(0.26 0.0064 84.6)",
+                                                                         "oklch(0.38 0.0086 84.6)",
+                                                                         "oklch(0.49 0.0086 84.6)",
+                                                                         "oklch(0.61 0.0086 84.6)",
+                                                                         "oklch(0.72 0.0086 84.6)",
+                                                                         "oklch(0.84 0.0055 84.6)",
+                                                                         "oklch(0.95 0.0017 84.6)"
+                                                                     ]
+                                                   },
+                                         "login-paper":  {
+                                                             "role":  "neutral",
+                                                             "displayName":  "login paper",
+                                                             "tonalRamp":  [
+                                                                               "oklch(0.15 0.0018 91.4)",
+                                                                               "oklch(0.26 0.0031 91.4)",
+                                                                               "oklch(0.38 0.0041 91.4)",
+                                                                               "oklch(0.49 0.0041 91.4)",
+                                                                               "oklch(0.61 0.0041 91.4)",
+                                                                               "oklch(0.72 0.0041 91.4)",
+                                                                               "oklch(0.84 0.0026 91.4)",
+                                                                               "oklch(0.95 0.0008 91.4)"
+                                                                           ]
+                                                         },
+                                         "ink":  {
+                                                     "role":  "neutral",
+                                                     "displayName":  "ink",
+                                                     "tonalRamp":  [
+                                                                       "oklch(0.15 0.0180 243.2)",
+                                                                       "oklch(0.26 0.0311 243.2)",
+                                                                       "oklch(0.38 0.0419 243.2)",
+                                                                       "oklch(0.49 0.0419 243.2)",
+                                                                       "oklch(0.61 0.0419 243.2)",
+                                                                       "oklch(0.72 0.0419 243.2)",
+                                                                       "oklch(0.84 0.0268 243.2)",
+                                                                       "oklch(0.95 0.0084 243.2)"
+                                                                   ]
+                                                 },
+                                         "secondary":  {
+                                                           "role":  "neutral",
+                                                           "displayName":  "secondary",
+                                                           "tonalRamp":  [
+                                                                             "oklch(0.15 0.0089 245.6)",
+                                                                             "oklch(0.26 0.0155 245.6)",
+                                                                             "oklch(0.38 0.0208 245.6)",
+                                                                             "oklch(0.49 0.0208 245.6)",
+                                                                             "oklch(0.61 0.0208 245.6)",
+                                                                             "oklch(0.72 0.0208 245.6)",
+                                                                             "oklch(0.84 0.0133 245.6)",
+                                                                             "oklch(0.95 0.0042 245.6)"
+                                                                         ]
+                                                       },
+                                         "white":  {
+                                                       "role":  "neutral",
+                                                       "displayName":  "white",
+                                                       "tonalRamp":  [
+                                                                         "oklch(0.15 0.0000 0.0)",
+                                                                         "oklch(0.26 0.0000 0.0)",
+                                                                         "oklch(0.38 0.0000 0.0)",
+                                                                         "oklch(0.49 0.0000 0.0)",
+                                                                         "oklch(0.61 0.0000 0.0)",
+                                                                         "oklch(0.72 0.0000 0.0)",
+                                                                         "oklch(0.84 0.0000 0.0)",
+                                                                         "oklch(0.95 0.0000 0.0)"
+                                                                     ]
+                                                   },
+                                         "login-border":  {
+                                                              "role":  "neutral",
+                                                              "displayName":  "login border",
+                                                              "tonalRamp":  [
+                                                                                "oklch(0.15 0.0049 243.7)",
+                                                                                "oklch(0.26 0.0085 243.7)",
+                                                                                "oklch(0.38 0.0115 243.7)",
+                                                                                "oklch(0.49 0.0115 243.7)",
+                                                                                "oklch(0.61 0.0115 243.7)",
+                                                                                "oklch(0.72 0.0115 243.7)",
+                                                                                "oklch(0.84 0.0074 243.7)",
+                                                                                "oklch(0.95 0.0023 243.7)"
+                                                                            ]
+                                                          },
+                                         "focus":  {
+                                                       "role":  "neutral",
+                                                       "displayName":  "focus",
+                                                       "tonalRamp":  [
+                                                                         "oklch(0.15 0.0379 79.1)",
+                                                                         "oklch(0.26 0.0657 79.1)",
+                                                                         "oklch(0.38 0.0884 79.1)",
+                                                                         "oklch(0.49 0.0884 79.1)",
+                                                                         "oklch(0.61 0.0884 79.1)",
+                                                                         "oklch(0.72 0.0884 79.1)",
+                                                                         "oklch(0.84 0.0566 79.1)",
+                                                                         "oklch(0.95 0.0177 79.1)"
+                                                                     ]
+                                                   },
+                                         "page":  {
+                                                      "role":  "neutral",
+                                                      "displayName":  "page",
+                                                      "tonalRamp":  [
+                                                                        "oklch(0.15 0.0018 236.5)",
+                                                                        "oklch(0.26 0.0031 236.5)",
+                                                                        "oklch(0.38 0.0042 236.5)",
+                                                                        "oklch(0.49 0.0042 236.5)",
+                                                                        "oklch(0.61 0.0042 236.5)",
+                                                                        "oklch(0.72 0.0042 236.5)",
+                                                                        "oklch(0.84 0.0027 236.5)",
+                                                                        "oklch(0.95 0.0008 236.5)"
+                                                                    ]
+                                                  },
+                                         "border":  {
+                                                        "role":  "neutral",
+                                                        "displayName":  "border",
+                                                        "tonalRamp":  [
+                                                                          "oklch(0.15 0.0062 238.0)",
+                                                                          "oklch(0.26 0.0108 238.0)",
+                                                                          "oklch(0.38 0.0146 238.0)",
+                                                                          "oklch(0.49 0.0146 238.0)",
+                                                                          "oklch(0.61 0.0146 238.0)",
+                                                                          "oklch(0.72 0.0146 238.0)",
+                                                                          "oklch(0.84 0.0093 238.0)",
+                                                                          "oklch(0.95 0.0029 238.0)"
+                                                                      ]
+                                                    },
+                                         "soft":  {
+                                                      "role":  "neutral",
+                                                      "displayName":  "soft",
+                                                      "tonalRamp":  [
+                                                                        "oklch(0.15 0.0018 236.5)",
+                                                                        "oklch(0.26 0.0031 236.5)",
+                                                                        "oklch(0.38 0.0042 236.5)",
+                                                                        "oklch(0.49 0.0042 236.5)",
+                                                                        "oklch(0.61 0.0042 236.5)",
+                                                                        "oklch(0.72 0.0042 236.5)",
+                                                                        "oklch(0.84 0.0027 236.5)",
+                                                                        "oklch(0.95 0.0008 236.5)"
+                                                                    ]
+                                                  },
+                                         "nav-muted":  {
+                                                           "role":  "neutral",
+                                                           "displayName":  "nav muted",
+                                                           "tonalRamp":  [
+                                                                             "oklch(0.15 0.0096 239.5)",
+                                                                             "oklch(0.26 0.0166 239.5)",
+                                                                             "oklch(0.38 0.0224 239.5)",
+                                                                             "oklch(0.49 0.0224 239.5)",
+                                                                             "oklch(0.61 0.0224 239.5)",
+                                                                             "oklch(0.72 0.0224 239.5)",
+                                                                             "oklch(0.84 0.0143 239.5)",
+                                                                             "oklch(0.95 0.0045 239.5)"
+                                                                         ]
+                                                       },
+                                         "good":  {
+                                                      "role":  "secondary",
+                                                      "displayName":  "good",
+                                                      "tonalRamp":  [
+                                                                        "oklch(0.15 0.0341 160.0)",
+                                                                        "oklch(0.26 0.0591 160.0)",
+                                                                        "oklch(0.38 0.0796 160.0)",
+                                                                        "oklch(0.49 0.0796 160.0)",
+                                                                        "oklch(0.61 0.0796 160.0)",
+                                                                        "oklch(0.72 0.0796 160.0)",
+                                                                        "oklch(0.84 0.0510 160.0)",
+                                                                        "oklch(0.95 0.0159 160.0)"
+                                                                    ]
+                                                  },
+                                         "warning":  {
+                                                         "role":  "secondary",
+                                                         "displayName":  "warning",
+                                                         "tonalRamp":  [
+                                                                           "oklch(0.15 0.0391 77.7)",
+                                                                           "oklch(0.26 0.0678 77.7)",
+                                                                           "oklch(0.38 0.0913 77.7)",
+                                                                           "oklch(0.49 0.0913 77.7)",
+                                                                           "oklch(0.61 0.0913 77.7)",
+                                                                           "oklch(0.72 0.0913 77.7)",
+                                                                           "oklch(0.84 0.0585 77.7)",
+                                                                           "oklch(0.95 0.0183 77.7)"
+                                                                       ]
+                                                     },
+                                         "danger":  {
+                                                        "role":  "secondary",
+                                                        "displayName":  "danger",
+                                                        "tonalRamp":  [
+                                                                          "oklch(0.15 0.0675 24.7)",
+                                                                          "oklch(0.26 0.1169 24.7)",
+                                                                          "oklch(0.38 0.1574 24.7)",
+                                                                          "oklch(0.49 0.1574 24.7)",
+                                                                          "oklch(0.61 0.1574 24.7)",
+                                                                          "oklch(0.72 0.1574 24.7)",
+                                                                          "oklch(0.84 0.1007 24.7)",
+                                                                          "oklch(0.95 0.0315 24.7)"
+                                                                      ]
+                                                    },
+                                         "login-dark-page":  {
+                                                                 "role":  "neutral",
+                                                                 "displayName":  "login dark page",
+                                                                 "tonalRamp":  [
+                                                                                   "oklch(0.15 0.0119 244.8)",
+                                                                                   "oklch(0.26 0.0207 244.8)",
+                                                                                   "oklch(0.38 0.0278 244.8)",
+                                                                                   "oklch(0.49 0.0278 244.8)",
+                                                                                   "oklch(0.61 0.0278 244.8)",
+                                                                                   "oklch(0.72 0.0278 244.8)",
+                                                                                   "oklch(0.84 0.0178 244.8)",
+                                                                                   "oklch(0.95 0.0056 244.8)"
+                                                                               ]
+                                                             },
+                                         "dark-page":  {
+                                                           "role":  "neutral",
+                                                           "displayName":  "dark page",
+                                                           "tonalRamp":  [
+                                                                             "oklch(0.15 0.0132 243.6)",
+                                                                             "oklch(0.26 0.0228 243.6)",
+                                                                             "oklch(0.38 0.0308 243.6)",
+                                                                             "oklch(0.49 0.0308 243.6)",
+                                                                             "oklch(0.61 0.0308 243.6)",
+                                                                             "oklch(0.72 0.0308 243.6)",
+                                                                             "oklch(0.84 0.0197 243.6)",
+                                                                             "oklch(0.95 0.0062 243.6)"
+                                                                         ]
+                                                       },
+                                         "dark-field":  {
+                                                            "role":  "neutral",
+                                                            "displayName":  "dark field",
+                                                            "tonalRamp":  [
+                                                                              "oklch(0.15 0.0138 243.7)",
+                                                                              "oklch(0.26 0.0239 243.7)",
+                                                                              "oklch(0.38 0.0322 243.7)",
+                                                                              "oklch(0.49 0.0322 243.7)",
+                                                                              "oklch(0.61 0.0322 243.7)",
+                                                                              "oklch(0.72 0.0322 243.7)",
+                                                                              "oklch(0.84 0.0206 243.7)",
+                                                                              "oklch(0.95 0.0064 243.7)"
+                                                                          ]
+                                                        },
+                                         "dark-secondary":  {
+                                                                "role":  "neutral",
+                                                                "displayName":  "dark secondary",
+                                                                "tonalRamp":  [
+                                                                                  "oklch(0.15 0.0075 242.5)",
+                                                                                  "oklch(0.26 0.0131 242.5)",
+                                                                                  "oklch(0.38 0.0176 242.5)",
+                                                                                  "oklch(0.49 0.0176 242.5)",
+                                                                                  "oklch(0.61 0.0176 242.5)",
+                                                                                  "oklch(0.72 0.0176 242.5)",
+                                                                                  "oklch(0.84 0.0113 242.5)",
+                                                                                  "oklch(0.95 0.0035 242.5)"
+                                                                              ]
+                                                            },
+                                         "dark-border":  {
+                                                             "role":  "neutral",
+                                                             "displayName":  "dark border",
+                                                             "tonalRamp":  [
+                                                                               "oklch(0.15 0.0148 236.3)",
+                                                                               "oklch(0.26 0.0257 236.3)",
+                                                                               "oklch(0.38 0.0346 236.3)",
+                                                                               "oklch(0.49 0.0346 236.3)",
+                                                                               "oklch(0.61 0.0346 236.3)",
+                                                                               "oklch(0.72 0.0346 236.3)",
+                                                                               "oklch(0.84 0.0221 236.3)",
+                                                                               "oklch(0.95 0.0069 236.3)"
+                                                                           ]
+                                                         },
+                                         "dark-nav":  {
+                                                          "role":  "neutral",
+                                                          "displayName":  "dark nav",
+                                                          "tonalRamp":  [
+                                                                            "oklch(0.15 0.0136 242.2)",
+                                                                            "oklch(0.26 0.0236 242.2)",
+                                                                            "oklch(0.38 0.0318 242.2)",
+                                                                            "oklch(0.49 0.0318 242.2)",
+                                                                            "oklch(0.61 0.0318 242.2)",
+                                                                            "oklch(0.72 0.0318 242.2)",
+                                                                            "oklch(0.84 0.0204 242.2)",
+                                                                            "oklch(0.95 0.0064 242.2)"
+                                                                        ]
+                                                      },
+                                         "dark-soft":  {
+                                                           "role":  "neutral",
+                                                           "displayName":  "dark soft",
+                                                           "tonalRamp":  [
+                                                                             "oklch(0.15 0.0154 242.8)",
+                                                                             "oklch(0.26 0.0266 242.8)",
+                                                                             "oklch(0.38 0.0358 242.8)",
+                                                                             "oklch(0.49 0.0358 242.8)",
+                                                                             "oklch(0.61 0.0358 242.8)",
+                                                                             "oklch(0.72 0.0358 242.8)",
+                                                                             "oklch(0.84 0.0229 242.8)",
+                                                                             "oklch(0.95 0.0072 242.8)"
+                                                                         ]
+                                                       },
+                                         "dark-good":  {
+                                                           "role":  "secondary",
+                                                           "displayName":  "dark good",
+                                                           "tonalRamp":  [
+                                                                             "oklch(0.15 0.0345 158.2)",
+                                                                             "oklch(0.26 0.0597 158.2)",
+                                                                             "oklch(0.38 0.0804 158.2)",
+                                                                             "oklch(0.49 0.0804 158.2)",
+                                                                             "oklch(0.61 0.0804 158.2)",
+                                                                             "oklch(0.72 0.0804 158.2)",
+                                                                             "oklch(0.84 0.0515 158.2)",
+                                                                             "oklch(0.95 0.0161 158.2)"
+                                                                         ]
+                                                       },
+                                         "dark-warning":  {
+                                                              "role":  "secondary",
+                                                              "displayName":  "dark warning",
+                                                              "tonalRamp":  [
+                                                                                "oklch(0.15 0.0411 87.4)",
+                                                                                "oklch(0.26 0.0713 87.4)",
+                                                                                "oklch(0.38 0.0960 87.4)",
+                                                                                "oklch(0.49 0.0960 87.4)",
+                                                                                "oklch(0.61 0.0960 87.4)",
+                                                                                "oklch(0.72 0.0960 87.4)",
+                                                                                "oklch(0.84 0.0614 87.4)",
+                                                                                "oklch(0.95 0.0192 87.4)"
+                                                                            ]
+                                                          },
+                                         "dark-danger":  {
+                                                             "role":  "secondary",
+                                                             "displayName":  "dark danger",
+                                                             "tonalRamp":  [
+                                                                               "oklch(0.15 0.0431 19.5)",
+                                                                               "oklch(0.26 0.0747 19.5)",
+                                                                               "oklch(0.38 0.1006 19.5)",
+                                                                               "oklch(0.49 0.1006 19.5)",
+                                                                               "oklch(0.61 0.1006 19.5)",
+                                                                               "oklch(0.72 0.1006 19.5)",
+                                                                               "oklch(0.84 0.0644 19.5)",
+                                                                               "oklch(0.95 0.0201 19.5)"
+                                                                           ]
+                                                         },
+                                         "brand-primary":  {
+                                                               "role":  "primary",
+                                                               "displayName":  "brand primary",
+                                                               "tonalRamp":  [
+                                                                                 "oklch(0.15 0.0300 176.4)",
+                                                                                 "oklch(0.26 0.0520 176.4)",
+                                                                                 "oklch(0.38 0.0700 176.4)",
+                                                                                 "oklch(0.49 0.0700 176.4)",
+                                                                                 "oklch(0.61 0.0700 176.4)",
+                                                                                 "oklch(0.72 0.0700 176.4)",
+                                                                                 "oklch(0.84 0.0448 176.4)",
+                                                                                 "oklch(0.95 0.0140 176.4)"
+                                                                             ]
+                                                           },
+                                         "brand-page":  {
+                                                            "role":  "neutral",
+                                                            "displayName":  "brand page",
+                                                            "tonalRamp":  [
+                                                                              "oklch(0.15 0.0032 164.9)",
+                                                                              "oklch(0.26 0.0056 164.9)",
+                                                                              "oklch(0.38 0.0075 164.9)",
+                                                                              "oklch(0.49 0.0075 164.9)",
+                                                                              "oklch(0.61 0.0075 164.9)",
+                                                                              "oklch(0.72 0.0075 164.9)",
+                                                                              "oklch(0.84 0.0048 164.9)",
+                                                                              "oklch(0.95 0.0015 164.9)"
+                                                                          ]
+                                                        },
+                                         "brand-ink":  {
+                                                           "role":  "neutral",
+                                                           "displayName":  "brand ink",
+                                                           "tonalRamp":  [
+                                                                             "oklch(0.15 0.0171 265.8)",
+                                                                             "oklch(0.26 0.0296 265.8)",
+                                                                             "oklch(0.38 0.0398 265.8)",
+                                                                             "oklch(0.49 0.0398 265.8)",
+                                                                             "oklch(0.61 0.0398 265.8)",
+                                                                             "oklch(0.72 0.0398 265.8)",
+                                                                             "oklch(0.84 0.0255 265.8)",
+                                                                             "oklch(0.95 0.0080 265.8)"
+                                                                         ]
+                                                       },
+                                         "brand-secondary":  {
+                                                                 "role":  "neutral",
+                                                                 "displayName":  "brand secondary",
+                                                                 "tonalRamp":  [
+                                                                                   "oklch(0.15 0.0160 257.3)",
+                                                                                   "oklch(0.26 0.0278 257.3)",
+                                                                                   "oklch(0.38 0.0374 257.3)",
+                                                                                   "oklch(0.49 0.0374 257.3)",
+                                                                                   "oklch(0.61 0.0374 257.3)",
+                                                                                   "oklch(0.72 0.0374 257.3)",
+                                                                                   "oklch(0.84 0.0240 257.3)",
+                                                                                   "oklch(0.95 0.0075 257.3)"
+                                                                               ]
+                                                             },
+                                         "brand-nav":  {
+                                                           "role":  "neutral",
+                                                           "displayName":  "brand nav",
+                                                           "tonalRamp":  [
+                                                                             "oklch(0.15 0.0148 186.9)",
+                                                                             "oklch(0.26 0.0257 186.9)",
+                                                                             "oklch(0.38 0.0345 186.9)",
+                                                                             "oklch(0.49 0.0345 186.9)",
+                                                                             "oklch(0.61 0.0345 186.9)",
+                                                                             "oklch(0.72 0.0345 186.9)",
+                                                                             "oklch(0.84 0.0221 186.9)",
+                                                                             "oklch(0.95 0.0069 186.9)"
+                                                                         ]
+                                                       },
+                                         "brand-selected":  {
+                                                                "role":  "neutral",
+                                                                "displayName":  "brand selected",
+                                                                "tonalRamp":  [
+                                                                                  "oklch(0.15 0.0199 183.6)",
+                                                                                  "oklch(0.26 0.0346 183.6)",
+                                                                                  "oklch(0.38 0.0465 183.6)",
+                                                                                  "oklch(0.49 0.0465 183.6)",
+                                                                                  "oklch(0.61 0.0465 183.6)",
+                                                                                  "oklch(0.72 0.0465 183.6)",
+                                                                                  "oklch(0.84 0.0298 183.6)",
+                                                                                  "oklch(0.95 0.0093 183.6)"
+                                                                              ]
+                                                            },
+                                         "brand-soft":  {
+                                                            "role":  "neutral",
+                                                            "displayName":  "brand soft",
+                                                            "tonalRamp":  [
+                                                                              "oklch(0.15 0.0049 176.3)",
+                                                                              "oklch(0.26 0.0084 176.3)",
+                                                                              "oklch(0.38 0.0113 176.3)",
+                                                                              "oklch(0.49 0.0113 176.3)",
+                                                                              "oklch(0.61 0.0113 176.3)",
+                                                                              "oklch(0.72 0.0113 176.3)",
+                                                                              "oklch(0.84 0.0072 176.3)",
+                                                                              "oklch(0.95 0.0023 176.3)"
+                                                                          ]
+                                                        }
+                                     },
+                       "typographyMeta":  {
+                                              "panel-title":  {
+                                                                  "displayName":  "Título de página",
+                                                                  "purpose":  "Encabezado operativo de la página; Segoe UI."
+                                                              },
+                                              "dialog-title":  {
+                                                                   "displayName":  "Título de diálogo",
+                                                                   "purpose":  "Ficha, formulario o revisión modal."
+                                                               },
+                                              "section-title":  {
+                                                                    "displayName":  "Título de sección",
+                                                                    "purpose":  "Agrupaciones de contenido operativo."
+                                                                },
+                                              "subheading":  {
+                                                                 "displayName":  "Subtítulo",
+                                                                 "purpose":  "Bloques internos y calendario."
+                                                             },
+                                              "metric":  {
+                                                             "displayName":  "Métrica",
+                                                             "purpose":  "Franja de datos de muestra autorizados."
+                                                         },
+                                              "body":  {
+                                                           "displayName":  "Cuerpo",
+                                                           "purpose":  "Datos y controles operativos."
+                                                       },
+                                              "caption":  {
+                                                              "displayName":  "Texto auxiliar",
+                                                              "purpose":  "Ayudas, navegación y estados."
+                                                          },
+                                              "metadata":  {
+                                                               "displayName":  "Metadatos",
+                                                               "purpose":  "Grupos, pie y calendario compacto."
+                                                           },
+                                              "brand":  {
+                                                            "displayName":  "Marca",
+                                                            "purpose":  "Nombre del hotel en el rail; no títulos del panel."
+                                                        }
+                                          },
+                       "shadows":  [
+
+                                   ],
+                       "motion":  [
+                                      {
+                                          "name":  "login-photo-zoom",
+                                          "value":  "24s, reversible, pausable",
+                                          "purpose":  "Solo fotografía del login; respeta preferencia de animación del sistema. El panel no introduce animaciones."
+                                      }
+                                  ],
+                       "breakpoints":  [
+                                           {
+                                               "name":  "window-minimum",
+                                               "value":  "920 × 660 DIPs",
+                                               "purpose":  "Mínimo nativo WPF; conserva rail y habilita desplazamiento."
+                                           }
+                                       ]
+                   },
+    "components":  [
+                       {
+                           "name":  "Acción primaria",
+                           "kind":  "button",
+                           "refersTo":  "button-primary",
+                           "description":  "Muestra documental de la acción primaria WPF en Claro; no código de producción.",
+                           "html":  "\u003cbutton class=\"ds-primary\"\u003eRevisar borrador\u003c/button\u003e",
+                           "css":  ".ds-primary { background:#17384F; color:#FFFFFF; border:1px solid #17384F; border-radius:8px; padding:9px 14px; min-height:38px; font:600 13px \"Segoe UI\",sans-serif; cursor:pointer; } .ds-primary:hover { border-color:#8A682C; } .ds-primary:focus-visible { outline:2px solid #8A682C; outline-offset:-2px; } .ds-primary:active { opacity:.72; } .ds-primary:disabled { opacity:.45; }"
+                       },
+                       {
+                           "name":  "Acción secundaria",
+                           "kind":  "button",
+                           "refersTo":  "button-secondary",
+                           "description":  "Acción de superficie clara, borde y foco visibles.",
+                           "html":  "\u003cbutton class=\"ds-secondary\"\u003eVolver a editar\u003c/button\u003e",
+                           "css":  ".ds-secondary { background:#FFFFFF; color:#192F40; border:1px solid #CBD5DC; border-radius:8px; padding:9px 14px; min-height:38px; font:400 13px \"Segoe UI\",sans-serif; cursor:pointer; } .ds-secondary:hover { border-color:#8A682C; } .ds-secondary:focus-visible { outline:2px solid #8A682C; outline-offset:-2px; } .ds-secondary:active { opacity:.72; } .ds-secondary:disabled { opacity:.45; }"
+                       },
+                       {
+                           "name":  "Campo de texto",
+                           "kind":  "input",
+                           "refersTo":  "input",
+                           "description":  "TextBox de altura 40; conserva el radio 12 de la plantilla compartida del login.",
+                           "html":  "\u003clabel class=\"ds-field-label\" for=\"ds-guest-name\"\u003eHuésped *\u003c/label\u003e\u003cinput class=\"ds-field\" id=\"ds-guest-name\" placeholder=\"Nombre del huésped\" /\u003e",
+                           "css":  ".ds-field-label { display:block; color:#192F40; padding-bottom:6px; font:400 13px \"Segoe UI\",sans-serif; } .ds-field { background:#FFFFFF; color:#192F40; border:1px solid #CBD5DC; border-radius:12px; height:40px; padding:0 16px; font:400 13px \"Segoe UI\",sans-serif; } .ds-field::placeholder { color:#5D6872; } .ds-field:hover { border-color:#768795; } .ds-field:focus-visible { outline:2px solid #8A682C; outline-offset:-2px; } .ds-field:disabled { opacity:.5; }"
+                       },
+                       {
+                           "name":  "Navegación activa",
+                           "kind":  "nav",
+                           "refersTo":  "navigation-selected",
+                           "description":  "Entrada seleccionada sobre el rail petróleo de 208 DIPs.",
+                           "html":  "\u003cnav class=\"ds-rail\" aria-label=\"Recepción\"\u003e\u003cdiv class=\"ds-group\"\u003eRecepción\u003c/div\u003e\u003cbutton class=\"ds-nav\" aria-current=\"page\"\u003eReservas\u003c/button\u003e\u003c/nav\u003e",
+                           "css":  ".ds-rail { background:#17384F; width:208px; padding:20px 12px; font-family:\"Segoe UI\",sans-serif; } .ds-group { color:#C1D0DB; font-size:11px; font-weight:600; margin:0 12px 6px; } .ds-nav { width:100%; min-height:36px; text-align:left; color:#FFFFFF; background:#31566D; border:1px solid transparent; border-radius:8px; padding:6px 12px; font:600 12px \"Segoe UI\",sans-serif; cursor:pointer; } .ds-nav:hover { border-color:#8A682C; } .ds-nav:focus-visible { outline:2px solid #8A682C; outline-offset:-2px; } .ds-nav:active { opacity:.72; }"
+                       },
+                       {
+                           "name":  "Panel de trabajo",
+                           "kind":  "card",
+                           "refersTo":  "panel",
+                           "description":  "Contenedor plano, separación por borde, sin sombra.",
+                           "html":  "\u003csection class=\"ds-panel\"\u003e\u003ch3 class=\"ds-panel-title\"\u003ePendientes de tu puesto\u003c/h3\u003e\u003cp class=\"ds-panel-copy\"\u003eRevisa las tareas y acciones disponibles para tu perfil.\u003c/p\u003e\u003c/section\u003e",
+                           "css":  ".ds-panel { background:#FFFFFF; color:#192F40; border:1px solid #CBD5DC; border-radius:12px; padding:20px; font-family:\"Segoe UI\",sans-serif; } .ds-panel-title { font-size:19px; font-weight:600; margin:0 0 6px; } .ds-panel-copy { color:#5D6872; font-size:12px; margin:0; }"
+                       },
+                       {
+                           "name":  "Estados tipográficos",
+                           "kind":  "custom",
+                           "description":  "El estado se expresa por nombre y color; no se representa como chip relleno.",
+                           "html":  "\u003cdiv class=\"ds-states\"\u003e\u003cspan class=\"ds-good\"\u003eDisponible\u003c/span\u003e\u003cspan class=\"ds-warning\"\u003eEn limpieza\u003c/span\u003e\u003cspan class=\"ds-danger\"\u003eBloqueada\u003c/span\u003e\u003c/div\u003e",
+                           "css":  ".ds-states { display:flex; flex-wrap:wrap; gap:16px; font:600 12px \"Segoe UI\",sans-serif; } .ds-good { color:#276447; } .ds-warning { color:#805C1C; } .ds-danger { color:#AE3535; }"
+                       },
+                       {
+                           "name":  "Estancia continua",
+                           "kind":  "custom",
+                           "refersTo":  "calendar-stay",
+                           "description":  "Muestra compacta de una barra por estancia; la activación real abre ficha contextual antes de edición.",
+                           "html":  "\u003cdiv class=\"ds-calendar\"\u003e\u003cdiv class=\"ds-calendar-head\"\u003eHabitación 204 · Deluxe\u003c/div\u003e\u003cbutton class=\"ds-stay\" aria-label=\"María Fernández, RES-1048, 31/10 a 03/11\"\u003eMaría Fernández · RES-1048\u003c/button\u003e\u003c/div\u003e",
+                           "css":  ".ds-calendar { background:#FFFFFF; color:#192F40; padding:16px; font-family:\"Segoe UI\",sans-serif; } .ds-calendar-head { font-size:11px; font-weight:600; margin-bottom:8px; } .ds-stay { display:block; width:300px; min-height:38px; text-align:center; background:#EDF0F2; color:#192F40; border:1px solid #CBD5DC; border-radius:8px; padding:6px; font:400 11px \"Segoe UI\",sans-serif; cursor:pointer; } .ds-stay:hover { border-color:#8A682C; } .ds-stay:focus-visible { outline:2px solid #8A682C; outline-offset:-2px; } .ds-stay:active { opacity:.72; }"
+                       }
+                   ],
+    "narrative":  {
+                      "northStar":  "Mesa de operaciones del hotel",
+                      "overview":  "El panel centra el trabajo en las tareas del puesto: identificar el perfil, leer pendientes, entrar en un área, elegir un flujo y revisar un borrador. La identidad se expresa mediante el emblema existente, la navegación petróleo y una jerarquía tipográfica clara. Los estados se leen por nombre y color; los datos de muestra y las revisiones conservan su carácter ilustrativo.\n\nEl proyecto es una aplicación WPF con .NET Framework 4.7.2. Este documento fusiona el panel final con las decisiones del acceso existente. Los tokens son normativos para sus roles: las unidades px representan un DIP WPF a 96 DPI para intercambio documental. Las muestras HTML del sidecar sirven solo al visor de documentación; no definen una implementación web.",
+                      "keyCharacteristics":  [
+                                                 "Navegación lateral estable, agrupada y limitada a las áreas del perfil.",
+                                                 "Superficies sobrias, líneas discretas y controles de Windows accesibles con teclado.",
+                                                 "Segoe UI en el trabajo operativo; Georgia conserva la voz de hospitalidad del acceso y la marca.",
+                                                 "Formularios con etiquetas permanentes, errores locales y revisión de borrador.",
+                                                 "Calendario de habitaciones con barras continuas por estancia."
+                                             ],
+                      "rules":  [
+                                    {
+                                        "name":  "The Local Theme Rule",
+                                        "body":  "Aplicar los cambios del panel mediante sus recursos `Ui.*`; preservar la paleta y las plantillas compartidas que sostienen el login.",
+                                        "section":  "colors"
+                                    },
+                                    {
+                                        "name":  "The Work Type Rule",
+                                        "body":  "Usar Segoe UI para los títulos del panel; reservar Georgia para la marca y el login existente.",
+                                        "section":  "typography"
+                                    }
+                                ],
+                      "dos":  [
+                                  "**Do** conservar el login, su composición 52/48, emblema, imagen y estilos originales.",
+                                  "**Do** usar recursos locales `Ui.*` y comprobar Claro, Oscuro y Marca al ampliar el panel.",
+                                  "**Do** mantener el rail de 208 DIPs y las 22 áreas del catálogo con visibilidad por perfil.",
+                                  "**Do** usar Segoe UI en títulos y datos operativos, con estados expresados mediante nombre y color.",
+                                  "**Do** abrir contexto antes de editar desde el calendario y conservar la continuidad de las estancias.",
+                                  "**Do** describir acciones como preparación o revisión de borradores y verificar el mínimo 920 × 660."
+                              ],
+                      "donts":  [
+                                    "**Don\u0027t** convertir este proyecto WPF en una web ni agregar frameworks web.",
+                                    "**Don\u0027t** restaurar doce secciones, rail de 190 DIPs o Georgia en los títulos operativos.",
+                                    "**Don\u0027t** propagar al login cambios de paleta, radios o plantillas propios del panel.",
+                                    "**Don\u0027t** introducir sombras decorativas o animaciones en el panel que no existen en la implementación.",
+                                    "**Don\u0027t** anunciar reservas, cobros, permisos o registros reales como completados desde este frontend.",
+                                    "**Don\u0027t** tratar los perfiles derivados o los colores de estado como autorización efectiva de backend."
+                                ]
+                  }
+}

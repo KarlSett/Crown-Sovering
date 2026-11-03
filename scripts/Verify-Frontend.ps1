@@ -13,7 +13,7 @@ try {
     $framework = Join-Path $env:WINDIR 'Microsoft.NET/Framework64/v4.0.30319'
     $wpf = Join-Path $framework 'WPF'
     $runner = Join-Path $preview 'FrontendSmoke.exe'
-    & (Join-Path $framework 'csc.exe') /nologo /target:exe /platform:anycpu "/out:$runner" "/reference:$assembly" "/reference:$wpf/PresentationCore.dll" "/reference:$wpf/PresentationFramework.dll" "/reference:$wpf/WindowsBase.dll" /reference:System.Xaml.dll (Join-Path $PSScriptRoot 'FrontendSmoke.cs')
+    & (Join-Path $framework 'csc.exe') /nologo /target:exe /platform:anycpu "/out:$runner" "/reference:$assembly" "/reference:$wpf/PresentationCore.dll" "/reference:$wpf/PresentationFramework.dll" "/reference:$wpf/WindowsBase.dll" /reference:System.Xaml.dll /reference:System.IO.Compression.dll /reference:System.IO.Compression.FileSystem.dll (Join-Path $PSScriptRoot 'FrontendSmoke.cs')
     if ($LASTEXITCODE -ne 0) { throw 'Smoke runner compilation failed.' }
     # Resolve the application assembly without copying or changing the installed application.
     $env:CROWN_FRONTEND_ASSEMBLY = $assembly

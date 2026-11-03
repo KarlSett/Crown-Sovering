@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
@@ -80,6 +82,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Frontend\Views\ModuleCatalog.cs" />
+    <Compile Include="Frontend\Security\FrontendAccessContext.cs" />
+    <Compile Include="Frontend\Views\OperationsCatalog.cs" />
+    <Compile Include="Frontend\Views\DashboardWorkspaces.cs" />
+    <Compile Include="Frontend\Views\ReservationImportPreview.cs" />
     <Compile Include="Frontend\Views\DashboardView.xaml.cs">
       <DependentUpon>DashboardView.xaml</DependentUpon>
       <SubType>Code</SubType>

@@ -21,6 +21,18 @@ namespace Crown__.Frontend.Views
 
     internal static class ModuleCatalog
     {
+        static ModuleCatalog()
+        {
+            All.AddRange(OperationsCatalog.Modules);
+            var reservation = All.Find(m => m.Key == "Reservas");
+            reservation.Fields = new[] { new FieldDefinition("Nombre del huésped"), new FieldDefinition("Correo de contacto", "email", "nombre@correo.com"),
+                new FieldDefinition("Llegada", "date", "dd/MM/aaaa"), new FieldDefinition("Salida", "date", "dd/MM/aaaa"),
+                new FieldDefinition("Tipo de habitación", "choice", "", "Individual", "Doble", "Matrimonial", "Triple", "Suite", "Familiar"),
+                new FieldDefinition("Número de huéspedes", "integer", "1 a 6"), new FieldDefinition("Tarifa por noche (USD)", "amount", "0.00"),
+                new FieldDefinition("Canal de origen", "choice", "", "Teléfono", "WhatsApp", "Correo", "Mostrador", "Agencia", "Empresa"),
+                new FieldDefinition("Habitación preferida", "optional", "Ej. 204"),
+                new FieldDefinition("Observaciones", "optional") };
+        }
         internal static readonly List<ModuleDefinition> All = new List<ModuleDefinition>
         {
             new ModuleDefinition { Key="Inicio", Title="Buenos días, Recepción", Description="Sábado, 31 de octubre de 2026 · Resumen del turno de muestra",

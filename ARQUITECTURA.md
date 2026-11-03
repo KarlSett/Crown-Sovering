@@ -9,7 +9,12 @@ Aplicación WPF con .NET Framework 4.7.2, organizada para dos integrantes de fro
 - Frontend/Views/LoginView.xaml.cs: presentación del fondo, tema, contraseña revelada y navegación de demostración sin autenticación.
 - Frontend/Views/DashboardView.xaml: estructura de navegación lateral, recursos semánticos, controles y panel de edición/revisión.
 - Frontend/Views/DashboardView.xaml.cs: composición de módulos, filtros locales, detalles, validación visual y previsualización de borradores.
-- Frontend/Views/ModuleCatalog.cs: definiciones de doce módulos, campos de formulario y fixtures ilustrativos. Separado de las entidades de negocio.
+- Frontend/Views/ModuleCatalog.cs: metadatos originales y registro de las 22 áreas de presentación. Separado de las entidades de negocio.
+- Frontend/Views/OperationsCatalog.cs: áreas nuevas, flujos, campos y referencias a los RF del Word.
+- Frontend/Views/DashboardWorkspaces.cs: resumen por perfil, selector de flujos, calendario, ayuda y revisión guiada.
+- Frontend/Views/ReservationImportPreview.cs: lectura/validación local de CSV y XLSX, sin importar ni persistir reservas.
+- Frontend/Security/FrontendAccessContext.cs: permisos explícitos e inmutables de presentación y perfiles sintéticos; no autentica usuarios ni protege servicios.
+- Frontend/README.md: matriz interpretada, contrato de sesión y trabajo pendiente de backend.
 - Frontend/Themes/HotelPalette.xaml: tokens de color y tipografía.
 - Frontend/Styles/LiquidGlassStyles.xaml: emblema, campos, botones y estados visuales reutilizables.
 - Frontend/Assets/hospitality-lobby.png: fondo local generado con imagegen; su prompt está en hospitality-lobby.prompt.txt.

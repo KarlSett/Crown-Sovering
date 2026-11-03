@@ -4,7 +4,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d" d:DesignWidth="1172" d:DesignHeight="702"
-      Title="Crown &amp; Sovereign — Recepción" FontFamily="{StaticResource HotelSansFont}"
+      Title="Crown &amp; Sovereign — Operaciones" FontFamily="{StaticResource HotelSansFont}"
       Background="{DynamicResource Ui.Page}" Foreground="{DynamicResource Ui.Ink}"
       UseLayoutRounding="True" SnapsToDevicePixels="True" PreviewKeyDown="OnPageKeyDown">
     <Page.Resources>
@@ -20,6 +20,10 @@
         <SolidColorBrush x:Key="Ui.Good" Color="#276447" />
         <SolidColorBrush x:Key="Ui.Warning" Color="#805C1C" />
         <SolidColorBrush x:Key="Ui.Danger" Color="#AE3535" />
+        <SolidColorBrush x:Key="Ui.Nav" Color="#17384F" />
+        <SolidColorBrush x:Key="Ui.NavSelected" Color="#31566D" />
+        <SolidColorBrush x:Key="Ui.NavInk" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="Ui.NavMuted" Color="#C1D0DB" />
         <Style TargetType="TextBlock"><Setter Property="Foreground" Value="{DynamicResource Ui.Ink}" /><Setter Property="FontSize" Value="13" /></Style>
         <Style x:Key="Muted" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="Foreground" Value="{DynamicResource Ui.Secondary}" /><Setter Property="TextWrapping" Value="Wrap" />
@@ -52,6 +56,7 @@
             <Setter Property="BorderBrush" Value="{DynamicResource Ui.Primary}" /><Setter Property="FontWeight" Value="SemiBold" />
         </Style>
         <Style x:Key="Nav" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Foreground" Value="{DynamicResource Ui.NavInk}" />
             <Setter Property="Background" Value="Transparent" /><Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="HorizontalContentAlignment" Value="Left" /><Setter Property="Margin" Value="0,1" /><Setter Property="Padding" Value="12,6" /><Setter Property="MinHeight" Value="36" />
         </Style>
@@ -126,44 +131,47 @@
     </Page.Resources>
     <Grid>
         <Grid x:Name="Workspace">
-            <Grid.ColumnDefinitions><ColumnDefinition Width="190" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-            <Border Background="{DynamicResource Ui.Field}" BorderBrush="{DynamicResource Ui.Border}" BorderThickness="0,0,1,0" Padding="12,16,12,12">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="208" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+            <Border Background="{DynamicResource Ui.Nav}" Padding="12,20,12,12">
                 <DockPanel LastChildFill="True">
                     <Grid DockPanel.Dock="Top" Margin="4,0,0,20">
                         <Grid.ColumnDefinitions><ColumnDefinition Width="43" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
                         <ContentControl Template="{StaticResource CrownSovereignLogoTemplate}" Width="35" Height="35" VerticalAlignment="Top" Margin="0,3,0,0" />
-                        <StackPanel Grid.Column="1"><TextBlock Text="Crown &amp;&#10;Sovereign" FontFamily="{StaticResource HotelSerifFont}" FontSize="15" FontWeight="Bold" /><TextBlock Text="Recepción" Style="{StaticResource Muted}" FontSize="12" Margin="0,5,0,0" /></StackPanel>
+                        <StackPanel Grid.Column="1"><TextBlock Text="Crown &amp;&#10;Sovereign" Foreground="{DynamicResource Ui.NavInk}" FontFamily="{StaticResource HotelSerifFont}" FontSize="16" FontWeight="Bold" /><TextBlock Text="Gestión hotelera" Foreground="{DynamicResource Ui.NavMuted}" FontSize="12" Margin="0,6,0,0" /></StackPanel>
                     </Grid>
                     <StackPanel DockPanel.Dock="Bottom" Margin="0,12,0,0">
-                        <Button x:Name="ThemeButton" Click="OnThemeCycle" Content="Tema: Claro" AutomationProperties.Name="Cambiar tema" />
+                        <Border BorderBrush="{DynamicResource Ui.NavSelected}" BorderThickness="0,1,0,0" Padding="8,12,8,10"><StackPanel>
+                            <TextBlock x:Name="RoleName" Text="Personal" Foreground="{DynamicResource Ui.NavInk}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                            <TextBlock Text="Puesto de demostración" Foreground="{DynamicResource Ui.NavMuted}" FontSize="11" Margin="0,5,0,0" />
+                        </StackPanel></Border>
+                        <Button x:Name="ThemeButton" Click="OnThemeCycle" Content="Tema: Claro" Style="{StaticResource Nav}" AutomationProperties.Name="Cambiar tema" />
                         <Button Content="Volver al acceso" Click="OnBackClick" Style="{StaticResource Nav}" Margin="0,8,0,0" />
                     </StackPanel>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"><StackPanel x:Name="NavigationItems" /></ScrollViewer>
                 </DockPanel>
             </Border>
-            <Grid Grid.Column="1" Margin="28,18,24,12">
+            <Grid Grid.Column="1" Margin="26,24,22,12">
                 <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
                 <Grid Margin="0,0,0,20">
                     <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                     <StackPanel>
-                        <TextBlock x:Name="PageTitle" FontSize="28" FontFamily="{StaticResource HotelSerifFont}" TextWrapping="Wrap" />
+                        <TextBlock x:Name="PageTitle" FontSize="27" FontWeight="SemiBold" TextWrapping="Wrap" />
                         <TextBlock x:Name="PageDescription" Style="{StaticResource Muted}" Margin="0,7,18,0" />
                     </StackPanel>
                     <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <TextBlock Text="A. Pérez" FontWeight="SemiBold" HorizontalAlignment="Right" />
-                        <TextBlock Text="Recepción · Turno 1" Style="{StaticResource Muted}" FontSize="12" Margin="0,4,0,0" />
+                        <Button Content="Ayuda (F1)" Click="OnHelpClick" Margin="12,0,0,0" />
                     </StackPanel>
                 </Grid>
                 <ScrollViewer x:Name="ContentScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"><StackPanel x:Name="ModuleContent" Margin="0,0,8,16" /></ScrollViewer>
-                <Border Grid.Row="2" BorderBrush="{DynamicResource Ui.Border}" BorderThickness="0,1,0,0" Padding="0,10,0,0"><TextBlock Text="Vista de muestra · Los cambios no se guardan ni afectan operaciones del hotel." Style="{StaticResource Muted}" FontSize="11" /></Border>
+                <Border Grid.Row="2" BorderBrush="{DynamicResource Ui.Border}" BorderThickness="0,1,0,0" Padding="0,10,0,0"><TextBlock x:Name="SessionNotice" Text="Demostración con datos de muestra. Los borradores no se guardan." Style="{StaticResource Muted}" FontSize="11" /></Border>
             </Grid>
         </Grid>
         <Grid x:Name="Overlay" Visibility="Collapsed" Background="#80000000" KeyboardNavigation.TabNavigation="Cycle" KeyboardNavigation.ControlTabNavigation="Cycle">
-            <Border Style="{StaticResource Panel}" Width="520" MaxHeight="560" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Border Style="{StaticResource Panel}" Width="540" MaxHeight="560" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Grid>
                     <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
                     <Grid Margin="0,0,0,16"><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
-                        <StackPanel><TextBlock x:Name="DialogTitle" FontSize="22" FontFamily="{StaticResource HotelSerifFont}" TextWrapping="Wrap" /><TextBlock x:Name="DialogDescription" Style="{StaticResource Muted}" Margin="0,6,12,0" /></StackPanel>
+                        <StackPanel><TextBlock x:Name="DialogTitle" FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap" /><TextBlock x:Name="DialogDescription" Style="{StaticResource Muted}" Margin="0,6,12,0" /></StackPanel>
                         <Button Grid.Column="1" Click="OnCloseDialog" ToolTip="Cerrar (Esc)" AutomationProperties.Name="Cerrar panel" Width="38" Padding="8" VerticalAlignment="Top"><Path Data="M0,0 L10,10 M10,0 L0,10" Width="10" Height="10" StrokeThickness="1.5" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" /></Button>
                     </Grid>
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"><StackPanel x:Name="DialogBody" Margin="0,0,8,0" /></ScrollViewer>

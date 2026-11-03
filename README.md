@@ -2,7 +2,9 @@
 
 Aplicación de escritorio para gestión hotelera, desarrollada en **WPF con C# y .NET Framework 4.7.2**.
 
-Incluye el **frontend del login y doce módulos del panel hotelero**. Ingresar y el acceso simulado permiten explorar las pantallas con datos de muestra, sin autenticar usuarios. Backend conectará los servicios y las operaciones reales.
+Incluye el **frontend del login y 22 áreas del panel hotelero con permisos de presentación por rol**. El login se conserva; Ingresar y el acceso simulado abren una demostración limitada de Recepción sin autenticar usuarios. Backend conectará sesión, permisos efectivos, servicios y operaciones reales.
+
+**Entrega por roles:** comenzar por [Frontend/README.md](Frontend/README.md), con la matriz interpretada del Word, el contrato propuesto y el trabajo pendiente de backend. El [mapa de requisitos](docs/REQUISITOS_FRONTEND.md) relaciona RF-01–118 con las pantallas.
 
 ![Login en modo claro](docs/images/login-light.png)
 
@@ -45,7 +47,7 @@ msbuild '.\Crown &.sln' /t:Build /p:Configuration=Debug
 - Apariencia clara, oscura y Marca, navegación por teclado y estados visuales. Iconos, campos, desplegables y barras de desplazamiento adaptados al tema.
 - Fondo hotelero local con movimiento suave y pausa.
 - Soporte de presentación para un MP4 local opcional; no se incluye vídeo.
-- Panel con Inicio, Reservas, Habitaciones, Check-in / check-out, Huéspedes, Convenios, F & B, Gym / Spa, Lavandería, Finanzas, Reportes y Ajustes.
+- Panel con 22 áreas: recepción, servicios, gestión y administración. Menú, flujos y acciones limitados por permisos; administrador con acceso completo de demostración.
 - Búsqueda sin distinguir tildes, filtros por estado y piso, fichas de detalle, agenda de servicios y gráfica de ocupación.
 - Formularios con validación de campos obligatorios, correo, teléfono, fechas y sus intervalos, horas, cantidades e importes. El resumen conserva los valores al volver a editar.
 - Sin autenticación, persistencia, consultas ni conexión a base de datos. Los formularios previsualizan borradores; no ejecutan movimientos reales ni generan documentos.
@@ -58,6 +60,8 @@ Frontend/
   Themes/         Colores y tipografía
   Styles/         Estilos y controles reutilizables
   Views/          Login, panel, catálogo de módulos y datos de muestra
+  Security/       Contexto de permisos de presentación
+  README.md       Matriz por roles y contrato de integración
 Backend/
   Data/           Conexiones y configuración de datos (pendiente)
   Models/         Entidades (pendiente)
@@ -86,7 +90,7 @@ Desde PowerShell con MSBuild de Visual Studio disponible:
 .\scripts\Verify-Frontend.ps1
 ```
 
-Compila el proyecto y un ejecutable independiente de comprobación. Recorre las doce secciones en tres tamaños y tres temas, prueba filtros, borradores y entradas inválidas, y comprueba la desaparición de los hints del login y la sincronización al revelar contraseñas. Los renders se escriben en `.design-preview`, excluida de Git; no son capturas de una sesión interactiva.
+Compila el proyecto y un ejecutable independiente de comprobación. Recorre las 22 áreas y sus flujos en tres tamaños y temas, comprueba restricciones por perfil/módulo/acción, filtros, borradores, importaciones y entradas inválidas. También verifica la regresión del login. Los renders se escriben en `.design-preview`, excluida de Git; no son capturas de una sesión interactiva.
 
 [Ver modo oscuro](docs/images/login-dark.png)
 
