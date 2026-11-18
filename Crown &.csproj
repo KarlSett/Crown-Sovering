@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -71,6 +71,201 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Frontend\Styles\DashboardStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Controls\KpiCard.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Controls\StatusBadge.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Views\Sections\FuncionamientoView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Views\Sections\ReservasView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Views\Sections\HabitacionesView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Views\Sections\IngresosView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="Frontend\Controls\KpiCard.xaml.cs">
+      <DependentUpon>KpiCard.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Controls\SectionCard.cs" />
+    <Compile Include="Frontend\Controls\StatusBadge.xaml.cs">
+      <DependentUpon>StatusBadge.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Views\Sections\FuncionamientoView.xaml.cs">
+      <DependentUpon>FuncionamientoView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Views\Sections\ReservasView.xaml.cs">
+      <DependentUpon>ReservasView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Views\Sections\HabitacionesView.xaml.cs">
+      <DependentUpon>HabitacionesView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Views\Sections\IngresosView.xaml.cs">
+      <DependentUpon>IngresosView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Frontend\Views\Dialogs\NuevoHuespedWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Views\Dialogs\NuevaHabitacionWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Views\Dialogs\NuevaReservaWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Views\Modules\ConfiguracionHotelView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Views\Modules\SeguridadView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Views\Modules\TarifasView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Views\Modules\ConveniosView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Views\Modules\LimpiezaView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Views\Modules\ConsumosView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Views\Modules\HabitacionesGestionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Views\Modules\HuespedesView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Views\Modules\ReservasGestionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Views\Modules\EstanciasView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Views\Modules\FacturacionFoliosView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Views\Modules\PagosCajaView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Views\Modules\NotificacionesReportesView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="Frontend\Views\Dialogs\NuevoHuespedWindow.xaml.cs">
+      <DependentUpon>NuevoHuespedWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Views\Dialogs\NuevaHabitacionWindow.xaml.cs">
+      <DependentUpon>NuevaHabitacionWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Views\Dialogs\NuevaReservaWindow.xaml.cs">
+      <DependentUpon>NuevaReservaWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Views\Modules\ConfiguracionHotelView.xaml.cs">
+      <DependentUpon>ConfiguracionHotelView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Views\Modules\SeguridadView.xaml.cs">
+      <DependentUpon>SeguridadView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Views\Modules\TarifasView.xaml.cs">
+      <DependentUpon>TarifasView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Views\Modules\ConveniosView.xaml.cs">
+      <DependentUpon>ConveniosView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Views\Modules\LimpiezaView.xaml.cs">
+      <DependentUpon>LimpiezaView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Views\Modules\ConsumosView.xaml.cs">
+      <DependentUpon>ConsumosView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Views\Modules\HabitacionesGestionView.xaml.cs">
+      <DependentUpon>HabitacionesGestionView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Views\Modules\HuespedesView.xaml.cs">
+      <DependentUpon>HuespedesView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Views\Modules\ReservasGestionView.xaml.cs">
+      <DependentUpon>ReservasGestionView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Views\Modules\EstanciasView.xaml.cs">
+      <DependentUpon>EstanciasView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Views\Modules\FacturacionFoliosView.xaml.cs">
+      <DependentUpon>FacturacionFoliosView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Views\Modules\PagosCajaView.xaml.cs">
+      <DependentUpon>PagosCajaView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Views\Modules\NotificacionesReportesView.xaml.cs">
+      <DependentUpon>NotificacionesReportesView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Frontend\Sesion.cs" />
+    <Compile Include="Frontend\Views\DashboardView.xaml.cs">
+      <DependentUpon>DashboardView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Frontend\Views\DashboardView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="Backend\Models\Entidades.cs" />
+    <Compile Include="Backend\Models\Formato.cs" />
+    <Compile Include="Backend\Models\Reportes.cs" />
+    <Compile Include="Backend\Data\DatosHotel.cs" />
+    <Compile Include="Backend\Services\ServicioHotel.cs" />
     <Compile Include="Frontend\Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -102,7 +297,11 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="ARQUITECTURA.md" />
+    <None Include="docs\ARQUITECTURA.md" />
+    <None Include="docs\DESIGN.md" />
+    <None Include="docs\INTEGRACION_BACKEND.md" />
+    <None Include="docs\MODULOS_Y_ROLES.md" />
+    <None Include="Backend\Repositories\README.md" />
     <None Include="Frontend\Assets\crown_logo.svg" />
     <Resource Include="Frontend\Assets\hospitality-lobby.png" />
     <Content Include="Frontend\Assets\Video\*.mp4">
@@ -115,12 +314,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Backend\Data\" />
-    <Folder Include="Backend\Models\" />
-    <Folder Include="Backend\Repositories\" />
-    <Folder Include="Backend\Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

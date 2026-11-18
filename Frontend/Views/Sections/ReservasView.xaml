@@ -1,0 +1,159 @@
+<UserControl x:Class="Crown__.Frontend.Views.Sections.ReservasView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="620"
+             FontFamily="{StaticResource HotelSansFont}"
+             UseLayoutRounding="True" SnapsToDevicePixels="True"
+             TextOptions.TextFormattingMode="Display" Loaded="OnLoaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Filtros y alta -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="TxtBuscarReserva" Style="{StaticResource FilterTextBox}"
+                     ToolTip="Buscar por código, huésped o habitación" TextChanged="OnBuscarTextoChanged" />
+            <ComboBox x:Name="CmbEstadoReserva" Grid.Column="1" Width="140" Height="40" Margin="8,0,0,0"
+                      FontSize="13" SelectionChanged="OnFiltroComboChanged" />
+            <ComboBox x:Name="CmbCanalReserva" Grid.Column="2" Width="130" Height="40" Margin="8,0,0,0"
+                      FontSize="13" SelectionChanged="OnFiltroComboChanged" />
+            <Button Grid.Column="4" Content="Nueva reserva" Style="{StaticResource PrimaryButton}"
+                    Click="OnNuevaReserva" />
+        </Grid>
+
+        <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,12,10,0" Padding="0">
+            <DataGrid x:Name="GridReservas" Style="{StaticResource HotelDataGrid}" Margin="4"
+                      SelectionChanged="OnSeleccionReserva" CanUserSortColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Código" Binding="{Binding Codigo}" Width="112" />
+                    <DataGridTextColumn Header="Huésped" Binding="{Binding Huesped}" Width="*" />
+                    <DataGridTextColumn Header="Hab." Binding="{Binding Habitacion}" Width="62" />
+                    <DataGridTextColumn Header="Canal" Binding="{Binding Canal}" Width="90" />
+                    <DataGridTextColumn Header="Entrada" Binding="{Binding Checkin}" Width="78" />
+                    <DataGridTextColumn Header="Salida" Binding="{Binding Checkout}" Width="78" />
+                    <DataGridTextColumn Header="Noches" Binding="{Binding Noches}" Width="66" />
+                    <DataGridTextColumn Header="Total" Binding="{Binding Total}" Width="92" />
+                    <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="104" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <!-- Acciones sobre la reserva seleccionada -->
+        <Grid Grid.Row="2" Margin="0,12,10,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock x:Name="TxtSeleccion" Style="{StaticResource StrongText}"
+                           Text="Selecciona una reserva para operar." />
+                <TextBlock x:Name="TxtAviso" Style="{StaticResource MutedText}" Margin="0,3,0,0" Text=" " />
+            </StackPanel>
+            <Button x:Name="BtnCheckIn" Grid.Column="1" Content="Registrar llegada"
+                    Style="{StaticResource SecondaryButton}" Margin="8,0,0,0"
+                    IsEnabled="False" Click="OnCheckIn" />
+            <Button x:Name="BtnCheckOut" Grid.Column="2" Content="Registrar salida"
+                    Style="{StaticResource SecondaryButton}" Margin="8,0,0,0"
+                    IsEnabled="False" Click="OnCheckOut" />
+            <Button x:Name="BtnCancelarReserva" Grid.Column="3" Content="Cancelar"
+                    Style="{StaticResource GhostButton}" Margin="8,0,0,0"
+                    IsEnabled="False" Click="OnCancelarReserva" />
+        </Grid>
+
+        <!-- Alta de reserva -->
+        <Grid x:Name="OverlayNueva" Grid.RowSpan="3" Background="#C8112230" Visibility="Collapsed">
+            <Border Style="{StaticResource OverlayCard}">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Nueva reserva" FontFamily="{StaticResource HotelSerifFont}" FontSize="21"
+                                   FontWeight="SemiBold"
+                                   Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Page}}" />
+                        <Button Grid.Column="1" Content="Cerrar" Style="{StaticResource GhostButton}" Click="OnCerrarOverlay" />
+                    </Grid>
+                    <TextBlock Text="La disponibilidad se valida contra las reservas existentes."
+                               Style="{StaticResource MutedText}" Margin="0,4,0,18" />
+
+                    <TextBlock Text="Huésped" Style="{StaticResource EyebrowText}" Margin="0,0,0,5" />
+                    <ComboBox x:Name="CmbHuespedForm" Height="40" FontSize="13" DisplayMemberPath="NombreCompleto" />
+
+                    <Grid Margin="0,14,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Entrada" Style="{StaticResource EyebrowText}" Margin="0,0,0,5" />
+                            <DatePicker x:Name="DpEntrada" Height="40" FontSize="13"
+                                        SelectedDateChanged="OnFechasReservaCambian" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Salida" Style="{StaticResource EyebrowText}" Margin="0,0,0,5" />
+                            <DatePicker x:Name="DpSalida" Height="40" FontSize="13"
+                                        SelectedDateChanged="OnFechasReservaCambian" />
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Text="Habitación" Style="{StaticResource EyebrowText}" Margin="0,14,0,5" />
+                    <ComboBox x:Name="CmbHabitacionForm" Height="40" FontSize="13" DisplayMemberPath="Texto"
+                              SelectionChanged="OnHabitacionFormCambia" />
+
+                    <Grid Margin="0,14,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Canal" Style="{StaticResource EyebrowText}" Margin="0,0,0,5" />
+                            <ComboBox x:Name="CmbCanalForm" Height="40" FontSize="13" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Tarifa por noche (USD)" Style="{StaticResource EyebrowText}" Margin="0,0,0,5" />
+                            <TextBox x:Name="TxtTarifaForm" Height="40" FontSize="13" Padding="10,0"
+                                     VerticalContentAlignment="Center" />
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Text="Observaciones" Style="{StaticResource EyebrowText}" Margin="0,14,0,5" />
+                    <TextBox x:Name="TxtObservacionesForm" Height="56" FontSize="13" Padding="10,8"
+                             TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+
+                    <TextBlock x:Name="TxtMensajeForm" Style="{StaticResource MutedText}" Margin="0,12,0,0"
+                               TextWrapping="Wrap" Foreground="#B4553B" />
+
+                    <Grid Margin="0,16,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="TxtTotalForm" Style="{StaticResource StrongText}" VerticalAlignment="Center" />
+                        <Button Grid.Column="1" Content="Cancelar" Style="{StaticResource SecondaryButton}"
+                                Margin="8,0,0,0" Click="OnCerrarOverlay" />
+                        <Button Grid.Column="2" Content="Guardar reserva" Style="{StaticResource PrimaryButton}"
+                                Margin="8,0,0,0" Click="OnGuardarReserva" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

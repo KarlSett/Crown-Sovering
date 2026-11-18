@@ -1,0 +1,425 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:Crown__.Frontend.Controls">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="../Themes/HotelPalette.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <!-- Texto -->
+    <Style x:Key="StrongText" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource Light.Ink}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                <Setter Property="Foreground" Value="{StaticResource Dark.Ink}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="MutedText" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource Light.Secondary}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                <Setter Property="Foreground" Value="{StaticResource Dark.Secondary}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="EyebrowText" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource Light.Secondary}" />
+        <Setter Property="FontSize" Value="10.5" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                <Setter Property="Foreground" Value="{StaticResource Dark.Secondary}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="CardTitle" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource HotelSerifFont}" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="Foreground" Value="{StaticResource Light.Ink}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                <Setter Property="Foreground" Value="{StaticResource Dark.Ink}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="KpiValue" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="26" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource Light.Ink}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                <Setter Property="Foreground" Value="{StaticResource Dark.Ink}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Tarjetas -->
+    <Style x:Key="Card" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource Light.Field}" />
+        <Setter Property="BorderBrush" Value="#1A17384F" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="Padding" Value="18,16" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                <Setter Property="Background" Value="{StaticResource Dark.Field}" />
+                <Setter Property="BorderBrush" Value="#33FFFFFF" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Navegación lateral -->
+    <Style x:Key="NavItem" TargetType="RadioButton">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Foreground" Value="#C9D4DC" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Margin" Value="0,2" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Grid>
+                        <Border x:Name="Surface" CornerRadius="10" Background="Transparent" Padding="12,11">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="18" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Ellipse x:Name="Dot" Width="6" Height="6" Fill="#6F8391"
+                                         VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2,0,0,0" />
+                                <ContentPresenter Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center"
+                                                  RecognizesAccessKey="True" />
+                            </Grid>
+                        </Border>
+                        <Border x:Name="Focus" CornerRadius="12" BorderThickness="2"
+                                BorderBrush="{StaticResource Brand.Gold}" Visibility="Collapsed" Margin="-3" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Surface" Property="Background" Value="#1AD9BB79" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Surface" Property="Background" Value="#26D9BB79" />
+                            <Setter TargetName="Dot" Property="Fill" Value="{StaticResource Brand.Gold}" />
+                            <Setter Property="Foreground" Value="{StaticResource Brand.Ivory}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Focus" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Botones compactos -->
+    <Style x:Key="PeriodOption" TargetType="RadioButton">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Foreground" Value="{StaticResource Light.Secondary}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Border x:Name="Surface" CornerRadius="9" Padding="14,8" Background="Transparent">
+                        <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Surface" Property="Background" Value="#14D9BB79" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Surface" Property="Background" Value="{StaticResource Light.Primary}" />
+                            <Setter Property="Foreground" Value="{StaticResource Light.OnPrimary}" />
+                        </Trigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark" />
+                                <Condition Binding="{Binding IsChecked, RelativeSource={RelativeSource Self}}" Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter TargetName="Surface" Property="Background" Value="{StaticResource Brand.Gold}" />
+                            <Setter Property="Foreground" Value="{StaticResource Brand.Navy}" />
+                        </MultiDataTrigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Surface" Property="BorderBrush" Value="{StaticResource Brand.Gold}" />
+                            <Setter TargetName="Surface" Property="BorderThickness" Value="2" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="CompactButton" TargetType="Button">
+        <Setter Property="Height" Value="38" />
+        <Setter Property="Padding" Value="14,0" />
+        <Setter Property="FontSize" Value="12.5" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <Border x:Name="Surface" CornerRadius="10" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" />
+                        <Border x:Name="Hover" CornerRadius="10" Background="{TemplateBinding Foreground}" Opacity="0" />
+                        <ContentPresenter Margin="{TemplateBinding Padding}" VerticalAlignment="Center"
+                                          HorizontalAlignment="Center" RecognizesAccessKey="True" />
+                        <Border x:Name="Focus" CornerRadius="12" BorderThickness="2" Margin="-3"
+                                BorderBrush="{StaticResource Brand.Gold}" Visibility="Collapsed" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Hover" Property="Opacity" Value="0.08" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Hover" Property="Opacity" Value="0.16" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Focus" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.4" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource CompactButton}">
+        <Setter Property="Background" Value="{StaticResource Light.Primary}" />
+        <Setter Property="Foreground" Value="{StaticResource Light.OnPrimary}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                <Setter Property="Background" Value="{StaticResource Brand.Gold}" />
+                <Setter Property="Foreground" Value="{StaticResource Brand.Navy}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource CompactButton}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource Light.Ink}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Light.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                <Setter Property="Foreground" Value="{StaticResource Dark.Ink}" />
+                <Setter Property="BorderBrush" Value="{StaticResource Dark.Border}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="GhostButton" TargetType="Button" BasedOn="{StaticResource CompactButton}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource Light.Secondary}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                <Setter Property="Foreground" Value="{StaticResource Dark.Secondary}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="NavActionButton" TargetType="Button" BasedOn="{StaticResource CompactButton}">
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Background" Value="#14F6F3ED" />
+        <Setter Property="Foreground" Value="{StaticResource Brand.Ivory}" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <!-- Campos -->
+    <Style x:Key="Input" TargetType="Control">
+        <Setter Property="Height" Value="40" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{StaticResource Light.Field}" />
+        <Setter Property="Foreground" Value="{StaticResource Light.Ink}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Light.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                <Setter Property="Background" Value="{StaticResource Dark.Field}" />
+                <Setter Property="Foreground" Value="{StaticResource Dark.Ink}" />
+                <Setter Property="BorderBrush" Value="{StaticResource Dark.Border}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="FilterTextBox" TargetType="TextBox">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Foreground" Value="{StaticResource Light.Ink}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Light.Border}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                <Setter Property="Foreground" Value="{StaticResource Dark.Ink}" />
+                <Setter Property="BorderBrush" Value="{StaticResource Dark.Border}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- DataGrid -->
+    <Style x:Key="ColumnHeader" TargetType="DataGridColumnHeader">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource Light.Secondary}" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="Height" Value="34" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <Setter Property="BorderBrush" Value="{StaticResource Light.Border}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridColumnHeader">
+                    <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}"
+                            BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                        <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Left" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DataCell" TargetType="DataGridCell">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridCell">
+                    <Border Background="{TemplateBinding Background}" Padding="12,0" SnapsToDevicePixels="True">
+                        <ContentPresenter VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="#1417384F" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="DataRow" TargetType="DataGridRow">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#0D17384F" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="HotelDataGrid" TargetType="DataGrid">
+        <Setter Property="AutoGenerateColumns" Value="False" />
+        <Setter Property="CanUserAddRows" Value="False" />
+        <Setter Property="CanUserDeleteRows" Value="False" />
+        <Setter Property="CanUserResizeRows" Value="False" />
+        <Setter Property="IsReadOnly" Value="True" />
+        <Setter Property="SelectionMode" Value="Single" />
+        <Setter Property="SelectionUnit" Value="FullRow" />
+        <Setter Property="HeadersVisibility" Value="Column" />
+        <Setter Property="GridLinesVisibility" Value="None" />
+        <Setter Property="RowHeight" Value="40" />
+        <Setter Property="ColumnHeaderHeight" Value="34" />
+        <Setter Property="FontSize" Value="12.5" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource Light.Ink}" />
+        <Setter Property="RowBackground" Value="Transparent" />
+        <Setter Property="AlternatingRowBackground" Value="#0817384F" />
+        <Setter Property="ColumnHeaderStyle" Value="{StaticResource ColumnHeader}" />
+        <Setter Property="CellStyle" Value="{StaticResource DataCell}" />
+        <Setter Property="RowStyle" Value="{StaticResource DataRow}" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                <Setter Property="Foreground" Value="{StaticResource Dark.Ink}" />
+                <Setter Property="AlternatingRowBackground" Value="#10FFFFFF" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Gráficos de barras -->
+    <Style x:Key="BarTrack" TargetType="Border">
+        <Setter Property="Height" Value="7" />
+        <Setter Property="CornerRadius" Value="3.5" />
+        <Setter Property="Background" Value="#1417384F" />
+    </Style>
+
+    <Style x:Key="BarFill" TargetType="Border">
+        <Setter Property="Height" Value="7" />
+        <Setter Property="CornerRadius" Value="3.5" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="Background" Value="{StaticResource Brand.Gold}" />
+    </Style>
+
+    <!-- Panel emergente -->
+    <Style x:Key="OverlayCard" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource Light.Field}" />
+        <Setter Property="CornerRadius" Value="20" />
+        <Setter Property="Padding" Value="26,22" />
+        <Setter Property="MaxWidth" Value="600" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect BlurRadius="40" ShadowDepth="8" Opacity="0.35" />
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Dark">
+                <Setter Property="Background" Value="{StaticResource Dark.Field}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="EstadoPill" TargetType="Border">
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="8,3" />
+        <Setter Property="Background" Value="#1417384F" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+    </Style>
+
+    <!-- Contenedor de sección: encabezado + contenido declarado en la vista. -->
+    <Style x:Key="SectionCardStyle" TargetType="{x:Type controls:SectionCard}">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:SectionCard}">
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{TemplateBinding Titulo}" Style="{StaticResource CardTitle}" />
+                                <TextBlock Grid.Column="1" Text="{TemplateBinding Nota}"
+                                           Style="{StaticResource MutedText}"
+                                           VerticalAlignment="Center" FontSize="11" />
+                            </Grid>
+                            <ContentPresenter Margin="0,12,0,0" HorizontalAlignment="Stretch" />
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

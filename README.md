@@ -2,7 +2,10 @@
 
 Aplicación de escritorio para gestión hotelera, desarrollada en **WPF con C# y .NET Framework 4.7.2**.
 
-Esta primera entrega contiene el **frontend del login** y la estructura para que el equipo de backend integre sus servicios. Los botones de ingreso, acceso simulado y soporte todavía no ejecutan acciones.
+La interfaz incluye el acceso, el panel operativo y las secciones de **funcionamiento,
+reservas, habitaciones disponibles y cuentas de ingreso** (resúmenes diario, semanal y
+trimestral). Los datos provienen de un almacén de demostración en memoria; la conexión a
+PostgreSQL queda pendiente.
 
 ![Login en modo claro](docs/images/login-light.png)
 
@@ -10,7 +13,7 @@ Esta primera entrega contiene el **frontend del login** y la estructura para que
 
 Destino: https://github.com/KarlSett/Crown-Sovering
 
-Para publicar esta entrega desde una terminal de PowerShell con acceso normal al proyecto:
+Para publicar desde una terminal de PowerShell con acceso normal al proyecto:
 
 ```powershell
 .\scripts\Publicar-Repositorio.ps1
@@ -30,7 +33,8 @@ git clone https://github.com/KarlSett/Crown-Sovering.git
 2. Abrir `Crown &.sln`.
 3. Seleccionar `Debug / Any CPU` e iniciar con **F5**.
 
-El proyecto no requiere paquetes NuGet, base de datos ni credenciales para visualizar la interfaz.
+El proyecto no requiere paquetes NuGet ni credenciales. `BtnIngresar` y
+`BtnLoginSimulado` abren el panel con datos de demostración; no hay validación real.
 
 Desde una consola de desarrollador de Visual Studio:
 
@@ -41,38 +45,61 @@ msbuild '.\Crown &.sln' /t:Build /p:Configuration=Debug
 ## Estado de la entrega
 
 - Ventana redondeada, con minimizar, maximizar/restaurar y **Salir**.
-- Formulario con usuario, contraseña, Recordarme, soporte e ingreso.
-- Apariencia clara y oscura, navegación por teclado y estados visuales.
-- Fondo hotelero local con movimiento suave y pausa.
-- Soporte de presentación para un MP4 local opcional; no se incluye vídeo.
-- Sin autenticación, navegación tras ingresar, persistencia, consultas ni conexión a base de datos.
+- Login con apariencia clara y oscura, navegación por teclado y estados visuales.
+- Fondo hotelero local con movimiento suave y pausa; MP4 local opcional.
+- Panel con barra lateral agrupada: Operación, Administración, Producto, Servicios y Configuración.
+- Cuatro roles de demostración (Administrador, Gerente, Recepcionista, Personal de servicios):
+  el menú muestra solo las pantallas de cada rol. La autorización real queda para el backend.
+- Trece pantallas de módulo, entre ellas Huéspedes, Inventario, Estancias, Facturación,
+  Pagos, Tarifas, Convenios, Limpieza, Consumos, Configuración y Seguridad.
+- Altas en ventanas emergentes (huésped, habitación, reserva); sin persistencia todavía.
+- Funcionamiento: ocupación, disponibilidad, llegadas, salidas, ingresos del día y movimientos.
+- Reservas: filtros, alta con validación de disponibilidad y operación de llegada/salida/cancelación.
+- Habitaciones: disponibilidad por fechas, tipo de capacidad y calidad.
+- Ingresos: cuentas de ingreso por concepto, medios de pago y detalle diario/semanal/trimestral.
+- Sin autenticación real, persistencia ni conexión a base de datos.
 
 ## Organización
 
 ```text
+Backend/
+  Data/           Almacén de demostración (DatosHotel)
+  Models/         Entidades y modelos de reportes
+  Repositories/   Reservado para ADO.NET (ver README interno)
+  Services/       Reglas de negocio (ServicioHotel)
 Frontend/
   Assets/         Emblema, fotografía y vídeo opcional
+  Controls/       KpiCard, SectionCard y StatusBadge
   Themes/         Colores y tipografía
-  Styles/         Estilos y controles reutilizables
-  Views/          LoginView.xaml y su código de presentación
-Backend/
-  Data/           Conexiones y configuración de datos (pendiente)
-  Models/         Entidades (pendiente)
-  Repositories/   Acceso a datos (pendiente)
-  Services/       Casos de uso y reglas de negocio (pendiente)
+  Styles/         Estilos del login y del panel
+  Views/          LoginView, DashboardView, Sections/, Modules/ y Dialogs/
 docs/
-  INTEGRACION_BACKEND.md
+  ARQUITECTURA.md, DESIGN.md, INTEGRACION_BACKEND.md, MODULOS_Y_ROLES.md
   images/         Vistas de referencia
 ```
 
+## Roles
+
+La matriz pantalla → tablas → rol está en [docs/MODULOS_Y_ROLES.md](docs/MODULOS_Y_ROLES.md).
+El menú se filtra por rol en el cliente (solo presentación); la autorización real
+corresponde al backend.
+
 ## Para el equipo de backend
 
-Comenzar por [la guía de integración](docs/INTEGRACION_BACKEND.md), que identifica los controles, su ubicación y las decisiones pendientes. La estructura general está en [ARQUITECTURA.md](ARQUITECTURA.md) y el lenguaje visual, en [DESIGN.md](DESIGN.md).
+Comenzar por [la guía de integración](docs/INTEGRACION_BACKEND.md), que describe el
+contrato de datos y las decisiones pendientes. La estructura general está en
+[docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) y el lenguaje visual, en
+[docs/DESIGN.md](docs/DESIGN.md).
 
-Las clases nuevas deben registrarse en el archivo `.csproj`: es un proyecto clásico, sin inclusión automática de archivos C#. Visual Studio lo hace al añadir una clase desde el proyecto.
+Las clases nuevas deben registrarse en el archivo `.csproj`: es un proyecto clásico, sin
+inclusión automática de archivos C#. Visual Studio lo hace al añadir una clase desde el
+proyecto.
 
-Crear ramas de trabajo desde `main`, por ejemplo `backend/autenticacion`, y revisar los cambios mediante pull requests. Evitar cambiar nombres de controles o archivos visuales sin coordinar con frontend.
+Crear ramas de trabajo desde `main`, por ejemplo `backend/autenticacion`, y revisar los
+cambios mediante pull requests. Evitar cambiar nombres de controles o archivos visuales
+sin coordinar con frontend.
 
 [Ver modo oscuro](docs/images/login-dark.png)
 
-Las imágenes de referencia son renders del XAML compilado; no requieren que la carpeta local de previsualizaciones forme parte del repositorio.
+Las imágenes de referencia son renders del XAML compilado; no requieren que la carpeta
+local de previsualizaciones forme parte del repositorio.

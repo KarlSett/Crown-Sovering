@@ -1,0 +1,101 @@
+<UserControl x:Class="Crown__.Frontend.Views.Modules.EstanciasView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Estancias y llaves" VerticalAlignment="Center" />
+            <TextBlock Text="Reserva o huésped" VerticalAlignment="Center" />
+            <TextBox Width="200" />
+            <Button Content="Buscar" />
+            <Button Content="Check-in" />
+            <Button Content="Check-out" />
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <GroupBox Header="Llegadas de hoy">
+                <ListBox>
+                    <ListBoxItem Content="Reserva · Huésped" />
+                    <ListBoxItem Content="Reserva · Huésped" />
+                </ListBox>
+            </GroupBox>
+            <GroupBox Grid.Column="1" Header="En casa">
+                <ListBox>
+                    <ListBoxItem Content="Hab. 101 · Huésped" />
+                    <ListBoxItem Content="Hab. 102 · Huésped" />
+                    <ListBoxItem Content="Hab. 103 · Huésped" />
+                </ListBox>
+            </GroupBox>
+            <GroupBox Grid.Column="2" Header="Salidas de hoy">
+                <ListBox>
+                    <ListBoxItem Content="Hab. 104 · Huésped" />
+                    <ListBoxItem Content="Hab. 105 · Huésped" />
+                </ListBox>
+            </GroupBox>
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <GroupBox Header="Detalle de la estancia">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Reserva" VerticalAlignment="Center" />
+                    <TextBox Grid.Column="1" IsReadOnly="True" />
+                    <TextBlock Grid.Row="1" Text="Tipo de check-in" VerticalAlignment="Center" />
+                    <ComboBox Grid.Row="1" Grid.Column="1" />
+                    <TextBlock Grid.Row="2" Text="Tipo de check-out" VerticalAlignment="Center" />
+                    <ComboBox Grid.Row="2" Grid.Column="1" />
+                    <TextBlock Grid.Row="3" Text="Estado" VerticalAlignment="Center" />
+                    <ComboBox Grid.Row="3" Grid.Column="1" />
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Grid.Column="1" Header="Llaves de la estancia">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <DataGrid AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Código" />
+                            <DataGridTextColumn Header="Emitida" />
+                            <DataGridTextColumn Header="Devuelta" />
+                            <DataGridTextColumn Header="Estado" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal">
+                        <Button Content="Emitir llave" />
+                        <Button Content="Devolver llave" />
+                        <Button Content="Mover de habitación" />
+                        <Button Content="Imprimir estancia" />
+                    </StackPanel>
+                </Grid>
+            </GroupBox>
+        </Grid>
+    </Grid>
+</UserControl>

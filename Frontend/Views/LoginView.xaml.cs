@@ -89,6 +89,40 @@ namespace Crown__.Frontend.Views
             ApplyMotionPreference();
         }
 
+        private void OnIngresar(object sender, RoutedEventArgs e)
+        {
+            // Sin validación de credenciales: se abre el panel con el rol elegido.
+            Sesion.Rol = RolSeleccionado();
+
+            if (NavigationService != null)
+                NavigationService.Navigate(new Uri("/Frontend/Views/DashboardView.xaml", UriKind.Relative));
+        }
+
+        private void OnAccesoAdmin(object sender, RoutedEventArgs e)
+        {
+            // Acceso de demostración con rol de administrador.
+            Sesion.Rol = Rol.Administrador;
+            CmbRol.SelectedIndex = 1;
+
+            if (NavigationService != null)
+                NavigationService.Navigate(new Uri("/Frontend/Views/DashboardView.xaml", UriKind.Relative));
+        }
+
+        private Rol RolSeleccionado()
+        {
+            switch (CmbRol.SelectedIndex)
+            {
+                case 1:
+                    return Rol.Administrador;
+                case 2:
+                    return Rol.Gerente;
+                case 3:
+                    return Rol.Servicios;
+                default:
+                    return Rol.Recepcionista;
+            }
+        }
+
         private void OnMotionToggle(object sender, RoutedEventArgs e)
         {
             ApplyMotionPreference();

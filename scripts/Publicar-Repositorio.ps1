@@ -37,7 +37,7 @@ else {
 
 # Only source, project files, documentation and this publisher are staged.
 $sourcePaths = @(
-    '.gitignore', '.gitattributes', 'README.md', 'ARQUITECTURA.md', 'DESIGN.md',
+    '.gitignore', '.gitattributes', 'README.md',
     'Crown &.sln', 'Crown &.csproj', 'App.config', 'App.xaml', 'App.xaml.cs',
     'MainWindow.xaml', 'MainWindow.xaml.cs', 'Properties', 'Frontend', 'Backend',
     'docs', 'scripts/Publicar-Repositorio.ps1'
@@ -46,7 +46,7 @@ Invoke-ProjectGit -GitArguments (@('add', '--') + $sourcePaths)
 & git -C $projectRoot diff --cached --quiet
 $stagedDiffStatus = $LASTEXITCODE
 if ($stagedDiffStatus -eq 1) {
-    Invoke-ProjectGit -GitArguments @('commit', '-m', 'Entrega inicial: frontend WPF del login y guia para backend')
+    Invoke-ProjectGit -GitArguments @('commit', '-m', 'Panel operativo: funcionamiento, reservas, habitaciones e ingresos')
 }
 elseif ($stagedDiffStatus -ne 0) {
     throw 'No se pudo revisar el contenido del commit.'
