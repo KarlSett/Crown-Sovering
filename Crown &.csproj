@@ -13,6 +13,7 @@
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -34,6 +35,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="WPF-UI" Version="4.3.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -71,10 +76,42 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+<<<<<<< Updated upstream
+=======
+    <Page Include="Frontend\Views\DashboardView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frontend\Views\HotelPreferencesView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="Frontend\Views\HotelPreferencesView.xaml.cs">
+      <DependentUpon>HotelPreferencesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Frontend\Views\HotelPreferencesViewModel.cs" />
+>>>>>>> Stashed changes
     <Compile Include="Frontend\Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+<<<<<<< Updated upstream
+=======
+    <Compile Include="Frontend\Views\ModuleCatalog.cs" />
+    <Compile Include="Frontend\Views\HotelEventsAndLimits.cs" />
+    <Compile Include="Frontend\Security\FrontendAccessContext.cs" />
+    <Compile Include="Frontend\Views\OperationsCatalog.cs" />
+    <Compile Include="Frontend\Views\DashboardWorkspaces.cs" />
+    <Compile Include="Frontend\Views\AdministratorView.cs" />
+    <Compile Include="Frontend\Views\ReservationImportPreview.cs" />
+    <Compile Include="Frontend\Views\ReservationsView.cs" />
+    <Compile Include="Frontend\Views\ClientsView.cs" />
+    <Compile Include="Frontend\Views\ModulesOverhaul.cs" />
+    <Compile Include="Frontend\Views\DashboardView.xaml.cs">
+      <DependentUpon>DashboardView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+>>>>>>> Stashed changes
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
