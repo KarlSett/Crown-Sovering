@@ -1,0 +1,149 @@
+<UserControl x:Class="Crown__.Frontend.Views.Modules.TarifasView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Tarifas y promociones" VerticalAlignment="Center" />
+            <Button Content="Nueva tarifa" />
+            <Button Content="Nueva temporada" />
+            <Button Content="Nueva promoción" />
+        </StackPanel>
+
+        <GroupBox Grid.Row="1" Header="Matriz de tarifas por tipo y temporada">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Text="Tipo de habitación" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Text="Temporada alta" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="2" Text="Temporada media" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="3" Text="Temporada baja" VerticalAlignment="Center" />
+                <TextBlock Grid.Row="1" Text="Sencilla" VerticalAlignment="Center" />
+                <TextBox Grid.Row="1" Grid.Column="1" />
+                <TextBox Grid.Row="1" Grid.Column="2" />
+                <TextBox Grid.Row="1" Grid.Column="3" />
+                <TextBlock Grid.Row="2" Text="Doble" VerticalAlignment="Center" />
+                <TextBox Grid.Row="2" Grid.Column="1" />
+                <TextBox Grid.Row="2" Grid.Column="2" />
+                <TextBox Grid.Row="2" Grid.Column="3" />
+                <TextBlock Grid.Row="3" Text="Familiar" VerticalAlignment="Center" />
+                <TextBox Grid.Row="3" Grid.Column="1" />
+                <TextBox Grid.Row="3" Grid.Column="2" />
+                <TextBox Grid.Row="3" Grid.Column="3" />
+                <TextBlock Grid.Row="4" Text="Suite" VerticalAlignment="Center" />
+                <TextBox Grid.Row="4" Grid.Column="1" />
+                <TextBox Grid.Row="4" Grid.Column="2" />
+                <TextBox Grid.Row="4" Grid.Column="3" />
+            </Grid>
+        </GroupBox>
+
+        <TabControl Grid.Row="2">
+            <TabItem Header="Temporadas">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <WrapPanel>
+                        <TextBlock Text="Nombre" VerticalAlignment="Center" />
+                        <TextBox Width="160" />
+                        <TextBlock Text="Inicio" VerticalAlignment="Center" />
+                        <DatePicker />
+                        <TextBlock Text="Fin" VerticalAlignment="Center" />
+                        <DatePicker />
+                        <Button Content="Guardar" />
+                    </WrapPanel>
+                    <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Temporada" />
+                            <DataGridTextColumn Header="Inicio" />
+                            <DataGridTextColumn Header="Fin" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Paquetes">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <WrapPanel>
+                        <TextBlock Text="Nombre" VerticalAlignment="Center" />
+                        <TextBox Width="160" />
+                        <TextBlock Text="Descripción" VerticalAlignment="Center" />
+                        <TextBox Width="220" />
+                        <TextBlock Text="Precio" VerticalAlignment="Center" />
+                        <TextBox Width="90" />
+                        <Button Content="Guardar" />
+                    </WrapPanel>
+                    <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Paquete" />
+                            <DataGridTextColumn Header="Descripción" />
+                            <DataGridTextColumn Header="Precio" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Promociones">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <WrapPanel>
+                        <TextBlock Text="Nombre" VerticalAlignment="Center" />
+                        <TextBox Width="160" />
+                        <TextBlock Text="Descuento (%)" VerticalAlignment="Center" />
+                        <TextBox Width="80" />
+                        <TextBlock Text="Inicio" VerticalAlignment="Center" />
+                        <DatePicker />
+                        <TextBlock Text="Fin" VerticalAlignment="Center" />
+                        <DatePicker />
+                        <CheckBox Content="Activa" VerticalAlignment="Center" />
+                        <Button Content="Guardar" />
+                    </WrapPanel>
+                    <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Promoción" />
+                            <DataGridTextColumn Header="Descuento" />
+                            <DataGridTextColumn Header="Inicio" />
+                            <DataGridTextColumn Header="Fin" />
+                            <DataGridTextColumn Header="Estado" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Precios por canal">
+                <DataGrid AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Tarifa" />
+                        <DataGridTextColumn Header="Temporada" />
+                        <DataGridTextColumn Header="Canal" />
+                        <DataGridTextColumn Header="Precio" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

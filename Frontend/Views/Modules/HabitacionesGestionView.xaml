@@ -1,0 +1,161 @@
+<UserControl x:Class="Crown__.Frontend.Views.Modules.HabitacionesGestionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Inventario de habitaciones" VerticalAlignment="Center" />
+            <TextBlock Text="Buscar…" VerticalAlignment="Center" />
+            <TextBox Width="180" />
+            <Button Content="Buscar" />
+            <Button Content="Nueva habitación" Click="OnNuevaHabitacion" />
+            <Button Content="Bloquear" />
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <GroupBox Header="Pisos">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <ListBox>
+                        <ListBoxItem Content="Piso 1" />
+                        <ListBoxItem Content="Piso 2" />
+                        <ListBoxItem Content="Piso 3" />
+                        <ListBoxItem Content="Piso 4" />
+                    </ListBox>
+                    <StackPanel Grid.Row="1">
+                        <TextBlock Text="Nuevo piso" />
+                        <TextBox />
+                        <Button Content="Agregar piso" />
+                    </StackPanel>
+                </Grid>
+            </GroupBox>
+
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="220" />
+                </Grid.RowDefinitions>
+
+                <GroupBox Header="Habitaciones del piso">
+                    <WrapPanel>
+                        <Button Content="101 · Doble" Width="120" Height="60" />
+                        <Button Content="102 · Doble" Width="120" Height="60" />
+                        <Button Content="103 · Suite" Width="120" Height="60" />
+                        <Button Content="104 · Familiar" Width="120" Height="60" />
+                        <Button Content="105 · Sencilla" Width="120" Height="60" />
+                        <Button Content="106 · Suite" Width="120" Height="60" />
+                    </WrapPanel>
+                </GroupBox>
+
+                <GroupBox Grid.Row="1" Header="Detalle de la habitación">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="N.º" VerticalAlignment="Center" />
+                        <TextBox Grid.Column="1" IsReadOnly="True" />
+                        <TextBlock Grid.Column="2" Text="Tipo" VerticalAlignment="Center" />
+                        <ComboBox Grid.Column="3" />
+                        <StackPanel Grid.Column="4" Orientation="Horizontal">
+                            <Button Content="Guardar" />
+                            <Button Content="Cambiar estado" />
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
+
+                <TabControl Grid.Row="2">
+                    <TabItem Header="Historial de estados">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Desde" VerticalAlignment="Center" />
+                                <DatePicker />
+                                <TextBlock Text="Hasta" VerticalAlignment="Center" />
+                                <DatePicker />
+                                <Button Content="Buscar" />
+                            </StackPanel>
+                            <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Estado" />
+                                    <DataGridTextColumn Header="Inicio" />
+                                    <DataGridTextColumn Header="Fin" />
+                                    <DataGridTextColumn Header="Motivo" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem Header="Bloqueos">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Habitación" VerticalAlignment="Center" />
+                                <ComboBox Width="110" />
+                                <TextBlock Text="Desde" VerticalAlignment="Center" />
+                                <DatePicker />
+                                <TextBlock Text="Hasta" VerticalAlignment="Center" />
+                                <DatePicker />
+                                <TextBlock Text="Motivo" VerticalAlignment="Center" />
+                                <TextBox Width="180" />
+                                <Button Content="Bloquear" />
+                            </StackPanel>
+                            <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Habitación" />
+                                    <DataGridTextColumn Header="Inicio" />
+                                    <DataGridTextColumn Header="Fin" />
+                                    <DataGridTextColumn Header="Motivo" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem Header="Tipos de habitación">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Nombre" VerticalAlignment="Center" />
+                                <TextBox Width="150" />
+                                <TextBlock Text="Capacidad" VerticalAlignment="Center" />
+                                <TextBox Width="70" />
+                                <Button Content="Guardar" />
+                            </StackPanel>
+                            <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Tipo" />
+                                    <DataGridTextColumn Header="Capacidad" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,136 @@
+<UserControl x:Class="Crown__.Frontend.Views.Modules.LimpiezaView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Limpieza y mantenimiento" VerticalAlignment="Center" />
+            <Button Content="Nueva tarea" />
+            <Button Content="Registrar incidencia" />
+            <Button Content="Nueva orden" />
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <GroupBox Header="Pendientes">
+                <ListBox>
+                    <ListBoxItem Content="Hab. 101 · Limpieza" />
+                    <ListBoxItem Content="Hab. 204 · Inspección" />
+                </ListBox>
+            </GroupBox>
+            <GroupBox Grid.Column="1" Header="En curso">
+                <ListBox>
+                    <ListBoxItem Content="Hab. 305 · Limpieza" />
+                </ListBox>
+            </GroupBox>
+            <GroupBox Grid.Column="2" Header="Completadas">
+                <ListBox>
+                    <ListBoxItem Content="Hab. 102 · Limpieza" />
+                    <ListBoxItem Content="Hab. 201 · Inspección" />
+                </ListBox>
+            </GroupBox>
+        </Grid>
+
+        <TabControl Grid.Row="2">
+            <TabItem Header="Checklists">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <WrapPanel>
+                        <TextBlock Text="Nombre" VerticalAlignment="Center" />
+                        <TextBox Width="170" />
+                        <TextBlock Text="Descripción" VerticalAlignment="Center" />
+                        <TextBox Width="230" />
+                        <Button Content="Guardar" />
+                    </WrapPanel>
+                    <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Checklist" />
+                            <DataGridTextColumn Header="Descripción" />
+                            <DataGridTextColumn Header="Ítems" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Ítems de checklist">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <WrapPanel>
+                        <TextBlock Text="Checklist" VerticalAlignment="Center" />
+                        <ComboBox Width="180" />
+                        <TextBlock Text="Descripción" VerticalAlignment="Center" />
+                        <TextBox Width="280" />
+                        <Button Content="Guardar" />
+                    </WrapPanel>
+                    <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Checklist" />
+                            <DataGridTextColumn Header="Descripción" />
+                            <DataGridTextColumn Header="Completado" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Inspecciones">
+                <DataGrid AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Tarea" />
+                        <DataGridTextColumn Header="Empleado" />
+                        <DataGridTextColumn Header="Resultado" />
+                        <DataGridTextColumn Header="Fecha" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="Incidencias">
+                <DataGrid AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Habitación" />
+                        <DataGridTextColumn Header="Tipo" />
+                        <DataGridTextColumn Header="Descripción" />
+                        <DataGridTextColumn Header="Estado" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="Órdenes de mantenimiento">
+                <DataGrid AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Orden" />
+                        <DataGridTextColumn Header="Incidencia" />
+                        <DataGridTextColumn Header="Empleado" />
+                        <DataGridTextColumn Header="Estado" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="Objetos olvidados">
+                <DataGrid AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Habitación" />
+                        <DataGridTextColumn Header="Descripción" />
+                        <DataGridTextColumn Header="Encontrado" />
+                        <DataGridTextColumn Header="Estado" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

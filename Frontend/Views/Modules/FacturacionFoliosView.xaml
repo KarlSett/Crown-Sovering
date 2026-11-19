@@ -1,0 +1,155 @@
+<UserControl x:Class="Crown__.Frontend.Views.Modules.FacturacionFoliosView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Facturación" VerticalAlignment="Center" />
+            <TextBlock Text="Buscar…" VerticalAlignment="Center" />
+            <TextBox Width="180" />
+            <Button Content="Buscar" />
+            <Button Content="Nuevo folio" />
+            <Button Content="Transferir cargo" />
+            <Button Content="Emitir factura" />
+            <Button Content="Nota de crédito" />
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+
+            <GroupBox Header="Folios abiertos">
+                <ListBox>
+                    <ListBoxItem Content="Folio · Huésped" />
+                    <ListBoxItem Content="Folio · Huésped" />
+                    <ListBoxItem Content="Folio · Huésped" />
+                    <ListBoxItem Content="Folio · Huésped" />
+                </ListBox>
+            </GroupBox>
+
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <GroupBox Header="Resumen del folio">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Huésped" VerticalAlignment="Center" />
+                        <TextBox Grid.Column="1" IsReadOnly="True" />
+                        <TextBlock Grid.Column="2" Text="Estado" VerticalAlignment="Center" />
+                        <TextBox Grid.Column="3" IsReadOnly="True" />
+                        <TextBlock Grid.Column="4" Text="Saldo" VerticalAlignment="Center" />
+                        <TextBox Grid.Column="5" IsReadOnly="True" />
+                    </Grid>
+                </GroupBox>
+
+                <TabControl Grid.Row="1">
+                    <TabItem Header="Cargos">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Concepto" VerticalAlignment="Center" />
+                                <ComboBox Width="140" />
+                                <TextBlock Text="Descripción" VerticalAlignment="Center" />
+                                <TextBox Width="200" />
+                                <TextBlock Text="Cantidad" VerticalAlignment="Center" />
+                                <TextBox Width="70" />
+                                <TextBlock Text="Precio" VerticalAlignment="Center" />
+                                <TextBox Width="90" />
+                                <Button Content="Agregar" />
+                            </StackPanel>
+                            <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Fecha" />
+                                    <DataGridTextColumn Header="Concepto" />
+                                    <DataGridTextColumn Header="Cantidad" />
+                                    <DataGridTextColumn Header="Precio" />
+                                    <DataGridTextColumn Header="Importe" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem Header="Conceptos">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Nombre" VerticalAlignment="Center" />
+                                <TextBox Width="180" />
+                                <TextBlock Text="Categoría" VerticalAlignment="Center" />
+                                <TextBox Width="150" />
+                                <Button Content="Guardar" />
+                            </StackPanel>
+                            <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Concepto" />
+                                    <DataGridTextColumn Header="Categoría" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem Header="Facturas">
+                        <DataGrid AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Número" />
+                                <DataGridTextColumn Header="Fecha" />
+                                <DataGridTextColumn Header="Subtotal" />
+                                <DataGridTextColumn Header="Impuesto" />
+                                <DataGridTextColumn Header="Total" />
+                                <DataGridTextColumn Header="Estado" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </TabItem>
+
+                    <TabItem Header="Notas de crédito">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Factura" VerticalAlignment="Center" />
+                                <ComboBox Width="140" />
+                                <TextBlock Text="Motivo" VerticalAlignment="Center" />
+                                <TextBox Width="220" />
+                                <TextBlock Text="Monto" VerticalAlignment="Center" />
+                                <TextBox Width="90" />
+                                <Button Content="Crear" />
+                            </StackPanel>
+                            <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Número" />
+                                    <DataGridTextColumn Header="Factura" />
+                                    <DataGridTextColumn Header="Motivo" />
+                                    <DataGridTextColumn Header="Monto" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

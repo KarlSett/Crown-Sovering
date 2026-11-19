@@ -2,57 +2,75 @@
 
 ## Punto de partida
 
-La entrega actual es exclusivamente de frontend. No hay usuarios de prueba, autenticación simulada, conexión a base de datos ni credenciales guardadas. Backend/Data, Models, Repositories y Services contienen marcadores para conservar las carpetas en Git.
+La interfaz funciona con datos de demostración en memoria (`Backend/Data/DatosHotel`) y
+no hay autenticación real: `BtnIngresar` y `BtnLoginSimulado` navegan al panel. El esquema
+PostgreSQL de referencia ya está reflejado en `Backend/Models/Entidades.cs`.
 
-La página del login es:
+Página de acceso: `Frontend/Views/LoginView.xaml` (clase
+`Crown__.Frontend.Views.LoginView`), cargada en el Frame `LoginFrame` de
+`MainWindow.xaml`. Los controles del login pertenecen al ámbito de esa página.
 
-- Vista: `Frontend/Views/LoginView.xaml`.
-- Código asociado: `Frontend/Views/LoginView.xaml.cs`.
-- Clase: `Crown__.Frontend.Views.LoginView`.
-- Contenedor: el Frame `LoginFrame` de `MainWindow.xaml`, que carga esta página.
+Panel: `Frontend/Views/DashboardView.xaml` (clase `Crown__.Frontend.Views.DashboardView`).
+Contiene solo composición; cada sección vive en `Frontend/Views/Sections` y tiene su propia
+lógica de presentación. Las pantallas de los trece módulos están en
+`Frontend/Views/Modules` y su visibilidad por rol se documenta en
+`docs/MODULOS_Y_ROLES.md`.
 
-Los controles pertenecen al ámbito de nombres de **LoginView**, no al de MainWindow. Integrar los eventos o bindings en la página; no buscarlos directamente con MainWindow.FindName.
+La selección de rol del login (`CmbRol`) guarda `Frontend/Sesion.Rol`; el panel oculta las
+entradas no permitidas. **Eso es solo presentación**: el backend debe autenticar y
+autorizar cada operación.
 
-## Controles disponibles
+## Secciones y servicios
 
-| Nombre | Tipo WPF | Uso previsto |
+| Sección | Clase | Servicio |
 | --- | --- | --- |
-| TxtUsuario | TextBox | Usuario; propiedad Text |
-| TxtContrasena | PasswordBox | Contraseña; propiedad Password |
-| ChkRecordarme | CheckBox | Preferencia visual; IsChecked; no persiste datos |
-| BtnIngresar | Button | Ingreso real; sin evento ni comando |
-| BtnLoginSimulado | Button | Acceso de demostración pendiente; sin evento ni comando |
-| BtnSoporteTecnico | Button | Soporte pendiente; sin evento ni comando |
+| Funcionamiento | `Sections/FuncionamientoView` | `ServicioHotel.ObtenerResumenOperativo()` |
+| Reservas | `Sections/ReservasView` | `ListarReservas`, `CrearReserva`, `CheckIn`, `CheckOut`, `Cancelar` |
+| Habitaciones | `Sections/HabitacionesView` | `ListarDisponibilidad`, `HabitacionesLibres` |
+| Cuentas de ingreso | `Sections/IngresosView` | `ObtenerIngresos(PeriodoReporte, fecha)` |
 
-ThemeToggle y MotionToggle pertenecen a presentación. Los eventos existentes administran únicamente el fondo, el tema y los controles de ventana.
+`ReservasView` expone el evento `CambiosRealizados`; `DashboardView` lo usa para refrescar
+las demás secciones. Cualquier implementación real debe conservar ese contrato o
+reemplazarlo por notificaciones del servicio.
 
-## Reparto de responsabilidades sugerido
+## Contrato a implementar
 
-| Carpeta | Responsabilidad pendiente |
-| --- | --- |
-| Backend/Models | Entidades y resultados de operaciones |
-| Backend/Data | Conexión y configuración de datos |
-| Backend/Repositories | Acceso a datos |
-| Backend/Services | Autenticación y reglas de negocio |
+`ServicioHotel` devuelve modelos de `Backend/Models` (`ResumenOperativo`,
+`ResumenIngresos`, `ReservaVista`, `HabitacionVista`), no entidades de EF ni `DataTable`.
+Para conectar PostgreSQL:
 
-La vista debería consumir un servicio; evitar consultas SQL o configuración de conexión dentro del XAML y su código asociado.
+1. Crear en `Backend/Repositories` un repositorio por agregado (reservas, habitaciones,
+   folios, transacciones, cierres) con consultas parametrizadas.
+2. Inyectar la cadena de conexión desde `App.config`; no incrustar secretos.
+3. Mantener las firmas públicas de `ServicioHotel` para que las cuatro secciones sigan
+   compilando sin cambios.
+4. Ejecutar las consultas fuera del hilo de interfaz y exponer estados de carga/error.
 
-## Decisiones que debe acordar el equipo
+## Controles del login
 
-- Proveedor y esquema de base de datos.
-- Contrato del servicio de autenticación y representación de sus resultados.
-- Pantalla de destino y permisos por rol.
-- Comportamiento de Recordarme, soporte y acceso de demostración.
-- Presentación de carga y errores de ingreso.
+| Nombre | Tipo | Uso |
+| --- | --- | --- |
+| TxtUsuario | TextBox | Usuario |
+| TxtContrasena | PasswordBox | Contraseña |
+| ChkRecordarme | CheckBox | Preferencia visual; no persiste |
+| BtnIngresar | Button | Abre el panel (sin autenticación) |
+| BtnLoginSimulado | Button | Igual que BtnIngresar |
+| BtnSoporteTecnico | Button | Pendiente |
 
-Estas decisiones no están implementadas ni se asumen en el frontend entregado. Las operaciones de datos deberán ejecutarse sin bloquear el hilo de interfaz; coordinar con frontend los estados de espera y error. No guardar contraseñas en texto plano ni incorporar secretos al repositorio.
+## Decisiones pendientes
+
+- Contrato real de autenticación y permisos por rol.
+- Destino de las operaciones cuando falle la conexión.
+- Cifrado y almacenamiento de la cadena de conexión.
+- Migración del almacén de demostración a datos reales sin duplicar reglas.
 
 ## Añadir archivos al proyecto
 
-El `Crown &.csproj` usa formato clásico de .NET Framework: añadir una clase desde Visual Studio actualiza su entrada Compile. Si se crea desde otro editor, añadir explícitamente dicha entrada. Mantener la versión objetivo 4.7.2 hasta acordar una migración.
+El `Crown &.csproj` usa formato clásico de .NET Framework: registrar explícitamente los
+archivos nuevos (`Compile`, `Page`). Mantener la versión objetivo 4.7.2 hasta acordar una
+migración.
 
 ## Validación inicial
 
-Antes de integrar, abrir la solución y comprobar ambos temas, el formulario, los controles de ventana y el tamaño mínimo. El fondo usa una imagen local y no necesita Internet. Para vídeo opcional, seguir `Frontend/Assets/Video/README.md`.
-
-La primera entrega fue compilada correctamente en Debug. El login no envía datos ni cambia de pantalla al pulsar sus botones.
+Abrir la solución y comprobar ambos temas, el login, el panel y el tamaño mínimo. El fondo
+usa una imagen local; el vídeo es opcional (`Frontend/Assets/Video/README.md`).

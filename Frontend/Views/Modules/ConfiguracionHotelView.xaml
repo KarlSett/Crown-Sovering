@@ -1,0 +1,148 @@
+<UserControl x:Class="Crown__.Frontend.Views.Modules.ConfiguracionHotelView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <TabControl TabStripPlacement="Left">
+        <TabItem Header="Hotel">
+            <GroupBox Header="Datos del hotel">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Nombre" VerticalAlignment="Center" />
+                    <TextBox Grid.Column="1" />
+                    <TextBlock Grid.Column="2" Text="Categoría" VerticalAlignment="Center" />
+                    <ComboBox Grid.Column="3" />
+                    <TextBlock Grid.Row="1" Text="Dirección" VerticalAlignment="Center" />
+                    <TextBox Grid.Row="1" Grid.Column="1" />
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Teléfono" VerticalAlignment="Center" />
+                    <TextBox Grid.Row="1" Grid.Column="3" />
+                    <TextBlock Grid.Row="2" Text="Correo" VerticalAlignment="Center" />
+                    <TextBox Grid.Row="2" Grid.Column="1" />
+                    <TextBlock Grid.Row="3" Text="Moneda" VerticalAlignment="Center" />
+                    <ComboBox Grid.Row="3" Grid.Column="1" />
+                    <Button Grid.Row="3" Grid.Column="3" Content="Guardar" />
+                </Grid>
+            </GroupBox>
+        </TabItem>
+
+        <TabItem Header="Parámetros">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <WrapPanel>
+                    <TextBlock Text="Clave" VerticalAlignment="Center" />
+                    <TextBox Width="160" />
+                    <TextBlock Text="Valor" VerticalAlignment="Center" />
+                    <TextBox Width="240" />
+                    <Button Content="Guardar" />
+                </WrapPanel>
+                <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Clave" />
+                        <DataGridTextColumn Header="Valor" />
+                        <DataGridTextColumn Header="Actualizado" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </TabItem>
+
+        <TabItem Header="Políticas">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <WrapPanel>
+                    <TextBlock Text="Nombre" VerticalAlignment="Center" />
+                    <TextBox Width="160" />
+                    <TextBlock Text="Valor" VerticalAlignment="Center" />
+                    <TextBox Width="180" />
+                    <TextBlock Text="Descripción" VerticalAlignment="Center" />
+                    <TextBox Width="200" />
+                    <Button Content="Guardar" />
+                </WrapPanel>
+                <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Nombre" />
+                        <DataGridTextColumn Header="Valor" />
+                        <DataGridTextColumn Header="Descripción" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </TabItem>
+
+        <TabItem Header="Impuestos">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <WrapPanel>
+                    <TextBlock Text="Nombre" VerticalAlignment="Center" />
+                    <TextBox Width="160" />
+                    <TextBlock Text="Porcentaje" VerticalAlignment="Center" />
+                    <TextBox Width="80" />
+                    <CheckBox Content="Activo" VerticalAlignment="Center" />
+                    <Button Content="Guardar" />
+                </WrapPanel>
+                <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Nombre" />
+                        <DataGridTextColumn Header="Porcentaje" />
+                        <DataGridTextColumn Header="Activo" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </TabItem>
+
+        <TabItem Header="Módulos">
+            <GroupBox Header="Módulos contratados">
+                <DataGrid AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Módulo" />
+                        <DataGridTextColumn Header="Descripción" />
+                        <DataGridTextColumn Header="Activo" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </GroupBox>
+        </TabItem>
+
+        <TabItem Header="Auditoría">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <WrapPanel>
+                    <TextBlock Text="Usuario" VerticalAlignment="Center" />
+                    <TextBox Width="150" />
+                    <TextBlock Text="Desde" VerticalAlignment="Center" />
+                    <DatePicker />
+                    <TextBlock Text="Hasta" VerticalAlignment="Center" />
+                    <DatePicker />
+                    <Button Content="Buscar" />
+                </WrapPanel>
+                <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Fecha" />
+                        <DataGridTextColumn Header="Usuario" />
+                        <DataGridTextColumn Header="Cambio" />
+                        <DataGridTextColumn Header="Valor anterior" />
+                        <DataGridTextColumn Header="Valor nuevo" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </TabItem>
+    </TabControl>
+</UserControl>
