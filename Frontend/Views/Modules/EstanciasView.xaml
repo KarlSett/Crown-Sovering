@@ -1,8 +1,10 @@
 <UserControl x:Class="Crown__.Frontend.Views.Modules.EstanciasView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Loaded="OnLoaded">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="2*" />
             <RowDefinition Height="*" />
@@ -11,13 +13,15 @@
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="Estancias y llaves" VerticalAlignment="Center" />
             <TextBlock Text="Reserva o huésped" VerticalAlignment="Center" />
-            <TextBox Width="200" />
-            <Button Content="Buscar" />
-            <Button Content="Check-in" />
-            <Button Content="Check-out" />
+            <TextBox x:Name="TxtBuscar" Width="200" TextChanged="OnBuscarCambia" />
+            <Button Content="Buscar" Click="OnBuscar" />
+            <Button x:Name="BtnCheckIn" Content="Check-in" Click="OnCheckIn" IsEnabled="False" />
+            <Button x:Name="BtnCheckOut" Content="Check-out" Click="OnCheckOut" IsEnabled="False" />
         </StackPanel>
 
-        <Grid Grid.Row="1">
+        <TextBlock x:Name="TxtAviso" Grid.Row="1" Margin="0,4,0,4" />
+
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
@@ -25,27 +29,17 @@
             </Grid.ColumnDefinitions>
 
             <GroupBox Header="Llegadas de hoy">
-                <ListBox>
-                    <ListBoxItem Content="Reserva · Huésped" />
-                    <ListBoxItem Content="Reserva · Huésped" />
-                </ListBox>
+                <ListBox x:Name="ListaLlegadas" SelectionChanged="OnSeleccionLlegada" />
             </GroupBox>
             <GroupBox Grid.Column="1" Header="En casa">
-                <ListBox>
-                    <ListBoxItem Content="Hab. 101 · Huésped" />
-                    <ListBoxItem Content="Hab. 102 · Huésped" />
-                    <ListBoxItem Content="Hab. 103 · Huésped" />
-                </ListBox>
+                <ListBox x:Name="ListaEnCasa" SelectionChanged="OnSeleccionEnCasa" />
             </GroupBox>
             <GroupBox Grid.Column="2" Header="Salidas de hoy">
-                <ListBox>
-                    <ListBoxItem Content="Hab. 104 · Huésped" />
-                    <ListBoxItem Content="Hab. 105 · Huésped" />
-                </ListBox>
+                <ListBox x:Name="ListaSalidas" SelectionChanged="OnSeleccionSalida" />
             </GroupBox>
         </Grid>
 
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
@@ -62,15 +56,17 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <TextBlock Text="Reserva" VerticalAlignment="Center" />
-                    <TextBox Grid.Column="1" IsReadOnly="True" />
+                    <TextBox x:Name="TxtReserva" Grid.Column="1" IsReadOnly="True" />
                     <TextBlock Grid.Row="1" Text="Tipo de check-in" VerticalAlignment="Center" />
-                    <ComboBox Grid.Row="1" Grid.Column="1" />
+                    <ComboBox x:Name="CmbCheckin" Grid.Row="1" Grid.Column="1" />
                     <TextBlock Grid.Row="2" Text="Tipo de check-out" VerticalAlignment="Center" />
-                    <ComboBox Grid.Row="2" Grid.Column="1" />
+                    <ComboBox x:Name="CmbCheckout" Grid.Row="2" Grid.Column="1" />
                     <TextBlock Grid.Row="3" Text="Estado" VerticalAlignment="Center" />
-                    <ComboBox Grid.Row="3" Grid.Column="1" />
+                    <TextBox x:Name="TxtEstado" Grid.Row="3" Grid.Column="1" IsReadOnly="True" />
+                    <Button x:Name="BtnGuardarTipos" Grid.Row="4" Grid.Column="1" Content="Guardar tipos" Click="OnGuardarTipos" IsEnabled="False" HorizontalAlignment="Left" />
                 </Grid>
             </GroupBox>
 
@@ -80,19 +76,20 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <DataGrid AutoGenerateColumns="False">
+                    <DataGrid x:Name="GridLlaves" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Código" />
-                            <DataGridTextColumn Header="Emitida" />
-                            <DataGridTextColumn Header="Devuelta" />
-                            <DataGridTextColumn Header="Estado" />
+                            <DataGridTextColumn Header="Código" Binding="{Binding Codigo}" Width="*" />
+                            <DataGridTextColumn Header="Emitida" Binding="{Binding EmitidaTexto}" Width="*" />
+                            <DataGridTextColumn Header="Devuelta" Binding="{Binding DevueltaTexto}" Width="*" />
+                            <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="*" />
                         </DataGrid.Columns>
                     </DataGrid>
                     <StackPanel Grid.Row="1" Orientation="Horizontal">
-                        <Button Content="Emitir llave" />
-                        <Button Content="Devolver llave" />
-                        <Button Content="Mover de habitación" />
-                        <Button Content="Imprimir estancia" />
+                        <TextBox x:Name="TxtCodigoLlave" Width="110" ToolTip="Código de la llave, por ejemplo T-101-A" />
+                        <Button x:Name="BtnEmitirLlave" Content="Emitir llave" Click="OnEmitirLlave" IsEnabled="False" />
+                        <Button x:Name="BtnDevolverLlave" Content="Devolver llave" Click="OnDevolverLlave" IsEnabled="False" />
+                        <Button x:Name="BtnMover" Content="Mover de habitación" Click="OnMover" IsEnabled="False" />
+                        <Button x:Name="BtnImprimir" Content="Imprimir estancia" Click="OnImprimir" IsEnabled="False" />
                     </StackPanel>
                 </Grid>
             </GroupBox>

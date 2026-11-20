@@ -3,12 +3,14 @@ using System.IO;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using Crown__.Backend.Services;
 
 namespace Crown__.Frontend.Views
 {
-    // Presentation only. No authentication, navigation, persistence, or backend calls.
+    // Acceso con usuario y contraseña de la base de datos.
     public partial class LoginView : Page
     {
         private readonly Storyboard posterMotion = new Storyboard();
@@ -91,8 +93,31 @@ namespace Crown__.Frontend.Views
 
         private void OnIngresar(object sender, RoutedEventArgs e)
         {
-            // Sin validación de credenciales: se abre el panel con el rol elegido.
-            Sesion.Rol = RolSeleccionado();
+            ResultadoLogin resultado;
+            try
+            {
+                Mouse.OverrideCursor = Cursors.Wait;
+                resultado = new AuthService().Ingresar(TxtUsuario.Text, TxtContrasena.Password);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("No se pudo conectar con la base de datos.\n" + ex.Message,
+                                "Inicio de sesión", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            finally
+            {
+                Mouse.OverrideCursor = null;
+            }
+
+            if (!resultado.Exito)
+            {
+                MessageBox.Show(resultado.Mensaje, "Inicio de sesión", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            Sesion.Iniciar(resultado.Usuario);
+            TxtContrasena.Clear();
 
             if (NavigationService != null)
                 NavigationService.Navigate(new Uri("/Frontend/Views/DashboardView.xaml", UriKind.Relative));
@@ -100,27 +125,6 @@ namespace Crown__.Frontend.Views
 
         private void OnAccesoAdmin(object sender, RoutedEventArgs e)
         {
-            // Acceso de demostración con rol de administrador.
-            Sesion.Rol = Rol.Administrador;
-            CmbRol.SelectedIndex = 1;
-
-            if (NavigationService != null)
-                NavigationService.Navigate(new Uri("/Frontend/Views/DashboardView.xaml", UriKind.Relative));
-        }
-
-        private Rol RolSeleccionado()
-        {
-            switch (CmbRol.SelectedIndex)
-            {
-                case 1:
-                    return Rol.Administrador;
-                case 2:
-                    return Rol.Gerente;
-                case 3:
-                    return Rol.Servicios;
-                default:
-                    return Rol.Recepcionista;
-            }
         }
 
         private void OnMotionToggle(object sender, RoutedEventArgs e)

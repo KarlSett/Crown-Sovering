@@ -1,108 +1,99 @@
 <UserControl x:Class="Crown__.Frontend.Views.Modules.SeguridadView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Loaded="OnLoaded">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel>
+            <TextBlock x:Name="TxtAviso" Margin="0,4,0,4" />
+
             <Expander Header="Usuarios" IsExpanded="True">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="200" />
-                    </Grid.RowDefinitions>
+                <StackPanel>
                     <WrapPanel>
                         <TextBlock Text="Usuario" VerticalAlignment="Center" />
-                        <TextBox Width="120" />
+                        <TextBox x:Name="TxtUsuario" Width="120" />
                         <TextBlock Text="Empleado" VerticalAlignment="Center" />
-                        <ComboBox Width="170" />
+                        <ComboBox x:Name="CmbEmpleado" Width="170" />
                         <TextBlock Text="Contraseña" VerticalAlignment="Center" />
-                        <PasswordBox Width="130" />
+                        <PasswordBox x:Name="TxtClave" Width="130" />
                         <TextBlock Text="Estado" VerticalAlignment="Center" />
-                        <ComboBox Width="110" />
-                        <Button Content="Guardar" />
+                        <ComboBox x:Name="CmbEstado" Width="110" />
+                        <Button Content="Guardar" Click="OnGuardarUsuario" />
                     </WrapPanel>
-                    <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                    <WrapPanel>
+                        <Button Content="Cambiar contraseña" Click="OnCambiarClave" />
+                        <Button Content="Activar / desactivar" Click="OnAlternarEstado" />
+                    </WrapPanel>
+                    <DataGrid x:Name="GridUsuarios" Height="170" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Usuario" />
-                            <DataGridTextColumn Header="Empleado" />
-                            <DataGridTextColumn Header="Roles" />
-                            <DataGridTextColumn Header="Estado" />
+                            <DataGridTextColumn Header="Usuario" Binding="{Binding Username}" Width="*" />
+                            <DataGridTextColumn Header="Empleado" Binding="{Binding Empleado}" Width="*" />
+                            <DataGridTextColumn Header="Roles" Binding="{Binding Roles}" Width="*" />
+                            <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="*" />
                         </DataGrid.Columns>
                     </DataGrid>
-                </Grid>
+                </StackPanel>
             </Expander>
 
             <Expander Header="Empleados">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="180" />
-                    </Grid.RowDefinitions>
+                <StackPanel>
                     <WrapPanel>
                         <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                        <TextBox Width="140" />
+                        <TextBox x:Name="TxtEmpNombre" Width="140" />
                         <TextBlock Text="Apellido" VerticalAlignment="Center" />
-                        <TextBox Width="140" />
+                        <TextBox x:Name="TxtEmpApellido" Width="140" />
                         <TextBlock Text="Correo" VerticalAlignment="Center" />
-                        <TextBox Width="170" />
+                        <TextBox x:Name="TxtEmpCorreo" Width="170" />
                         <TextBlock Text="Teléfono" VerticalAlignment="Center" />
-                        <TextBox Width="120" />
-                        <Button Content="Guardar" />
+                        <TextBox x:Name="TxtEmpTelefono" Width="120" />
+                        <Button Content="Guardar" Click="OnGuardarEmpleado" />
                     </WrapPanel>
-                    <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                    <DataGrid x:Name="GridEmpleados" Height="150" AutoGenerateColumns="False" IsReadOnly="True">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Nombre" />
-                            <DataGridTextColumn Header="Apellido" />
-                            <DataGridTextColumn Header="Correo" />
-                            <DataGridTextColumn Header="Teléfono" />
+                            <DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}" Width="*" />
+                            <DataGridTextColumn Header="Apellido" Binding="{Binding Apellido}" Width="*" />
+                            <DataGridTextColumn Header="Correo" Binding="{Binding Correo}" Width="*" />
+                            <DataGridTextColumn Header="Teléfono" Binding="{Binding Telefono}" Width="*" />
                         </DataGrid.Columns>
                     </DataGrid>
-                </Grid>
+                </StackPanel>
             </Expander>
 
             <Expander Header="Roles">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="180" />
-                    </Grid.RowDefinitions>
+                <StackPanel>
                     <WrapPanel>
                         <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                        <TextBox Width="160" />
+                        <TextBox x:Name="TxtRolNombre" Width="160" />
                         <TextBlock Text="Descripción" VerticalAlignment="Center" />
-                        <TextBox Width="240" />
-                        <Button Content="Guardar" />
+                        <TextBox x:Name="TxtRolDescripcion" Width="240" />
+                        <Button Content="Guardar" Click="OnGuardarRol" />
                     </WrapPanel>
-                    <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                    <DataGrid x:Name="GridRoles" Height="130" AutoGenerateColumns="False" IsReadOnly="True">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Rol" />
-                            <DataGridTextColumn Header="Descripción" />
-                            <DataGridTextColumn Header="Usuarios" />
+                            <DataGridTextColumn Header="Rol" Binding="{Binding Nombre}" Width="*" />
+                            <DataGridTextColumn Header="Descripción" Binding="{Binding Descripcion}" Width="2*" />
+                            <DataGridTextColumn Header="Usuarios" Binding="{Binding Usuarios}" Width="*" />
                         </DataGrid.Columns>
                     </DataGrid>
-                </Grid>
+                </StackPanel>
             </Expander>
 
             <Expander Header="Asignación de roles">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="180" />
-                    </Grid.RowDefinitions>
+                <StackPanel>
                     <WrapPanel>
                         <TextBlock Text="Usuario" VerticalAlignment="Center" />
-                        <ComboBox Width="170" />
+                        <ComboBox x:Name="CmbUsuarioRol" Width="170" />
                         <TextBlock Text="Rol" VerticalAlignment="Center" />
-                        <ComboBox Width="140" />
-                        <Button Content="Asignar" />
+                        <ComboBox x:Name="CmbRol" Width="140" />
+                        <Button Content="Asignar" Click="OnAsignar" />
+                        <Button Content="Quitar el rol seleccionado" Click="OnQuitar" />
                     </WrapPanel>
-                    <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                    <DataGrid x:Name="GridAsignaciones" Height="150" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Usuario" />
-                            <DataGridTextColumn Header="Rol" />
-                            <DataGridTextColumn Header="Acciones" />
+                            <DataGridTextColumn Header="Usuario" Binding="{Binding Usuario}" Width="*" />
+                            <DataGridTextColumn Header="Rol" Binding="{Binding Rol}" Width="*" />
                         </DataGrid.Columns>
                     </DataGrid>
-                </Grid>
+                </StackPanel>
             </Expander>
         </StackPanel>
     </ScrollViewer>

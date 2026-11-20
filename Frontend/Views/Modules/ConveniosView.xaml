@@ -1,98 +1,66 @@
 <UserControl x:Class="Crown__.Frontend.Views.Modules.ConveniosView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Loaded="OnLoaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="2*" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="Convenios corporativos" VerticalAlignment="Center" />
-            <Button Content="Nuevo convenio" />
-            <Button Content="Actualizar" />
+            <Button Content="Nuevo convenio" Click="OnNuevo" />
+            <Button Content="Editar" Click="OnEditar" />
+            <Button Content="Actualizar" Click="OnActualizar" />
         </StackPanel>
 
-        <GroupBox Grid.Row="1" Header="Convenios activos">
-            <WrapPanel>
-                <GroupBox Header="Convenio">
-                    <StackPanel>
-                        <TextBlock Text="Empresa" />
-                        <TextBlock Text="Tarifa preferencial" />
-                        <TextBlock Text="Límite de crédito" />
-                        <TextBlock Text="Vence" />
-                        <StackPanel Orientation="Horizontal">
-                            <Button Content="Editar" />
-                            <Button Content="Reservas" />
-                        </StackPanel>
-                    </StackPanel>
-                </GroupBox>
-                <GroupBox Header="Convenio">
-                    <StackPanel>
-                        <TextBlock Text="Empresa" />
-                        <TextBlock Text="Tarifa preferencial" />
-                        <TextBlock Text="Límite de crédito" />
-                        <TextBlock Text="Vence" />
-                        <StackPanel Orientation="Horizontal">
-                            <Button Content="Editar" />
-                            <Button Content="Reservas" />
-                        </StackPanel>
-                    </StackPanel>
-                </GroupBox>
-                <GroupBox Header="Convenio">
-                    <StackPanel>
-                        <TextBlock Text="Empresa" />
-                        <TextBlock Text="Tarifa preferencial" />
-                        <TextBlock Text="Límite de crédito" />
-                        <TextBlock Text="Vence" />
-                        <StackPanel Orientation="Horizontal">
-                            <Button Content="Editar" />
-                            <Button Content="Reservas" />
-                        </StackPanel>
-                    </StackPanel>
-                </GroupBox>
-            </WrapPanel>
+        <TextBlock x:Name="TxtAviso" Grid.Row="1" Margin="0,4,0,4" />
+
+        <GroupBox Grid.Row="2" Header="Convenios">
+            <DataGrid x:Name="GridConvenios" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single" SelectionChanged="OnSeleccion">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Convenio" Binding="{Binding Nombre}" Width="*" />
+                    <DataGridTextColumn Header="Empresa" Binding="{Binding Empresa}" Width="*" />
+                    <DataGridTextColumn Header="Tarifa preferencial" Binding="{Binding TarifaTexto}" Width="*" />
+                    <DataGridTextColumn Header="Límite de crédito" Binding="{Binding LimiteTexto}" Width="*" />
+                    <DataGridTextColumn Header="Vence" Binding="{Binding VenceTexto}" Width="*" />
+                    <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
         </GroupBox>
 
-        <TabControl Grid.Row="2">
+        <TabControl Grid.Row="3">
             <TabItem Header="Reservas asociadas">
-                <DataGrid AutoGenerateColumns="False">
+                <DataGrid x:Name="GridReservas" AutoGenerateColumns="False" IsReadOnly="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Reserva" />
-                        <DataGridTextColumn Header="Huésped" />
-                        <DataGridTextColumn Header="Entrada" />
-                        <DataGridTextColumn Header="Salida" />
-                        <DataGridTextColumn Header="Estado" />
+                        <DataGridTextColumn Header="Reserva" Binding="{Binding Reserva}" Width="*" />
+                        <DataGridTextColumn Header="Huésped" Binding="{Binding Huesped}" Width="2*" />
+                        <DataGridTextColumn Header="Entrada" Binding="{Binding EntradaTexto}" Width="*" />
+                        <DataGridTextColumn Header="Salida" Binding="{Binding SalidaTexto}" Width="*" />
+                        <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="*" />
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
 
             <TabItem Header="Historial de saldos">
-                <DataGrid AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Convenio" />
-                        <DataGridTextColumn Header="Saldo" />
-                        <DataGridTextColumn Header="Descripción" />
-                        <DataGridTextColumn Header="Fecha" />
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-
-            <TabItem Header="Nuevo convenio">
-                <WrapPanel>
-                    <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                    <TextBox Width="140" />
-                    <TextBlock Text="Empresa" VerticalAlignment="Center" />
-                    <TextBox Width="170" />
-                    <TextBlock Text="Tarifa preferencial" VerticalAlignment="Center" />
-                    <TextBox Width="90" />
-                    <TextBlock Text="Límite de crédito" VerticalAlignment="Center" />
-                    <TextBox Width="90" />
-                    <TextBlock Text="Vencimiento" VerticalAlignment="Center" />
-                    <DatePicker />
-                    <Button Content="Guardar" />
-                </WrapPanel>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Button Content="Registrar saldo" Click="OnRegistrarSaldo" HorizontalAlignment="Left" />
+                    <DataGrid x:Name="GridSaldos" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Convenio" Binding="{Binding Convenio}" Width="*" />
+                            <DataGridTextColumn Header="Saldo" Binding="{Binding SaldoTexto}" Width="*" />
+                            <DataGridTextColumn Header="Descripción" Binding="{Binding Descripcion}" Width="2*" />
+                            <DataGridTextColumn Header="Fecha" Binding="{Binding FechaTexto}" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

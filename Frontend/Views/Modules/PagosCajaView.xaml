@@ -1,11 +1,13 @@
 <UserControl x:Class="Crown__.Frontend.Views.Modules.PagosCajaView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Loaded="OnLoaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="200" />
+            <RowDefinition Height="230" />
         </Grid.RowDefinitions>
 
         <GroupBox Header="Turno de caja">
@@ -20,45 +22,42 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Usuario" VerticalAlignment="Center" />
-                <TextBox Grid.Column="1" IsReadOnly="True" />
+                <TextBox x:Name="TxtUsuario" Grid.Column="1" IsReadOnly="True" />
                 <TextBlock Grid.Column="2" Text="Apertura" VerticalAlignment="Center" />
-                <TextBox Grid.Column="3" IsReadOnly="True" />
+                <TextBox x:Name="TxtApertura" Grid.Column="3" IsReadOnly="True" />
                 <TextBlock Grid.Column="4" Text="Estado" VerticalAlignment="Center" />
-                <TextBox Grid.Column="5" IsReadOnly="True" />
+                <TextBox x:Name="TxtEstadoTurno" Grid.Column="5" IsReadOnly="True" />
                 <StackPanel Grid.Column="6" Orientation="Horizontal">
-                    <Button Content="Abrir turno" />
-                    <Button Content="Cerrar turno" />
+                    <Button x:Name="BtnAbrirTurno" Content="Abrir turno" Click="OnAbrirTurno" />
+                    <Button x:Name="BtnCerrarTurno" Content="Cerrar turno" Click="OnCerrarTurno" IsEnabled="False" />
                 </StackPanel>
             </Grid>
         </GroupBox>
 
-        <Grid Grid.Row="1">
+        <TextBlock x:Name="TxtAviso" Grid.Row="1" Margin="0,4,0,4" />
+
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*" />
                 <ColumnDefinition Width="2*" />
             </Grid.ColumnDefinitions>
 
             <GroupBox Header="Pagos del turno">
-                <ListBox>
-                    <ListBoxItem Content="Pago · Folio · Monto" />
-                    <ListBoxItem Content="Pago · Folio · Monto" />
-                    <ListBoxItem Content="Pago · Folio · Monto" />
-                    <ListBoxItem Content="Pago · Folio · Monto" />
-                </ListBox>
+                <ListBox x:Name="ListaPagos" />
             </GroupBox>
 
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="2*" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <GroupBox Header="Movimientos de caja">
-                    <DataGrid AutoGenerateColumns="False">
+                    <DataGrid x:Name="GridMovimientos" AutoGenerateColumns="False" IsReadOnly="True">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Tipo" />
-                            <DataGridTextColumn Header="Monto" />
-                            <DataGridTextColumn Header="Fecha" />
-                            <DataGridTextColumn Header="Pago" />
+                            <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" Width="*" />
+                            <DataGridTextColumn Header="Monto" Binding="{Binding MontoTexto}" Width="*" />
+                            <DataGridTextColumn Header="Fecha" Binding="{Binding FechaTexto}" Width="*" />
+                            <DataGridTextColumn Header="Pago" Binding="{Binding Pago}" Width="*" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </GroupBox>
@@ -73,17 +72,31 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Esperado" VerticalAlignment="Center" />
-                        <TextBox Grid.Column="1" IsReadOnly="True" />
+                        <TextBox x:Name="TxtEsperado" Grid.Column="1" IsReadOnly="True" />
                         <TextBlock Grid.Column="2" Text="Contado" VerticalAlignment="Center" />
-                        <TextBox Grid.Column="3" />
+                        <TextBox x:Name="TxtContado" Grid.Column="3" TextChanged="OnContadoCambia" />
                         <TextBlock Grid.Column="4" Text="Diferencia" VerticalAlignment="Center" />
-                        <TextBox Grid.Column="5" IsReadOnly="True" />
+                        <TextBox x:Name="TxtDiferencia" Grid.Column="5" IsReadOnly="True" />
                     </Grid>
                 </GroupBox>
             </Grid>
         </Grid>
 
-        <TabControl Grid.Row="2">
+        <TabControl Grid.Row="3">
+            <TabItem Header="Registrar pago">
+                <WrapPanel>
+                    <TextBlock Text="Folio" VerticalAlignment="Center" />
+                    <ComboBox x:Name="CmbFolio" Width="340" />
+                    <TextBlock Text="Método" VerticalAlignment="Center" />
+                    <ComboBox x:Name="CmbMetodo" Width="140" />
+                    <TextBlock Text="Monto" VerticalAlignment="Center" />
+                    <TextBox x:Name="TxtMontoPago" Width="90" />
+                    <TextBlock Text="Referencia" VerticalAlignment="Center" />
+                    <TextBox x:Name="TxtReferencia" Width="160" />
+                    <Button Content="Registrar pago" Click="OnRegistrarPago" />
+                </WrapPanel>
+            </TabItem>
+
             <TabItem Header="Métodos de pago">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -92,27 +105,27 @@
                     </Grid.RowDefinitions>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                        <TextBox Width="180" />
-                        <CheckBox Content="Activo" VerticalAlignment="Center" />
-                        <Button Content="Guardar" />
+                        <TextBox x:Name="TxtMetodoNombre" Width="180" />
+                        <CheckBox x:Name="ChkMetodoActivo" Content="Activo" IsChecked="True" VerticalAlignment="Center" />
+                        <Button Content="Guardar" Click="OnGuardarMetodo" />
                     </StackPanel>
-                    <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                    <DataGrid x:Name="GridMetodos" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Método" />
-                            <DataGridTextColumn Header="Activo" />
+                            <DataGridTextColumn Header="Método" Binding="{Binding Nombre}" Width="*" />
+                            <DataGridTextColumn Header="Activo" Binding="{Binding ActivoTexto}" Width="*" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
             </TabItem>
 
             <TabItem Header="Devoluciones y anulaciones">
-                <DataGrid AutoGenerateColumns="False">
+                <DataGrid x:Name="GridDevoluciones" AutoGenerateColumns="False" IsReadOnly="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Pago" />
-                        <DataGridTextColumn Header="Tipo" />
-                        <DataGridTextColumn Header="Monto" />
-                        <DataGridTextColumn Header="Motivo" />
-                        <DataGridTextColumn Header="Estado" />
+                        <DataGridTextColumn Header="Pago" Binding="{Binding Pago}" Width="*" />
+                        <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" Width="*" />
+                        <DataGridTextColumn Header="Monto" Binding="{Binding MontoTexto}" Width="*" />
+                        <DataGridTextColumn Header="Motivo" Binding="{Binding Motivo}" Width="2*" />
+                        <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="*" />
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
@@ -120,12 +133,12 @@
             <TabItem Header="Nuevo movimiento">
                 <WrapPanel>
                     <TextBlock Text="Tipo" VerticalAlignment="Center" />
-                    <ComboBox Width="120" />
+                    <ComboBox x:Name="CmbTipoMovimiento" Width="120" />
                     <TextBlock Text="Monto" VerticalAlignment="Center" />
-                    <TextBox Width="90" />
+                    <TextBox x:Name="TxtMontoMovimiento" Width="90" />
                     <TextBlock Text="Motivo" VerticalAlignment="Center" />
-                    <TextBox Width="200" />
-                    <Button Content="Registrar" />
+                    <TextBox x:Name="TxtMotivoMovimiento" Width="200" />
+                    <Button Content="Registrar" Click="OnRegistrarMovimiento" />
                 </WrapPanel>
             </TabItem>
         </TabControl>

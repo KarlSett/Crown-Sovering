@@ -44,9 +44,7 @@ namespace Crown__.Frontend.Views
         private void AplicarSesion()
         {
             TxtSesionUsuario.Text = Sesion.NombreRol;
-            TxtSesionDetalle.Text = Sesion.Rol == Rol.Administrador
-                ? "Acceso total al sistema"
-                : "Vista de demostración";
+            TxtSesionDetalle.Text = Sesion.NombreUsuario ?? "Sin sesión";
 
             AplicarPermisos();
         }
@@ -154,9 +152,28 @@ namespace Crown__.Frontend.Views
 
         private void OnCambiosRealizados(object sender, EventArgs e)
         {
-            VistaFuncionamiento.Cargar();
-            VistaHabitaciones.Cargar();
-            VistaIngresos.Cargar();
+            Recargar(VistaFuncionamiento.Cargar);
+            Recargar(VistaHabitaciones.Cargar);
+            Recargar(VistaIngresos.Cargar);
+        }
+
+        // Una sección que no pudo leer la base avisa una sola vez en lugar de dejar la pantalla en blanco.
+        private bool avisoDeConexion;
+
+        private void Recargar(Action cargar)
+        {
+            try
+            {
+                cargar();
+                avisoDeConexion = false;
+            }
+            catch (Exception ex)
+            {
+                if (avisoDeConexion) return;
+                avisoDeConexion = true;
+                MessageBox.Show("No se pudieron leer los datos de la base." + Environment.NewLine + ex.Message, "Conexión",
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private void OnNavChecked(object sender, RoutedEventArgs e)
@@ -198,53 +215,72 @@ namespace Crown__.Frontend.Views
 
             switch (seccion)
             {
+                case "funcionamiento":
+                    Recargar(VistaFuncionamiento.Cargar);
+                    break;
                 case "reservas":
                     Titulo("Reservas", "Consulta, crea y opera las reservas del hotel.");
+                    Recargar(VistaReservas.Cargar);
                     break;
                 case "habitaciones":
                     Titulo("Habitaciones disponibles", "Disponibilidad por fechas, tipo de capacidad y calidad.");
+                    Recargar(VistaHabitaciones.Cargar);
                     break;
                 case "ingresos":
                     Titulo("Cuentas de ingreso", "Resumen diario, semanal y trimestral de las cuentas del hotel.");
+                    Recargar(VistaIngresos.Cargar);
                     break;
                 case "huespedes":
                     Titulo("Huéspedes", "Perfiles de huéspedes y consentimientos de datos.");
+                    Recargar(VistaHuespedes.Cargar);
                     break;
                 case "inventario":
                     Titulo("Inventario de habitaciones", "Habitaciones, pisos, tipos, historial y bloqueos.");
+                    Recargar(VistaInventario.Cargar);
                     break;
                 case "estancias":
                     Titulo("Estancias y llaves", "Check-in, check-out y control de llaves.");
+                    Recargar(VistaEstancias.Cargar);
                     break;
                 case "facturacion":
                     Titulo("Facturación", "Folios, cargos, facturas y notas de crédito.");
+                    Recargar(VistaFacturacion.Cargar);
                     break;
                 case "pagos":
                     Titulo("Pagos y caja", "Cobros, devoluciones, turnos y cierre de caja.");
+                    Recargar(VistaPagos.Cargar);
                     break;
                 case "reservasadmin":
                     Titulo("Reservas · administración", "Canales, grupos, lista de espera y solicitudes especiales.");
+                    Recargar(VistaReservasAdmin.Cargar);
                     break;
                 case "notificaciones":
                     Titulo("Notificaciones y reportes", "Avisos internos y reportes programados.");
+                    Recargar(VistaNotificaciones.Cargar);
                     break;
                 case "tarifas":
                     Titulo("Tarifas y promociones", "Tarifas por tipo de habitación, temporadas, paquetes y promociones.");
+                    Recargar(VistaTarifas.Cargar);
                     break;
                 case "convenios":
                     Titulo("Convenios corporativos", "Empresas, tarifas preferenciales y límites de crédito.");
+                    Recargar(VistaConvenios.Cargar);
                     break;
                 case "limpieza":
                     Titulo("Limpieza y mantenimiento", "Tareas, inspecciones, incidencias y objetos olvidados.");
+                    Recargar(VistaLimpieza.Cargar);
                     break;
                 case "consumos":
                     Titulo("Consumos y servicios", "Productos, inventario, consumos y servicios del hotel.");
+                    Recargar(VistaConsumos.Cargar);
                     break;
                 case "configuracion":
                     Titulo("Configuración del hotel", "Datos del hotel, parámetros, políticas, impuestos y módulos.");
+                    Recargar(VistaConfiguracion.Cargar);
                     break;
                 case "seguridad":
                     Titulo("Seguridad y personal", "Empleados, usuarios, roles y asignaciones.");
+                    Recargar(VistaSeguridad.Cargar);
                     break;
                 default:
                     Titulo("Funcionamiento", "Ocupación, llegadas, salidas y movimientos del día.");
@@ -265,6 +301,7 @@ namespace Crown__.Frontend.Views
 
         private void OnCerrarSesion(object sender, RoutedEventArgs e)
         {
+            Sesion.Cerrar();
             Sesion.Rol = Rol.Recepcionista;
             NavigationService.Navigate(new Uri("/Frontend/Views/LoginView.xaml", UriKind.Relative));
         }
