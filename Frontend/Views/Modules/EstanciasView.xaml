@@ -1,6 +1,6 @@
 <UserControl x:Class="Crown__.Frontend.Views.Modules.EstanciasView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Loaded="OnLoaded">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:dialogs="clr-namespace:Crown__.Frontend.Views.Dialogs" Loaded="OnLoaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -13,8 +13,8 @@
             <TextBlock Text="Reserva o huésped" VerticalAlignment="Center" Margin="0,0,8,0" />
             <TextBox x:Name="TxtBuscarEstancia" TextChanged="OnSearchChanged" Width="200" Margin="0,2,6,2" />
             <Button Content="Buscar" />
-            <Button Content="Check-in" />
-            <Button Content="Check-out" />
+            <Button dialogs:DialogLauncher.Action="check-in" Content="Check-in" />
+            <Button dialogs:DialogLauncher.Action="check-out" Content="Check-out" />
         </StackPanel></ScrollViewer>
 
         <Grid Grid.Row="1">
@@ -81,10 +81,10 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <StackPanel Grid.Row="1" Orientation="Horizontal">
-                        <Button Content="Emitir llave" />
-                        <Button Content="Devolver llave" />
-                        <Button Content="Mover de habitación" />
-                        <Button Content="Imprimir estancia" />
+                        <Button dialogs:DialogLauncher.Action="issue-key" Content="Emitir llave" />
+                        <Button dialogs:DialogLauncher.Action="return-key" Content="Devolver llave" />
+                        <Button dialogs:DialogLauncher.Action="move-room" Content="Mover de habitación" />
+                        <Button dialogs:DialogLauncher.Action="print-stay" Content="Imprimir estancia" />
                     </StackPanel>
                 </Grid>
             </GroupBox>

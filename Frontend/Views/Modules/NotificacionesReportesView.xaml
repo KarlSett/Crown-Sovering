@@ -1,6 +1,6 @@
 <UserControl x:Class="Crown__.Frontend.Views.Modules.NotificacionesReportesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:dialogs="clr-namespace:Crown__.Frontend.Views.Dialogs">
     <TabControl>
         <TabItem Header="Bandeja de notificaciones">
             <Grid>
@@ -50,7 +50,7 @@
                             <WrapPanel>
                                 <TextBlock Text="Rol" VerticalAlignment="Center" Margin="0,0,8,0" />
                                 <ComboBox Width="160" Margin="0,2,6,2" />
-                                <Button Content="Enviar" />
+                                <Button dialogs:DialogLauncher.Action="notification" Content="Enviar" />
                             </WrapPanel>
                             <TextBox Height="50" AcceptsReturn="True" Margin="0,2,6,2" />
                         </StackPanel>

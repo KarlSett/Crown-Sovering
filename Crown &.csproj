@@ -254,6 +254,7 @@
     </Compile>
     <Compile Include="Frontend\Sesion.cs" />
     <Compile Include="Frontend\Themes\ThemePresentation.cs" />
+    <Compile Include="Frontend\Views\Dialogs\DialogLauncher.cs" />
     <Page Include="Frontend\Styles\OperationsStyles.xaml"><Generator>MSBuild:Compile</Generator><SubType>Designer</SubType></Page>
     <Page Include="Frontend\Styles\ModernControls.xaml"><Generator>MSBuild:Compile</Generator><SubType>Designer</SubType></Page>
     <Compile Include="Frontend\Views\DashboardView.xaml.cs">
@@ -269,6 +270,7 @@
     <Compile Include="Backend\Models\Reportes.cs" />
     <Compile Include="Backend\Data\DatosHotel.cs" />
     <Compile Include="Backend\Services\ServicioHotel.cs" />
+    <Compile Include="Backend\Services\BusquedaTolerante.cs" />
     <Compile Include="Frontend\Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
       <SubType>Code</SubType>

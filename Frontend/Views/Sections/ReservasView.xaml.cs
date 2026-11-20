@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using Crown__.Backend.Models;
 using Crown__.Backend.Services;
 
@@ -12,6 +13,7 @@ namespace Crown__.Frontend.Views.Sections
     /// <summary>Listado y operación de reservas, con alta en panel emergente.</summary>
     public partial class ReservasView : UserControl
     {
+        private readonly DispatcherTimer searchDelay = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(180) };
         private readonly ServicioHotel servicio = ServicioHotel.Instancia;
         private bool cargando = true;
         private ReservaVista seleccion;
@@ -29,6 +31,8 @@ namespace Crown__.Frontend.Views.Sections
         public ReservasView()
         {
             InitializeComponent();
+            searchDelay.Tick += delegate { searchDelay.Stop(); CargarReservas(); };
+            Unloaded += delegate { searchDelay.Stop(); };
             LlenarFiltros();
         }
 
@@ -80,12 +84,12 @@ namespace Crown__.Frontend.Views.Sections
 
         private void OnBuscarTextoChanged(object sender, TextChangedEventArgs e)
         {
-            if (!cargando)
-                CargarReservas();
+            if (!cargando) { searchDelay.Stop(); searchDelay.Start(); }
         }
 
         private void OnFiltroComboChanged(object sender, SelectionChangedEventArgs e)
         {
+            searchDelay.Stop();
             if (!cargando)
                 CargarReservas();
         }

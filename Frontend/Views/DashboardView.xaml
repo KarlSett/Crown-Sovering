@@ -154,26 +154,7 @@
             </Grid>
 
             <!-- Cada entrada de la barra lateral tiene su propia vista. -->
-            <Grid Grid.Row="1" Margin="0,16,0,0">
-                <sections:FuncionamientoView x:Name="VistaFuncionamiento" />
-                <sections:ReservasView x:Name="VistaReservas" Visibility="Collapsed" />
-                <sections:HabitacionesView x:Name="VistaHabitaciones" Visibility="Collapsed" />
-                <sections:IngresosView x:Name="VistaIngresos" Visibility="Collapsed" />
-
-                <modules:HuespedesView x:Name="VistaHuespedes" Visibility="Collapsed" />
-                <modules:HabitacionesGestionView x:Name="VistaInventario" Visibility="Collapsed" />
-                <modules:EstanciasView x:Name="VistaEstancias" Visibility="Collapsed" />
-                <modules:FacturacionFoliosView x:Name="VistaFacturacion" Visibility="Collapsed" />
-                <modules:PagosCajaView x:Name="VistaPagos" Visibility="Collapsed" />
-                <modules:ReservasGestionView x:Name="VistaReservasAdmin" Visibility="Collapsed" />
-                <modules:NotificacionesReportesView x:Name="VistaNotificaciones" Visibility="Collapsed" />
-
-                <modules:TarifasView x:Name="VistaTarifas" Visibility="Collapsed" />
-                <modules:ConveniosView x:Name="VistaConvenios" Visibility="Collapsed" />
-                <modules:LimpiezaView x:Name="VistaLimpieza" Visibility="Collapsed" />
-                <modules:ConsumosView x:Name="VistaConsumos" Visibility="Collapsed" />
-                <modules:ConfiguracionHotelView x:Name="VistaConfiguracion" Visibility="Collapsed" />
-                <modules:SeguridadView x:Name="VistaSeguridad" Visibility="Collapsed" />
+            <Grid x:Name="ViewHost" Grid.Row="1" Margin="0,16,0,0">
             </Grid>
         </Grid>
     </Grid>

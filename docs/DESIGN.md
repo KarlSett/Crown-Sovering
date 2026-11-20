@@ -128,3 +128,45 @@ selección por piso y uso del calendario en una raíz WPF nativa oculta. No guar
 
 Las imágenes se generan en `.design-preview/modern/`. Son exportaciones del XAML compilado,
 no capturas de una sesión interactiva. Las vistas de referencia se incluyen en `docs/images/`.
+
+## Subventanas y rendimiento
+
+Las acciones de alta, edición, bloqueo, cobro, turnos, facturación, llaves y mantenimiento
+se vinculan explícitamente a `DialogLauncher.Action`. Se incluyen 33 tipos de subventana,
+entre ellos la consulta de disponibilidad; Nueva reserva abre su ventana existente.
+Las nuevas subventanas tienen propietario, campos desplazables y cierre con botón o Escape.
+No guardan, cobran, eliminan, imprimen ni ejecutan operaciones de negocio. Las acciones
+inline de guardar y buscar no se convierten automáticamente en diálogos.
+
+El panel crea solo la vista inicial. Los demás módulos se instancian al visitarlos y se
+reutilizan, conservando sus filtros y selección. Los refrescos solo alcanzan vistas ya
+creadas. El foco del menú se dibuja dentro del botón (margen positivo) y las etiquetas
+pueden ocupar dos líneas, evitando recortes al cambiar de tamaño o seleccionar una opción.
+
+## Búsquedas tolerantes
+
+Huéspedes, Reservas y Estancias comparten `BusquedaTolerante`. La búsqueda ignora
+mayúsculas, tildes y espacios repetidos, admite nombres/apellidos en distinto orden y
+ordena primero las coincidencias directas. Los nombres de 4 a 8 letras admiten un cambio,
+letra faltante, letra extra o intercambio de dos letras contiguas; desde 9 letras admiten
+hasta dos cambios. El total por consulta no supera dos cambios y todas las palabras deben
+coincidir. Las palabras de hasta tres letras conservan coincidencia directa o parcial.
+
+Códigos, habitaciones, documentos y correos conservan coincidencia directa/parcial;
+no se les aplican correcciones aproximadas. Los filtros de estado y canal se mantienen.
+Cada campo espera 180 ms sin nuevas pulsaciones antes de recalcular, agrupando la escritura
+rápida. Las búsquedas no corrigen ni modifican los datos almacenados.
+
+## Pantalla completa
+
+El botón de maximizar entra en pantalla completa, ocupando el monitor completo y
+cubriendo el área de la barra de tareas mientras la aplicación está activa. Al restaurar,
+se recuperan posición, tamaño, redimensionamiento y WindowChrome de la ventana normal.
+F11 alterna pantalla completa; Escape restaura la ventana. Minimizar mantiene el estado
+para volver a pantalla completa al restaurar. No se cambia la visibilidad global de la barra
+de tareas ni se fuerza Topmost.
+
+Se suspende [WindowChrome](https://learn.microsoft.com/en-us/dotnet/api/system.windows.shell.windowchrome)
+durante la maximización para que la ventana sin bordes use el monitor completo.
+`scripts/Fullscreen-Smoke.cs` verifica límites nativos del monitor, cobertura de la zona de
+la barra de tareas, botón, F11/Escape, restauración de geometría y minimizar/restaurar.

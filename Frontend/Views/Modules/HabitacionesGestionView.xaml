@@ -1,6 +1,6 @@
 <UserControl x:Class="Crown__.Frontend.Views.Modules.HabitacionesGestionView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Loaded="OnLoaded">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:dialogs="clr-namespace:Crown__.Frontend.Views.Dialogs" Loaded="OnLoaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -13,7 +13,7 @@
             <TextBox Width="180" Margin="0,2,6,2" />
             <Button Content="Buscar" />
             <Button Content="Nueva habitación" Click="OnNuevaHabitacion" />
-            <Button Content="Bloquear" />
+            <Button dialogs:DialogLauncher.Action="block-room" Content="Bloquear" />
         </StackPanel></ScrollViewer>
 
         <Grid Grid.Row="1">
@@ -37,7 +37,7 @@
                     <StackPanel Grid.Row="1">
                         <TextBlock Text="Nuevo piso" />
                         <TextBox Margin="0,2,6,2" />
-                        <Button Content="Agregar piso" />
+                        <Button dialogs:DialogLauncher.Action="new-floor" Content="Agregar piso" />
                     </StackPanel>
                 </Grid>
             </GroupBox>
@@ -75,7 +75,7 @@
                         <ComboBox x:Name="CmbTipoHabitacion" Grid.Column="3" Margin="0,0,8,0" />
                         <StackPanel Grid.Column="4" Orientation="Horizontal">
                             <Button Content="Guardar" />
-                            <Button Content="Cambiar estado" />
+                            <Button dialogs:DialogLauncher.Action="room-state" Content="Cambiar estado" />
                         </StackPanel>
                     </Grid>
                 </GroupBox>
@@ -120,7 +120,7 @@
                                 <DatePicker />
                                 <TextBlock Text="Motivo" VerticalAlignment="Center" Margin="0,0,8,0" />
                                 <TextBox Width="180" Margin="0,2,6,2" />
-                                <Button Content="Bloquear" />
+                                <Button dialogs:DialogLauncher.Action="block-room" Content="Bloquear" />
                             </StackPanel></ScrollViewer>
                             <DataGrid Grid.Row="1" AutoGenerateColumns="False">
                                 <DataGrid.Columns>

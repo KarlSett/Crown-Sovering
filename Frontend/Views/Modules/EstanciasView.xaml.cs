@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using Crown__.Backend.Models;
 using Crown__.Backend.Services;
 
@@ -9,17 +10,20 @@ namespace Crown__.Frontend.Views.Modules
 {
     public partial class EstanciasView : UserControl
     {
+        private readonly DispatcherTimer searchDelay = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(180) };
         private bool ready;
         public EstanciasView()
         {
             InitializeComponent();
+            searchDelay.Tick += delegate { searchDelay.Stop(); Cargar(); };
+            Unloaded += delegate { searchDelay.Stop(); };
             CmbEntradaEstancia.ItemsSource = new[] { "Individual", "Grupo" };
             CmbSalidaEstancia.ItemsSource = new[] { "Regular", "Express" };
             CmbEstadoEstancia.ItemsSource = new[] { "Confirmada", "En curso", "Finalizada", "Cancelada", "No presentado" };
             CmbEntradaEstancia.SelectedIndex = 0; CmbSalidaEstancia.SelectedIndex = 0;
         }
         private void OnLoaded(object sender, RoutedEventArgs e) { ready = true; Cargar(); }
-        private void OnSearchChanged(object sender, TextChangedEventArgs e) { if (ready) Cargar(); }
+        private void OnSearchChanged(object sender, TextChangedEventArgs e) { if (ready) { searchDelay.Stop(); searchDelay.Start(); } }
         private void Cargar()
         {
             var reservations = ServicioHotel.Instancia.ListarReservas(TxtBuscarEstancia.Text, "Todas", "Todos");

@@ -1,6 +1,6 @@
 <UserControl x:Class="Crown__.Frontend.Views.Modules.ReservasGestionView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Loaded="OnLoaded" SizeChanged="OnWorkspaceSizeChanged">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:dialogs="clr-namespace:Crown__.Frontend.Views.Dialogs" Loaded="OnLoaded" SizeChanged="OnWorkspaceSizeChanged">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -11,7 +11,7 @@
         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"><StackPanel Orientation="Horizontal">
             <TextBlock x:Name="TxtSemana" Text="Agenda semanal" Width="132" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0" />
             <Button Content="Nueva reserva" Click="OnNuevaReserva" />
-            <Button Content="Buscar disponibilidad" />
+            <Button dialogs:DialogLauncher.Action="availability" Content="Buscar disponibilidad" />
             <TextBlock Text="Canal" VerticalAlignment="Center" Margin="0,0,8,0" />
             <ComboBox x:Name="CmbCanalAgenda" Width="120" Margin="0,2,6,2" SelectionChanged="OnFilterChanged" />
             <TextBlock Text="Estado" VerticalAlignment="Center" Margin="0,0,8,0" />

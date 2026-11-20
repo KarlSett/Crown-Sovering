@@ -83,7 +83,7 @@
     <Style x:Key="NavItem" TargetType="RadioButton">
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Foreground" Value="{DynamicResource UI.SidebarText}" />
-        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontSize" Value="12" /><Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Margin" Value="0,2" />
         <Setter Property="MinHeight" Value="40" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -93,10 +93,10 @@
                     <Border x:Name="Surface" CornerRadius="8" Background="Transparent" Padding="11,11">
                         <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="19" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
                             <Path x:Name="Glyph" Data="M2,2 H18 V18 H2 Z" Width="17" Height="17" Stretch="Uniform" Stroke="{TemplateBinding Foreground}" StrokeThickness="1.45" StrokeLineJoin="Round" VerticalAlignment="Center" />
-                            <ContentPresenter Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" RecognizesAccessKey="True" />
+                            <TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" Text="{TemplateBinding Content}" TextWrapping="Wrap" />
                         </Grid>
                     </Border>
-                    <Border x:Name="Focus" BorderThickness="1" BorderBrush="{DynamicResource UI.BrandMark}" CornerRadius="10" Margin="-2" Visibility="Collapsed" IsHitTestVisible="False" />
+                    <Border x:Name="Focus" BorderThickness="1" BorderBrush="{DynamicResource UI.BrandMark}" CornerRadius="7" Margin="1" Visibility="Collapsed" IsHitTestVisible="False" />
                 </Grid>
                 <ControlTemplate.Triggers>
                         <Trigger Property="Tag" Value="funcionamiento"><Setter TargetName="Glyph" Property="Data" Value="M2,2 H8 V8 H2 Z M12,2 H18 V8 H12 Z M2,12 H8 V18 H2 Z M12,12 H18 V18 H12 Z" /></Trigger>

@@ -104,8 +104,12 @@ internal static class PreviewFrontend
                 throw new Exception("Calendar status filter did not refresh.");
             ShowSection(page, "huespedes"); Layout(page, 1172, 702);
             var guests = (FrameworkElement)page.FindName("VistaHuespedes");
-            ((TextBox)guests.FindName("TxtBuscarHuesped")).Text = "zzzz-no-match"; Pump();
+            ((TextBox)guests.FindName("TxtBuscarHuesped")).Text = "zzzz-no-match"; System.Threading.Thread.Sleep(220); Pump();
             if (((ListBox)guests.FindName("ListaHuespedes")).Items.Count != 0) throw new Exception("Guest filter did not refresh.");
+            ((TextBox)guests.FindName("TxtBuscarHuesped")).Text = "Zofia";
+            System.Threading.Thread.Sleep(220); Pump();
+            if (!((ListBox)guests.FindName("ListaHuespedes")).Items.Cast<Crown__.Frontend.Views.Modules.HuespedesView.GuestPresentation>().Any(item => item.Guest.Nombres.StartsWith("Sof", StringComparison.OrdinalIgnoreCase)))
+                throw new Exception("Guest UI did not find Sofia when typing Zofia.");
             source.RootVisual = null;
         }
     }
@@ -129,12 +133,13 @@ internal static class PreviewFrontend
                 Capture(login, Path.Combine(output, "login-" + theme + "-minimum.png"), 892, 602);
                 var page = new DashboardView(); Layout(page, 1172, 702);
                 page.RaiseEvent(new RoutedEventArgs(FrameworkElement.LoadedEvent));
-                foreach (string viewName in new[] { "VistaFuncionamiento", "VistaReservas", "VistaHabitaciones", "VistaIngresos", "VistaInventario", "VistaReservasAdmin", "VistaEstancias" })
-                    ((FrameworkElement)page.FindName(viewName)).RaiseEvent(new RoutedEventArgs(FrameworkElement.LoadedEvent));
+                if (((Grid)page.FindName("ViewHost")).Children.Count != 1) throw new Exception("Dashboard eagerly created unopened modules.");
                 if ((string)page.Tag != theme) throw new Exception("Dashboard theme failed.");
                 foreach (string section in new[] { "funcionamiento", "habitaciones", "inventario", "reservas", "huespedes", "configuracion", "tarifas", "limpieza", "seguridad", "pagos", "estancias", "consumos", "facturacion", "notificaciones", "convenios", "reservasadmin", "ingresos" })
                 {
                     ShowSection(page, section);
+                    var currentView = (FrameworkElement)typeof(DashboardView).GetMethod("ObtenerVista", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(page, new object[] { section });
+                    if (!currentView.IsLoaded) currentView.RaiseEvent(new RoutedEventArgs(FrameworkElement.LoadedEvent));
                     Capture(page, Path.Combine(output, section + "-" + theme + ".png"), 1172, 702);
                     Capture(page, Path.Combine(output, section + "-" + theme + "-minimum.png"), 892, 602);
                     if (section == "reservasadmin" || section == "inventario" || section == "funcionamiento")
@@ -146,22 +151,43 @@ internal static class PreviewFrontend
                         if (detailGrid.ActualHeight < 80) throw new Exception("The reservation detail cannot show its first guest row at wide size: " + detailGrid.ActualHeight);
                     }
                 }
-                var reserves = (FrameworkElement)page.FindName("VistaReservas");
-                typeof(DashboardView).GetMethod("MostrarSeccion", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(page, new object[] { "reservas" });
-                reserves.GetType().GetMethod("OnNuevaReserva", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(reserves, new object[] { null, new RoutedEventArgs() });
-                Capture(page, Path.Combine(output, "new-reservation-" + theme + ".png"), 1172, 702);
-                Capture(page, Path.Combine(output, "new-reservation-" + theme + "-minimum.png"), 892, 602);
-                var saveReservation = Descendants<Button>(reserves).First(button => button.Content as string == "Guardar reserva");
-                var savePosition = saveReservation.TranslatePoint(new Point(0, 0), page);
-                if (savePosition.Y + saveReservation.ActualHeight > 602 || savePosition.Y < 0)
-                    throw new Exception("Reservation save action is outside the minimum window.");
                 foreach (Window dialog in new Window[] { new NuevaHabitacionWindow(), new NuevaReservaWindow(), new NuevoHuespedWindow() })
                 {
                     Capture((FrameworkElement)dialog.Content, Path.Combine(output, dialog.GetType().Name + "-" + theme + ".png"), (int)dialog.Width - 24, (int)dialog.Height - 40);
                     dialog.Close();
                 }
+                var definitions = typeof(DialogLauncher).GetField("Forms", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null) as Dictionary<string, string[]>;
+                foreach (var action in definitions.Keys)
+                {
+                    var popup = DialogLauncher.Create(action);
+                    var body = (FrameworkElement)popup.Content;
+                    Layout(body, action == "availability" ? 1000 : 480, 480);
+                    if (action == "block-room" || action == "new-rate") Capture(body, Path.Combine(output, "popup-" + action + "-" + theme + ".png"), 480, 480);
+                    var closePopup = Descendants<Button>(body).Last(button => button.Content as string == "Cerrar");
+                    bool closed = false; popup.Closed += delegate { closed = true; };
+                    closePopup.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                    if (!closed) throw new Exception("Dialog close button failed: " + action);
+                }
+                var menuItem = (RadioButton)page.FindName("NavHabitaciones"); menuItem.ApplyTemplate();
+                var ring = (Border)menuItem.Template.FindName("Focus", menuItem);
+                if (ring.Margin.Left < 0 || ring.Margin.Top < 0) throw new Exception("Menu focus ring extends outside its clipped viewport.");
+                foreach (var action in new[] { "new-product", "availability", "new-reservation" })
+                {
+                    var opener = new Button(); DialogLauncher.SetAction(opener, action);
+                    bool opened = false, closed = false;
+                    Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, new Action(delegate
+                    {
+                        var actual = Application.Current.Windows.Cast<Window>().LastOrDefault();
+                        if (actual == null) return;
+                        opened = actual.IsVisible;
+                        actual.Closed += delegate { closed = true; };
+                        actual.Close();
+                    }));
+                    opener.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                    if (!opened || !closed) throw new Exception("Native subwindow did not open and close: " + action);
+                }
                 VerifyInteractions(theme, output);
-                Console.WriteLine("PASS " + theme + ": all 17 sections at both sizes, three dialogs, room filters, floor selection, calendar and contrast.");
+                Console.WriteLine("PASS " + theme + ": all 17 sections at both sizes, 33 dialog forms, native popup opening/closing, lazy modules, menu bounds, filters and contrast.");
             }
             ThemePresentation.Apply("Light");
             var togglePage = new LoginView(); Layout(togglePage, 1172, 702);

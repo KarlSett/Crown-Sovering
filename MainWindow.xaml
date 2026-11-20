@@ -68,7 +68,7 @@
                       Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
             </Button>
             <Button Click="ToggleMaximizeWindow" Style="{StaticResource WindowButton}"
-                    ToolTip="Maximizar o restaurar" AutomationProperties.Name="Maximizar o restaurar ventana" IsTabStop="False">
+                    ToolTip="Pantalla completa o restaurar (F11)" AutomationProperties.Name="Pantalla completa o restaurar ventana" IsTabStop="False">
                 <Path Data="M0.5,0.5 H9.5 V9.5 H0.5 Z" Width="10" Height="10" StrokeThickness="1"
                       Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
             </Button>

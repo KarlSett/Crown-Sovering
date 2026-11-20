@@ -1,6 +1,6 @@
 <UserControl x:Class="Crown__.Frontend.Views.Modules.HuespedesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:dialogs="clr-namespace:Crown__.Frontend.Views.Dialogs">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -13,8 +13,8 @@
             <TextBox x:Name="TxtBuscarHuesped" TextChanged="OnSearchChanged" Width="220" Margin="0,2,6,2" />
             <Button Content="Buscar" />
             <Button Content="Nuevo huésped" Click="OnNuevoHuesped" />
-            <Button Content="Editar" />
-            <Button Content="Eliminar" />
+            <Button dialogs:DialogLauncher.Action="edit-guest" Content="Editar" />
+            <Button dialogs:DialogLauncher.Action="delete-guest" Content="Eliminar" />
         </StackPanel></ScrollViewer>
 
         <Grid Grid.Row="1">
