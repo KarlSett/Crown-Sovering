@@ -17,18 +17,18 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                    <TextBox Grid.Column="1" />
-                    <TextBlock Grid.Column="2" Text="Categoría" VerticalAlignment="Center" />
-                    <ComboBox Grid.Column="3" />
-                    <TextBlock Grid.Row="1" Text="Dirección" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="1" Grid.Column="1" />
-                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Teléfono" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="1" Grid.Column="3" />
-                    <TextBlock Grid.Row="2" Text="Correo" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="2" Grid.Column="1" />
-                    <TextBlock Grid.Row="3" Text="Moneda" VerticalAlignment="Center" />
-                    <ComboBox Grid.Row="3" Grid.Column="1" />
+                    <TextBlock Text="Nombre" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Grid.Column="1" Margin="0,2,6,2" />
+                    <TextBlock Grid.Column="2" Text="Categoría" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <ComboBox Grid.Column="3" Margin="0,2,6,2" />
+                    <TextBlock Grid.Row="1" Text="Dirección" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Margin="0,2,6,2" />
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Teléfono" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Grid.Row="1" Grid.Column="3" Margin="0,2,6,2" />
+                    <TextBlock Grid.Row="2" Text="Correo" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Margin="0,2,6,2" />
+                    <TextBlock Grid.Row="3" Text="Moneda" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <ComboBox Grid.Row="3" Grid.Column="1" Margin="0,2,6,2" />
                     <Button Grid.Row="3" Grid.Column="3" Content="Guardar" />
                 </Grid>
             </GroupBox>
@@ -41,10 +41,10 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <WrapPanel>
-                    <TextBlock Text="Clave" VerticalAlignment="Center" />
-                    <TextBox Width="160" />
-                    <TextBlock Text="Valor" VerticalAlignment="Center" />
-                    <TextBox Width="240" />
+                    <TextBlock Text="Clave" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Width="160" Margin="0,2,6,2" />
+                    <TextBlock Text="Valor" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Width="240" Margin="0,2,6,2" />
                     <Button Content="Guardar" />
                 </WrapPanel>
                 <DataGrid Grid.Row="1" AutoGenerateColumns="False">
@@ -64,12 +64,12 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <WrapPanel>
-                    <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                    <TextBox Width="160" />
-                    <TextBlock Text="Valor" VerticalAlignment="Center" />
-                    <TextBox Width="180" />
-                    <TextBlock Text="Descripción" VerticalAlignment="Center" />
-                    <TextBox Width="200" />
+                    <TextBlock Text="Nombre" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Width="160" Margin="0,2,6,2" />
+                    <TextBlock Text="Valor" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Width="180" Margin="0,2,6,2" />
+                    <TextBlock Text="Descripción" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Width="200" Margin="0,2,6,2" />
                     <Button Content="Guardar" />
                 </WrapPanel>
                 <DataGrid Grid.Row="1" AutoGenerateColumns="False">
@@ -89,10 +89,10 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <WrapPanel>
-                    <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                    <TextBox Width="160" />
-                    <TextBlock Text="Porcentaje" VerticalAlignment="Center" />
-                    <TextBox Width="80" />
+                    <TextBlock Text="Nombre" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Width="160" Margin="0,2,6,2" />
+                    <TextBlock Text="Porcentaje" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Width="80" Margin="0,2,6,2" />
                     <CheckBox Content="Activo" VerticalAlignment="Center" />
                     <Button Content="Guardar" />
                 </WrapPanel>
@@ -125,11 +125,11 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <WrapPanel>
-                    <TextBlock Text="Usuario" VerticalAlignment="Center" />
-                    <TextBox Width="150" />
-                    <TextBlock Text="Desde" VerticalAlignment="Center" />
+                    <TextBlock Text="Usuario" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Width="150" Margin="0,2,6,2" />
+                    <TextBlock Text="Desde" VerticalAlignment="Center" Margin="0,0,8,0" />
                     <DatePicker />
-                    <TextBlock Text="Hasta" VerticalAlignment="Center" />
+                    <TextBlock Text="Hasta" VerticalAlignment="Center" Margin="0,0,8,0" />
                     <DatePicker />
                     <Button Content="Buscar" />
                 </WrapPanel>

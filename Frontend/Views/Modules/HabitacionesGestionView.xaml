@@ -1,20 +1,20 @@
 <UserControl x:Class="Crown__.Frontend.Views.Modules.HabitacionesGestionView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Loaded="OnLoaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Text="Inventario de habitaciones" VerticalAlignment="Center" />
-            <TextBlock Text="Buscar…" VerticalAlignment="Center" />
-            <TextBox Width="180" />
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"><StackPanel Orientation="Horizontal">
+            <TextBlock Text="Inventario de habitaciones" VerticalAlignment="Center" Margin="0,0,8,0" />
+            <TextBlock Text="Buscar…" VerticalAlignment="Center" Margin="0,0,8,0" />
+            <TextBox Width="180" Margin="0,2,6,2" />
             <Button Content="Buscar" />
             <Button Content="Nueva habitación" Click="OnNuevaHabitacion" />
             <Button Content="Bloquear" />
-        </StackPanel>
+        </StackPanel></ScrollViewer>
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -28,7 +28,7 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <ListBox>
+                    <ListBox x:Name="ListaPisos" SelectionChanged="OnPisoSelected">
                         <ListBoxItem Content="Piso 1" />
                         <ListBoxItem Content="Piso 2" />
                         <ListBoxItem Content="Piso 3" />
@@ -36,7 +36,7 @@
                     </ListBox>
                     <StackPanel Grid.Row="1">
                         <TextBlock Text="Nuevo piso" />
-                        <TextBox />
+                        <TextBox Margin="0,2,6,2" />
                         <Button Content="Agregar piso" />
                     </StackPanel>
                 </Grid>
@@ -50,17 +50,17 @@
                 </Grid.RowDefinitions>
 
                 <GroupBox Header="Habitaciones del piso">
-                    <WrapPanel>
-                        <Button Content="101 · Doble" Width="120" Height="60" />
-                        <Button Content="102 · Doble" Width="120" Height="60" />
-                        <Button Content="103 · Suite" Width="120" Height="60" />
-                        <Button Content="104 · Familiar" Width="120" Height="60" />
-                        <Button Content="105 · Sencilla" Width="120" Height="60" />
-                        <Button Content="106 · Suite" Width="120" Height="60" />
-                    </WrapPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <ItemsControl x:Name="ListaHabitaciones">
+                            <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate><DataTemplate>
+                                <RadioButton Content="{Binding Numero}" Tag="{Binding}" GroupName="RoomInventory" Style="{StaticResource RoomTile}" Width="120" Height="60" Margin="4" Checked="OnRoomSelected" AutomationProperties.Name="{Binding Numero}" ToolTip="{Binding Disponibilidad}" />
+                            </DataTemplate></ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
                 </GroupBox>
 
-                <GroupBox Grid.Row="1" Header="Detalle de la habitación">
+                <GroupBox x:Name="DetalleHabitacion" Grid.Row="1" Header="Detalle de la habitación">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -69,10 +69,10 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="N.º" VerticalAlignment="Center" />
-                        <TextBox Grid.Column="1" IsReadOnly="True" />
-                        <TextBlock Grid.Column="2" Text="Tipo" VerticalAlignment="Center" />
-                        <ComboBox Grid.Column="3" />
+                        <TextBlock Text="N.º" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox x:Name="TxtNumeroHabitacion" Grid.Column="1" IsReadOnly="True" Margin="0,0,10,0" />
+                        <TextBlock Grid.Column="2" Text="Tipo" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <ComboBox x:Name="CmbTipoHabitacion" Grid.Column="3" Margin="0,0,8,0" />
                         <StackPanel Grid.Column="4" Orientation="Horizontal">
                             <Button Content="Guardar" />
                             <Button Content="Cambiar estado" />
@@ -87,13 +87,13 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Desde" VerticalAlignment="Center" />
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"><StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Desde" VerticalAlignment="Center" Margin="0,0,8,0" />
                                 <DatePicker />
-                                <TextBlock Text="Hasta" VerticalAlignment="Center" />
+                                <TextBlock Text="Hasta" VerticalAlignment="Center" Margin="0,0,8,0" />
                                 <DatePicker />
                                 <Button Content="Buscar" />
-                            </StackPanel>
+                            </StackPanel></ScrollViewer>
                             <DataGrid Grid.Row="1" AutoGenerateColumns="False">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Estado" />
@@ -111,17 +111,17 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Habitación" VerticalAlignment="Center" />
-                                <ComboBox Width="110" />
-                                <TextBlock Text="Desde" VerticalAlignment="Center" />
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"><StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Habitación" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <ComboBox Width="110" Margin="0,2,6,2" />
+                                <TextBlock Text="Desde" VerticalAlignment="Center" Margin="0,0,8,0" />
                                 <DatePicker />
-                                <TextBlock Text="Hasta" VerticalAlignment="Center" />
+                                <TextBlock Text="Hasta" VerticalAlignment="Center" Margin="0,0,8,0" />
                                 <DatePicker />
-                                <TextBlock Text="Motivo" VerticalAlignment="Center" />
-                                <TextBox Width="180" />
+                                <TextBlock Text="Motivo" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBox Width="180" Margin="0,2,6,2" />
                                 <Button Content="Bloquear" />
-                            </StackPanel>
+                            </StackPanel></ScrollViewer>
                             <DataGrid Grid.Row="1" AutoGenerateColumns="False">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Habitación" />
@@ -139,13 +139,13 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                                <TextBox Width="150" />
-                                <TextBlock Text="Capacidad" VerticalAlignment="Center" />
-                                <TextBox Width="70" />
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"><StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Nombre" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBox Width="150" Margin="0,2,6,2" />
+                                <TextBlock Text="Capacidad" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBox Width="70" Margin="0,2,6,2" />
                                 <Button Content="Guardar" />
-                            </StackPanel>
+                            </StackPanel></ScrollViewer>
                             <DataGrid Grid.Row="1" AutoGenerateColumns="False">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Tipo" />

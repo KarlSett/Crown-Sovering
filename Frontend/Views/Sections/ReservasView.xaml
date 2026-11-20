@@ -75,8 +75,11 @@
         </Grid>
 
         <!-- Alta de reserva -->
-        <Grid x:Name="OverlayNueva" Grid.RowSpan="3" Background="#C8112230" Visibility="Collapsed">
-            <Border Style="{StaticResource OverlayCard}">
+        <Grid x:Name="OverlayNueva" Grid.RowSpan="3" Background="{DynamicResource UI.Overlay}" Visibility="Collapsed">
+            <Border Style="{StaticResource OverlayCard}" MaxHeight="{Binding ActualHeight, ElementName=OverlayNueva}">
+                <Grid>
+                    <Grid.RowDefinitions><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                 <StackPanel>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -113,8 +116,15 @@
                     </Grid>
 
                     <TextBlock Text="Habitación" Style="{StaticResource EyebrowText}" Margin="0,14,0,5" />
-                    <ComboBox x:Name="CmbHabitacionForm" Height="40" FontSize="13" DisplayMemberPath="Texto"
-                              SelectionChanged="OnHabitacionFormCambia" />
+                    <ComboBox x:Name="CmbHabitacionForm" Height="46" FontSize="13" SelectionChanged="OnHabitacionFormCambia">
+                        <ComboBox.ItemTemplate><DataTemplate>
+                            <Grid MinWidth="300">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                <StackPanel><TextBlock Text="{Binding Titulo}" FontWeight="SemiBold" /><TextBlock Text="{Binding Calidad}" Foreground="{DynamicResource UI.Muted}" FontSize="11" /></StackPanel>
+                                <TextBlock Grid.Column="1" Text="{Binding Tarifa}" Foreground="{DynamicResource UI.Text}" VerticalAlignment="Center" Margin="14,0,0,0" />
+                            </Grid>
+                        </DataTemplate></ComboBox.ItemTemplate>
+                    </ComboBox>
 
                     <Grid Margin="0,14,0,0">
                         <Grid.ColumnDefinitions>
@@ -138,9 +148,11 @@
                              TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
 
                     <TextBlock x:Name="TxtMensajeForm" Style="{StaticResource MutedText}" Margin="0,12,0,0"
-                               TextWrapping="Wrap" Foreground="#B4553B" />
+                               TextWrapping="Wrap" Foreground="{DynamicResource UI.Danger}" />
 
-                    <Grid Margin="0,16,0,0">
+                </StackPanel>
+                    </ScrollViewer>
+                    <Grid Grid.Row="1" Margin="0,16,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
@@ -152,7 +164,7 @@
                         <Button Grid.Column="2" Content="Guardar reserva" Style="{StaticResource PrimaryButton}"
                                 Margin="8,0,0,0" Click="OnGuardarReserva" />
                     </Grid>
-                </StackPanel>
+                </Grid>
             </Border>
         </Grid>
     </Grid>

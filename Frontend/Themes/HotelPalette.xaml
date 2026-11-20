@@ -1,11 +1,23 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:system="clr-namespace:System;assembly=mscorlib">
     <FontFamily x:Key="HotelSansFont">Segoe UI</FontFamily>
     <FontFamily x:Key="HotelSerifFont">Georgia</FontFamily>
     <SolidColorBrush x:Key="Brand.Navy" Color="#102B3F" />
     <SolidColorBrush x:Key="Brand.Gold" Color="#D9BB79" />
     <SolidColorBrush x:Key="Brand.Ivory" Color="#F6F3ED" />
     <SolidColorBrush x:Key="Brand.Secondary" Color="#BCC8D1" />
+    <!-- Supplied Forest Green scale. The official emblem keeps its own original colors. -->
+    <SolidColorBrush x:Key="ForestGreen.50" Color="#EFFEF3" />
+    <SolidColorBrush x:Key="ForestGreen.100" Color="#D9FFE5" />
+    <SolidColorBrush x:Key="ForestGreen.200" Color="#B6FCCC" />
+    <SolidColorBrush x:Key="ForestGreen.300" Color="#7CF9A4" />
+    <SolidColorBrush x:Key="ForestGreen.400" Color="#3DEB76" />
+    <SolidColorBrush x:Key="ForestGreen.500" Color="#13D453" />
+    <SolidColorBrush x:Key="ForestGreen.600" Color="#09B040" />
+    <SolidColorBrush x:Key="ForestGreen.700" Color="#0C9239" />
+    <SolidColorBrush x:Key="ForestGreen.800" Color="#0F6C2F" />
+    <SolidColorBrush x:Key="ForestGreen.900" Color="#0E5929" />
+    <SolidColorBrush x:Key="ForestGreen.950" Color="#013213" />
     <SolidColorBrush x:Key="Light.Page" Color="#FAF9F6" />
     <SolidColorBrush x:Key="Light.Ink" Color="#192F40" />
     <SolidColorBrush x:Key="Light.Secondary" Color="#5D6872" />
@@ -24,4 +36,36 @@
     <SolidColorBrush x:Key="Dark.Focus" Color="#D9BB79" />
     <SolidColorBrush x:Key="Dark.Primary" Color="#D9BB79" />
     <SolidColorBrush x:Key="Dark.OnPrimary" Color="#102B3F" />
+    <SolidColorBrush x:Key="UI.Page" Color="#EDF1F6" />
+    <SolidColorBrush x:Key="UI.Surface" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="UI.Inset" Color="#F3F6FA" />
+    <SolidColorBrush x:Key="UI.Text" Color="#172E44" />
+    <SolidColorBrush x:Key="UI.Muted" Color="#596D83" />
+    <SolidColorBrush x:Key="UI.Border" Color="#DCE3EC" />
+    <SolidColorBrush x:Key="UI.Hover" Color="#E7EDF4" />
+    <SolidColorBrush x:Key="UI.Accent" Color="#183C55" />
+    <SolidColorBrush x:Key="UI.OnAccent" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="UI.Selection" Color="#E2ECF5" />
+    <SolidColorBrush x:Key="UI.Success" Color="#23664D" />
+    <SolidColorBrush x:Key="UI.SuccessSurface" Color="#E7F4EC" />
+    <SolidColorBrush x:Key="UI.Warning" Color="#805719" />
+    <SolidColorBrush x:Key="UI.WarningSurface" Color="#FBF1DD" />
+    <SolidColorBrush x:Key="UI.Danger" Color="#A43D52" />
+    <SolidColorBrush x:Key="UI.DangerSurface" Color="#FBEAF0" />
+    <SolidColorBrush x:Key="UI.Sidebar" Color="#FBFCFE" />
+    <SolidColorBrush x:Key="UI.Focus" Color="#345F83" />
+    <system:String x:Key="UI.Mode">Light</system:String>
+    <system:String x:Key="UI.ThemeLabel">Claro</system:String>
+    <SolidColorBrush x:Key="UI.SidebarText" Color="#334B63" />
+    <SolidColorBrush x:Key="UI.SidebarMuted" Color="#5B6F84" />
+    <SolidColorBrush x:Key="UI.SidebarActive" Color="#183C55" />
+    <SolidColorBrush x:Key="UI.OnSidebarActive" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="UI.SidebarHover" Color="#EAF0F6" />
+    <SolidColorBrush x:Key="UI.SidebarBorder" Color="#DCE3EC" />
+    <SolidColorBrush x:Key="UI.BrandMark" Color="#8B692F" />
+    <SolidColorBrush x:Key="UI.BoardToday" Color="#E6EEF7" />
+    <SolidColorBrush x:Key="UI.BoardTodayText" Color="#183C55" />
+    <SolidColorBrush x:Key="UI.RowAlternate" Color="#0817384F" />
+    <SolidColorBrush x:Key="UI.Overlay" Color="#C8112230" />
+    <SolidColorBrush x:Key="UI.TextSelection" Color="#D9BB79" />
 </ResourceDictionary>

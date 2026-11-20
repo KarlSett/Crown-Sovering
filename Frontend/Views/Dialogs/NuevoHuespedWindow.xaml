@@ -3,6 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Nuevo huésped" Width="440" Height="440"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <Grid Background="{DynamicResource UI.Page}" TextElement.Foreground="{DynamicResource UI.Text}">
+        <Grid.RowDefinitions><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
     <StackPanel Margin="16">
         <TextBlock Text="Nombre" />
         <TextBox />
@@ -17,9 +20,11 @@
         <TextBlock Text="Fecha de nacimiento" />
         <DatePicker />
         <CheckBox Content="Autoriza el tratamiento de datos" />
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+    </StackPanel>
+        </ScrollViewer>
+        <StackPanel Grid.Row="1" Margin="16,8,16,12" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="Cancelar" Click="OnCancelar" />
             <Button Content="Guardar" IsDefault="True" Click="OnGuardar" />
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </Window>

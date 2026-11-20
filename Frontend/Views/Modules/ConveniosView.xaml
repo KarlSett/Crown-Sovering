@@ -8,11 +8,11 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Text="Convenios corporativos" VerticalAlignment="Center" />
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"><StackPanel Orientation="Horizontal">
+            <TextBlock Text="Convenios corporativos" VerticalAlignment="Center" Margin="0,0,8,0" />
             <Button Content="Nuevo convenio" />
             <Button Content="Actualizar" />
-        </StackPanel>
+        </StackPanel></ScrollViewer>
 
         <GroupBox Grid.Row="1" Header="Convenios activos">
             <WrapPanel>
@@ -22,10 +22,10 @@
                         <TextBlock Text="Tarifa preferencial" />
                         <TextBlock Text="Límite de crédito" />
                         <TextBlock Text="Vence" />
-                        <StackPanel Orientation="Horizontal">
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"><StackPanel Orientation="Horizontal">
                             <Button Content="Editar" />
                             <Button Content="Reservas" />
-                        </StackPanel>
+                        </StackPanel></ScrollViewer>
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Convenio">
@@ -34,10 +34,10 @@
                         <TextBlock Text="Tarifa preferencial" />
                         <TextBlock Text="Límite de crédito" />
                         <TextBlock Text="Vence" />
-                        <StackPanel Orientation="Horizontal">
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"><StackPanel Orientation="Horizontal">
                             <Button Content="Editar" />
                             <Button Content="Reservas" />
-                        </StackPanel>
+                        </StackPanel></ScrollViewer>
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Convenio">
@@ -46,10 +46,10 @@
                         <TextBlock Text="Tarifa preferencial" />
                         <TextBlock Text="Límite de crédito" />
                         <TextBlock Text="Vence" />
-                        <StackPanel Orientation="Horizontal">
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"><StackPanel Orientation="Horizontal">
                             <Button Content="Editar" />
                             <Button Content="Reservas" />
-                        </StackPanel>
+                        </StackPanel></ScrollViewer>
                     </StackPanel>
                 </GroupBox>
             </WrapPanel>
@@ -81,15 +81,15 @@
 
             <TabItem Header="Nuevo convenio">
                 <WrapPanel>
-                    <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                    <TextBox Width="140" />
-                    <TextBlock Text="Empresa" VerticalAlignment="Center" />
-                    <TextBox Width="170" />
-                    <TextBlock Text="Tarifa preferencial" VerticalAlignment="Center" />
-                    <TextBox Width="90" />
-                    <TextBlock Text="Límite de crédito" VerticalAlignment="Center" />
-                    <TextBox Width="90" />
-                    <TextBlock Text="Vencimiento" VerticalAlignment="Center" />
+                    <TextBlock Text="Nombre" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Width="140" Margin="0,2,6,2" />
+                    <TextBlock Text="Empresa" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Width="170" Margin="0,2,6,2" />
+                    <TextBlock Text="Tarifa preferencial" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Width="90" Margin="0,2,6,2" />
+                    <TextBlock Text="Límite de crédito" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Width="90" Margin="0,2,6,2" />
+                    <TextBlock Text="Vencimiento" VerticalAlignment="Center" Margin="0,0,8,0" />
                     <DatePicker />
                     <Button Content="Guardar" />
                 </WrapPanel>

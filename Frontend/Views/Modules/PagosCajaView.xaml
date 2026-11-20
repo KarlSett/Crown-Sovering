@@ -19,12 +19,12 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="Usuario" VerticalAlignment="Center" />
-                <TextBox Grid.Column="1" IsReadOnly="True" />
-                <TextBlock Grid.Column="2" Text="Apertura" VerticalAlignment="Center" />
-                <TextBox Grid.Column="3" IsReadOnly="True" />
-                <TextBlock Grid.Column="4" Text="Estado" VerticalAlignment="Center" />
-                <TextBox Grid.Column="5" IsReadOnly="True" />
+                <TextBlock Text="Usuario" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <TextBox Grid.Column="1" IsReadOnly="True" Margin="0,2,6,2" />
+                <TextBlock Grid.Column="2" Text="Apertura" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <TextBox Grid.Column="3" IsReadOnly="True" Margin="0,2,6,2" />
+                <TextBlock Grid.Column="4" Text="Estado" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <TextBox Grid.Column="5" IsReadOnly="True" Margin="0,2,6,2" />
                 <StackPanel Grid.Column="6" Orientation="Horizontal">
                     <Button Content="Abrir turno" />
                     <Button Content="Cerrar turno" />
@@ -72,12 +72,12 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Esperado" VerticalAlignment="Center" />
-                        <TextBox Grid.Column="1" IsReadOnly="True" />
-                        <TextBlock Grid.Column="2" Text="Contado" VerticalAlignment="Center" />
-                        <TextBox Grid.Column="3" />
-                        <TextBlock Grid.Column="4" Text="Diferencia" VerticalAlignment="Center" />
-                        <TextBox Grid.Column="5" IsReadOnly="True" />
+                        <TextBlock Text="Esperado" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Grid.Column="1" IsReadOnly="True" Margin="0,2,6,2" />
+                        <TextBlock Grid.Column="2" Text="Contado" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Grid.Column="3" Margin="0,2,6,2" />
+                        <TextBlock Grid.Column="4" Text="Diferencia" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Grid.Column="5" IsReadOnly="True" Margin="0,2,6,2" />
                     </Grid>
                 </GroupBox>
             </Grid>
@@ -90,12 +90,12 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                        <TextBox Width="180" />
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"><StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Nombre" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="180" Margin="0,2,6,2" />
                         <CheckBox Content="Activo" VerticalAlignment="Center" />
                         <Button Content="Guardar" />
-                    </StackPanel>
+                    </StackPanel></ScrollViewer>
                     <DataGrid Grid.Row="1" AutoGenerateColumns="False">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Método" />
@@ -119,12 +119,12 @@
 
             <TabItem Header="Nuevo movimiento">
                 <WrapPanel>
-                    <TextBlock Text="Tipo" VerticalAlignment="Center" />
-                    <ComboBox Width="120" />
-                    <TextBlock Text="Monto" VerticalAlignment="Center" />
-                    <TextBox Width="90" />
-                    <TextBlock Text="Motivo" VerticalAlignment="Center" />
-                    <TextBox Width="200" />
+                    <TextBlock Text="Tipo" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <ComboBox Width="120" Margin="0,2,6,2" />
+                    <TextBlock Text="Monto" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Width="90" Margin="0,2,6,2" />
+                    <TextBlock Text="Motivo" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Width="200" Margin="0,2,6,2" />
                     <Button Content="Registrar" />
                 </WrapPanel>
             </TabItem>

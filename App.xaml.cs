@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -13,5 +13,10 @@ namespace Crown__
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            Crown__.Frontend.Themes.ThemePresentation.Apply("Light");
+            base.OnStartup(e);
+        }
     }
 }

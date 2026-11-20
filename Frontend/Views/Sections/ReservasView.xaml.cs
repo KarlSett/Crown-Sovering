@@ -16,6 +16,13 @@ namespace Crown__.Frontend.Views.Sections
         private bool cargando = true;
         private ReservaVista seleccion;
 
+        private sealed class RoomChoice : HabitacionOpcion
+        {
+            public string Titulo { get; set; }
+            public string Calidad { get; set; }
+            public string Tarifa { get; set; }
+        }
+
         /// <summary>Se dispara cuando una reserva cambia y el panel debe refrescarse.</summary>
         public event EventHandler CambiosRealizados;
 
@@ -226,9 +233,12 @@ namespace Crown__.Frontend.Views.Sections
             DateTime fin = salida.Value <= inicio ? inicio.AddDays(1) : salida.Value;
 
             var opciones = servicio.HabitacionesLibres(inicio, fin)
-                .Select(h => new HabitacionOpcion
+                .Select(h => new RoomChoice
                 {
                     Id = h.Id,
+                    Titulo = h.NumeroHabitacion + " · " + h.CapacidadTipo,
+                    Calidad = h.Calidad + " · " + h.CapacidadPersonas + " personas",
+                    Tarifa = Formato.Moneda(h.TarifaBase) + " / noche",
                     Texto = h.NumeroHabitacion + " · " + h.CapacidadTipo + " · " + h.Calidad + " · " +
                             Formato.Moneda(h.TarifaBase)
                 })

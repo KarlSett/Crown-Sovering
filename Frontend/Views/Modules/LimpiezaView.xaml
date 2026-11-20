@@ -8,12 +8,12 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Text="Limpieza y mantenimiento" VerticalAlignment="Center" />
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"><StackPanel Orientation="Horizontal">
+            <TextBlock Text="Limpieza y mantenimiento" VerticalAlignment="Center" Margin="0,0,8,0" />
             <Button Content="Nueva tarea" />
             <Button Content="Registrar incidencia" />
             <Button Content="Nueva orden" />
-        </StackPanel>
+        </StackPanel></ScrollViewer>
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -49,10 +49,10 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <WrapPanel>
-                        <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                        <TextBox Width="170" />
-                        <TextBlock Text="Descripción" VerticalAlignment="Center" />
-                        <TextBox Width="230" />
+                        <TextBlock Text="Nombre" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="170" Margin="0,2,6,2" />
+                        <TextBlock Text="Descripción" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="230" Margin="0,2,6,2" />
                         <Button Content="Guardar" />
                     </WrapPanel>
                     <DataGrid Grid.Row="1" AutoGenerateColumns="False">
@@ -72,10 +72,10 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <WrapPanel>
-                        <TextBlock Text="Checklist" VerticalAlignment="Center" />
-                        <ComboBox Width="180" />
-                        <TextBlock Text="Descripción" VerticalAlignment="Center" />
-                        <TextBox Width="280" />
+                        <TextBlock Text="Checklist" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <ComboBox Width="180" Margin="0,2,6,2" />
+                        <TextBlock Text="Descripción" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="280" Margin="0,2,6,2" />
                         <Button Content="Guardar" />
                     </WrapPanel>
                     <DataGrid Grid.Row="1" AutoGenerateColumns="False">

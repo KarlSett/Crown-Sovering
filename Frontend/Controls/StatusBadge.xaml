@@ -5,10 +5,17 @@
              UseLayoutRounding="True" SnapsToDevicePixels="True"
              TextOptions.TextFormattingMode="Display">
     <!-- Insignia compacta para estados y conteos. -->
-    <Border Background="#0F17384F" CornerRadius="10" Padding="12,8">
+    <Border Background="{DynamicResource UI.Inset}" CornerRadius="10" Padding="12,8">
         <StackPanel Orientation="Horizontal">
-            <Ellipse Width="8" Height="8" VerticalAlignment="Center" Margin="0,0,8,0"
-                     Fill="{Binding Color, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+            <Ellipse Width="8" Height="8" VerticalAlignment="Center" Margin="0,0,8,0">
+                <Ellipse.Style><Style TargetType="Ellipse">
+                    <Setter Property="Fill" Value="{Binding Color, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                    <Style.Triggers><MultiDataTrigger><MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=Page}}" Value="Brand" />
+                        <Condition Binding="{Binding Etiqueta, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="Ocupadas" />
+                    </MultiDataTrigger.Conditions><Setter Property="Fill" Value="{StaticResource ForestGreen.700}" /></MultiDataTrigger></Style.Triggers>
+                </Style></Ellipse.Style>
+            </Ellipse>
             <TextBlock Text="{Binding Etiqueta, RelativeSource={RelativeSource AncestorType=UserControl}}"
                        Style="{StaticResource MutedText}" FontSize="12" VerticalAlignment="Center" />
             <TextBlock Text="{Binding Cantidad, RelativeSource={RelativeSource AncestorType=UserControl}}"

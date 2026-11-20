@@ -10,14 +10,14 @@
                         <RowDefinition Height="200" />
                     </Grid.RowDefinitions>
                     <WrapPanel>
-                        <TextBlock Text="Usuario" VerticalAlignment="Center" />
-                        <TextBox Width="120" />
-                        <TextBlock Text="Empleado" VerticalAlignment="Center" />
-                        <ComboBox Width="170" />
-                        <TextBlock Text="Contraseña" VerticalAlignment="Center" />
+                        <TextBlock Text="Usuario" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="120" Margin="0,2,6,2" />
+                        <TextBlock Text="Empleado" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <ComboBox Width="170" Margin="0,2,6,2" />
+                        <TextBlock Text="Contraseña" VerticalAlignment="Center" Margin="0,0,8,0" />
                         <PasswordBox Width="130" />
-                        <TextBlock Text="Estado" VerticalAlignment="Center" />
-                        <ComboBox Width="110" />
+                        <TextBlock Text="Estado" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <ComboBox Width="110" Margin="0,2,6,2" />
                         <Button Content="Guardar" />
                     </WrapPanel>
                     <DataGrid Grid.Row="1" AutoGenerateColumns="False">
@@ -38,14 +38,14 @@
                         <RowDefinition Height="180" />
                     </Grid.RowDefinitions>
                     <WrapPanel>
-                        <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                        <TextBox Width="140" />
-                        <TextBlock Text="Apellido" VerticalAlignment="Center" />
-                        <TextBox Width="140" />
-                        <TextBlock Text="Correo" VerticalAlignment="Center" />
-                        <TextBox Width="170" />
-                        <TextBlock Text="Teléfono" VerticalAlignment="Center" />
-                        <TextBox Width="120" />
+                        <TextBlock Text="Nombre" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="140" Margin="0,2,6,2" />
+                        <TextBlock Text="Apellido" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="140" Margin="0,2,6,2" />
+                        <TextBlock Text="Correo" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="170" Margin="0,2,6,2" />
+                        <TextBlock Text="Teléfono" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="120" Margin="0,2,6,2" />
                         <Button Content="Guardar" />
                     </WrapPanel>
                     <DataGrid Grid.Row="1" AutoGenerateColumns="False">
@@ -66,10 +66,10 @@
                         <RowDefinition Height="180" />
                     </Grid.RowDefinitions>
                     <WrapPanel>
-                        <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                        <TextBox Width="160" />
-                        <TextBlock Text="Descripción" VerticalAlignment="Center" />
-                        <TextBox Width="240" />
+                        <TextBlock Text="Nombre" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="160" Margin="0,2,6,2" />
+                        <TextBlock Text="Descripción" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="240" Margin="0,2,6,2" />
                         <Button Content="Guardar" />
                     </WrapPanel>
                     <DataGrid Grid.Row="1" AutoGenerateColumns="False">
@@ -89,10 +89,10 @@
                         <RowDefinition Height="180" />
                     </Grid.RowDefinitions>
                     <WrapPanel>
-                        <TextBlock Text="Usuario" VerticalAlignment="Center" />
-                        <ComboBox Width="170" />
-                        <TextBlock Text="Rol" VerticalAlignment="Center" />
-                        <ComboBox Width="140" />
+                        <TextBlock Text="Usuario" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <ComboBox Width="170" Margin="0,2,6,2" />
+                        <TextBlock Text="Rol" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <ComboBox Width="140" Margin="0,2,6,2" />
                         <Button Content="Asignar" />
                     </WrapPanel>
                     <DataGrid Grid.Row="1" AutoGenerateColumns="False">

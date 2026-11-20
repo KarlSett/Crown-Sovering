@@ -8,13 +8,13 @@
             <RowDefinition Height="200" />
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Text="Consumos y servicios" VerticalAlignment="Center" />
-            <TextBlock Text="Estancia" VerticalAlignment="Center" />
-            <ComboBox Width="160" />
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"><StackPanel Orientation="Horizontal">
+            <TextBlock Text="Consumos y servicios" VerticalAlignment="Center" Margin="0,0,8,0" />
+            <TextBlock Text="Estancia" VerticalAlignment="Center" Margin="0,0,8,0" />
+            <ComboBox Width="160" Margin="0,2,6,2" />
             <Button Content="Nuevo producto" />
             <Button Content="Registrar consumo" />
-        </StackPanel>
+        </StackPanel></ScrollViewer>
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -28,10 +28,10 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Buscar…" VerticalAlignment="Center" />
-                        <TextBox Width="140" />
-                    </StackPanel>
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"><StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Buscar…" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="140" Margin="0,2,6,2" />
+                    </StackPanel></ScrollViewer>
                     <ListBox Grid.Row="1">
                         <ListBoxItem Content="Producto · Precio" />
                         <ListBoxItem Content="Producto · Precio" />
@@ -68,12 +68,12 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Subtotal" VerticalAlignment="Center" />
-                        <TextBox Grid.Column="1" IsReadOnly="True" />
-                        <TextBlock Grid.Column="2" Text="Impuesto" VerticalAlignment="Center" />
-                        <TextBox Grid.Column="3" IsReadOnly="True" />
-                        <TextBlock Grid.Column="4" Text="Total" VerticalAlignment="Center" />
-                        <TextBox Grid.Column="5" IsReadOnly="True" />
+                        <TextBlock Text="Subtotal" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Grid.Column="1" IsReadOnly="True" Margin="0,2,6,2" />
+                        <TextBlock Grid.Column="2" Text="Impuesto" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Grid.Column="3" IsReadOnly="True" Margin="0,2,6,2" />
+                        <TextBlock Grid.Column="4" Text="Total" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Grid.Column="5" IsReadOnly="True" Margin="0,2,6,2" />
                         <Button Grid.Column="6" Content="Cobrar" />
                     </Grid>
                 </GroupBox>
@@ -88,12 +88,12 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <WrapPanel>
-                        <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                        <TextBox Width="160" />
-                        <TextBlock Text="Tipo" VerticalAlignment="Center" />
-                        <ComboBox Width="120" />
-                        <TextBlock Text="Precio" VerticalAlignment="Center" />
-                        <TextBox Width="80" />
+                        <TextBlock Text="Nombre" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="160" Margin="0,2,6,2" />
+                        <TextBlock Text="Tipo" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <ComboBox Width="120" Margin="0,2,6,2" />
+                        <TextBlock Text="Precio" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="80" Margin="0,2,6,2" />
                         <CheckBox Content="Activo" VerticalAlignment="Center" />
                         <Button Content="Guardar" />
                     </WrapPanel>

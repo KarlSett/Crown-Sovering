@@ -8,12 +8,12 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Text="Tarifas y promociones" VerticalAlignment="Center" />
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"><StackPanel Orientation="Horizontal">
+            <TextBlock Text="Tarifas y promociones" VerticalAlignment="Center" Margin="0,0,8,0" />
             <Button Content="Nueva tarifa" />
             <Button Content="Nueva temporada" />
             <Button Content="Nueva promoción" />
-        </StackPanel>
+        </StackPanel></ScrollViewer>
 
         <GroupBox Grid.Row="1" Header="Matriz de tarifas por tipo y temporada">
             <Grid>
@@ -30,26 +30,26 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <TextBlock Text="Tipo de habitación" VerticalAlignment="Center" />
-                <TextBlock Grid.Column="1" Text="Temporada alta" VerticalAlignment="Center" />
-                <TextBlock Grid.Column="2" Text="Temporada media" VerticalAlignment="Center" />
-                <TextBlock Grid.Column="3" Text="Temporada baja" VerticalAlignment="Center" />
-                <TextBlock Grid.Row="1" Text="Sencilla" VerticalAlignment="Center" />
-                <TextBox Grid.Row="1" Grid.Column="1" />
-                <TextBox Grid.Row="1" Grid.Column="2" />
-                <TextBox Grid.Row="1" Grid.Column="3" />
-                <TextBlock Grid.Row="2" Text="Doble" VerticalAlignment="Center" />
-                <TextBox Grid.Row="2" Grid.Column="1" />
-                <TextBox Grid.Row="2" Grid.Column="2" />
-                <TextBox Grid.Row="2" Grid.Column="3" />
-                <TextBlock Grid.Row="3" Text="Familiar" VerticalAlignment="Center" />
-                <TextBox Grid.Row="3" Grid.Column="1" />
-                <TextBox Grid.Row="3" Grid.Column="2" />
-                <TextBox Grid.Row="3" Grid.Column="3" />
-                <TextBlock Grid.Row="4" Text="Suite" VerticalAlignment="Center" />
-                <TextBox Grid.Row="4" Grid.Column="1" />
-                <TextBox Grid.Row="4" Grid.Column="2" />
-                <TextBox Grid.Row="4" Grid.Column="3" />
+                <TextBlock Text="Tipo de habitación" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <TextBlock Grid.Column="1" Text="Temporada alta" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <TextBlock Grid.Column="2" Text="Temporada media" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <TextBlock Grid.Column="3" Text="Temporada baja" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <TextBlock Grid.Row="1" Text="Sencilla" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <TextBox Grid.Row="1" Grid.Column="1" Margin="0,2,6,2" />
+                <TextBox Grid.Row="1" Grid.Column="2" Margin="0,2,6,2" />
+                <TextBox Grid.Row="1" Grid.Column="3" Margin="0,2,6,2" />
+                <TextBlock Grid.Row="2" Text="Doble" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <TextBox Grid.Row="2" Grid.Column="1" Margin="0,2,6,2" />
+                <TextBox Grid.Row="2" Grid.Column="2" Margin="0,2,6,2" />
+                <TextBox Grid.Row="2" Grid.Column="3" Margin="0,2,6,2" />
+                <TextBlock Grid.Row="3" Text="Familiar" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <TextBox Grid.Row="3" Grid.Column="1" Margin="0,2,6,2" />
+                <TextBox Grid.Row="3" Grid.Column="2" Margin="0,2,6,2" />
+                <TextBox Grid.Row="3" Grid.Column="3" Margin="0,2,6,2" />
+                <TextBlock Grid.Row="4" Text="Suite" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <TextBox Grid.Row="4" Grid.Column="1" Margin="0,2,6,2" />
+                <TextBox Grid.Row="4" Grid.Column="2" Margin="0,2,6,2" />
+                <TextBox Grid.Row="4" Grid.Column="3" Margin="0,2,6,2" />
             </Grid>
         </GroupBox>
 
@@ -61,11 +61,11 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <WrapPanel>
-                        <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                        <TextBox Width="160" />
-                        <TextBlock Text="Inicio" VerticalAlignment="Center" />
+                        <TextBlock Text="Nombre" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="160" Margin="0,2,6,2" />
+                        <TextBlock Text="Inicio" VerticalAlignment="Center" Margin="0,0,8,0" />
                         <DatePicker />
-                        <TextBlock Text="Fin" VerticalAlignment="Center" />
+                        <TextBlock Text="Fin" VerticalAlignment="Center" Margin="0,0,8,0" />
                         <DatePicker />
                         <Button Content="Guardar" />
                     </WrapPanel>
@@ -86,12 +86,12 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <WrapPanel>
-                        <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                        <TextBox Width="160" />
-                        <TextBlock Text="Descripción" VerticalAlignment="Center" />
-                        <TextBox Width="220" />
-                        <TextBlock Text="Precio" VerticalAlignment="Center" />
-                        <TextBox Width="90" />
+                        <TextBlock Text="Nombre" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="160" Margin="0,2,6,2" />
+                        <TextBlock Text="Descripción" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="220" Margin="0,2,6,2" />
+                        <TextBlock Text="Precio" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="90" Margin="0,2,6,2" />
                         <Button Content="Guardar" />
                     </WrapPanel>
                     <DataGrid Grid.Row="1" AutoGenerateColumns="False">
@@ -111,13 +111,13 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <WrapPanel>
-                        <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                        <TextBox Width="160" />
-                        <TextBlock Text="Descuento (%)" VerticalAlignment="Center" />
-                        <TextBox Width="80" />
-                        <TextBlock Text="Inicio" VerticalAlignment="Center" />
+                        <TextBlock Text="Nombre" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="160" Margin="0,2,6,2" />
+                        <TextBlock Text="Descuento (%)" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="80" Margin="0,2,6,2" />
+                        <TextBlock Text="Inicio" VerticalAlignment="Center" Margin="0,0,8,0" />
                         <DatePicker />
-                        <TextBlock Text="Fin" VerticalAlignment="Center" />
+                        <TextBlock Text="Fin" VerticalAlignment="Center" Margin="0,0,8,0" />
                         <DatePicker />
                         <CheckBox Content="Activa" VerticalAlignment="Center" />
                         <Button Content="Guardar" />

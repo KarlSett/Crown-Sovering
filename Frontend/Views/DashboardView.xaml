@@ -12,16 +12,9 @@
       Loaded="OnLoaded">
     <Page.Style>
         <Style TargetType="Page">
-            <Setter Property="Tag" Value="Light" />
-            <Setter Property="Background" Value="{StaticResource Light.Page}" />
-            <Setter Property="Foreground" Value="{StaticResource Light.Ink}" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsChecked, ElementName=ThemeToggle}" Value="True">
-                    <Setter Property="Tag" Value="Dark" />
-                    <Setter Property="Background" Value="{StaticResource Dark.Page}" />
-                    <Setter Property="Foreground" Value="{StaticResource Dark.Ink}" />
-                </DataTrigger>
-            </Style.Triggers>
+            <Setter Property="Tag" Value="{DynamicResource UI.Mode}" />
+            <Setter Property="Background" Value="{DynamicResource UI.Page}" />
+            <Setter Property="Foreground" Value="{DynamicResource UI.Text}" />
         </Style>
     </Page.Style>
 
@@ -32,7 +25,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- ============================ Barra lateral ============================ -->
-        <Border Grid.Column="0" Background="{StaticResource Brand.Navy}" CornerRadius="22">
+        <Border Grid.Column="0" Background="{DynamicResource UI.Sidebar}" CornerRadius="16" BorderBrush="{DynamicResource UI.SidebarBorder}" BorderThickness="1">
             <Grid Margin="18,24,18,18">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -45,9 +38,9 @@
                                     AutomationProperties.Name="Emblema de Crown &amp; Sovereign"
                                     Template="{StaticResource CrownSovereignLogoTemplate}" />
                     <StackPanel VerticalAlignment="Center">
-                        <TextBlock Text="Crown &amp; Sovereign" FontFamily="{StaticResource HotelSerifFont}"
-                                   FontSize="14" Foreground="{StaticResource Brand.Ivory}" />
-                        <TextBlock Text="Recepción" FontSize="11" Margin="0,3,0,0" Foreground="{StaticResource Brand.Gold}" />
+                        <TextBlock Text="Crown &amp; Sovereign" FontFamily="{StaticResource HotelSansFont}" FontWeight="SemiBold"
+                                   FontSize="13" Foreground="{DynamicResource UI.SidebarText}" />
+                        <TextBlock Text="Gestión hotelera" FontSize="11" Margin="0,3,0,0" Foreground="{DynamicResource UI.BrandMark}" />
                     </StackPanel>
                 </StackPanel>
 
@@ -55,8 +48,8 @@
                 <ScrollViewer Grid.Row="1" Margin="0,20,0,12" VerticalScrollBarVisibility="Auto"
                               HorizontalScrollBarVisibility="Disabled" Focusable="False">
                     <StackPanel>
-                        <TextBlock Text="OPERACIÓN" Style="{StaticResource EyebrowText}"
-                                   Foreground="#8FA3B2" Margin="12,0,0,8" />
+                        <TextBlock Text="Operación" Style="{StaticResource EyebrowText}"
+                                   Foreground="{DynamicResource UI.SidebarMuted}" Margin="12,0,0,8" />
                         <RadioButton x:Name="NavFuncionamiento" Style="{StaticResource NavItem}" GroupName="Navegacion"
                                      Content="Funcionamiento" Tag="funcionamiento" IsChecked="True" Checked="OnNavChecked" />
                         <RadioButton x:Name="NavReservas" Style="{StaticResource NavItem}" GroupName="Navegacion"
@@ -67,8 +60,8 @@
                                      Content="Cuentas de ingreso" Tag="ingresos" Checked="OnNavChecked" />
 
                         <StackPanel x:Name="GrupoAdministracion">
-                            <TextBlock Text="ADMINISTRACIÓN" Style="{StaticResource EyebrowText}"
-                                       Foreground="#8FA3B2" Margin="12,18,0,8" />
+                            <TextBlock Text="Administración" Style="{StaticResource EyebrowText}"
+                                       Foreground="{DynamicResource UI.SidebarMuted}" Margin="12,18,0,8" />
                             <RadioButton x:Name="NavHuespedes" Style="{StaticResource NavItem}" GroupName="Navegacion"
                                          Content="Huéspedes" Tag="huespedes" Checked="OnNavChecked" />
                             <RadioButton x:Name="NavInventario" Style="{StaticResource NavItem}" GroupName="Navegacion"
@@ -86,8 +79,8 @@
                         </StackPanel>
 
                         <StackPanel x:Name="GrupoProducto">
-                            <TextBlock Text="PRODUCTO" Style="{StaticResource EyebrowText}"
-                                       Foreground="#8FA3B2" Margin="12,18,0,8" />
+                            <TextBlock Text="Producto" Style="{StaticResource EyebrowText}"
+                                       Foreground="{DynamicResource UI.SidebarMuted}" Margin="12,18,0,8" />
                             <RadioButton x:Name="NavTarifas" Style="{StaticResource NavItem}" GroupName="Navegacion"
                                          Content="Tarifas" Tag="tarifas" Checked="OnNavChecked" />
                             <RadioButton x:Name="NavConvenios" Style="{StaticResource NavItem}" GroupName="Navegacion"
@@ -95,8 +88,8 @@
                         </StackPanel>
 
                         <StackPanel x:Name="GrupoServicios">
-                            <TextBlock Text="SERVICIOS" Style="{StaticResource EyebrowText}"
-                                       Foreground="#8FA3B2" Margin="12,18,0,8" />
+                            <TextBlock Text="Servicios" Style="{StaticResource EyebrowText}"
+                                       Foreground="{DynamicResource UI.SidebarMuted}" Margin="12,18,0,8" />
                             <RadioButton x:Name="NavLimpieza" Style="{StaticResource NavItem}" GroupName="Navegacion"
                                          Content="Limpieza y mantenimiento" Tag="limpieza" Checked="OnNavChecked" />
                             <RadioButton x:Name="NavConsumos" Style="{StaticResource NavItem}" GroupName="Navegacion"
@@ -104,8 +97,8 @@
                         </StackPanel>
 
                         <StackPanel x:Name="GrupoConfiguracion">
-                            <TextBlock Text="CONFIGURACIÓN" Style="{StaticResource EyebrowText}"
-                                       Foreground="#8FA3B2" Margin="12,18,0,8" />
+                            <TextBlock Text="Configuración" Style="{StaticResource EyebrowText}"
+                                       Foreground="{DynamicResource UI.SidebarMuted}" Margin="12,18,0,8" />
                             <RadioButton x:Name="NavConfiguracion" Style="{StaticResource NavItem}" GroupName="Navegacion"
                                          Content="Configuración del hotel" Tag="configuracion" Checked="OnNavChecked" />
                             <RadioButton x:Name="NavSeguridad" Style="{StaticResource NavItem}" GroupName="Navegacion"
@@ -115,16 +108,19 @@
                 </ScrollViewer>
 
                 <StackPanel Grid.Row="2">
-                    <Border Background="#14F6F3ED" CornerRadius="12" Padding="12,10" Margin="0,0,0,10">
-                        <StackPanel>
-                            <TextBlock Text="Sesión activa" FontSize="10.5" Foreground="#8FA3B2" />
-                            <TextBlock x:Name="TxtSesionUsuario" Text="Recepción · Turno mañana" FontSize="12"
-                                       Foreground="{StaticResource Brand.Ivory}" Margin="0,4,0,0" />
-                            <TextBlock x:Name="TxtSesionDetalle" Text="Datos de demostración" FontSize="10.5"
-                                       Foreground="#8FA3B2" Margin="0,3,0,0" />
-                        </StackPanel>
+                    <Border Background="{DynamicResource UI.SidebarHover}" CornerRadius="10" Padding="10,12" Margin="0,0,0,10">
+                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="34" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <Border Background="{DynamicResource UI.SidebarActive}" CornerRadius="8" Width="28" Height="32" VerticalAlignment="Center"><Path Data="M13,6 A3,3 0 1 1 7,6 A3,3 0 1 1 13,6 M4,18 V15 Q4,11 10,11 Q16,11 16,15 V18" Stroke="{DynamicResource UI.OnSidebarActive}" StrokeThickness="1.4" Width="16" Height="18" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" /></Border>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Sesión activa" FontSize="10" Foreground="{DynamicResource UI.SidebarMuted}" />
+                                <TextBlock x:Name="TxtSesionUsuario" Text="Recepcionista" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource UI.SidebarText}" Margin="0,3,0,0" />
+                                <TextBlock x:Name="TxtSesionDetalle" Text="Datos de demostración" FontSize="9.5" Foreground="{DynamicResource UI.SidebarMuted}" Margin="0,3,0,0" TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </Grid>
                     </Border>
-                    <Button Content="Cerrar sesión" Style="{StaticResource NavActionButton}" Click="OnCerrarSesion" />
+                    <Button Style="{StaticResource NavActionButton}" Click="OnCerrarSesion" AutomationProperties.Name="Cerrar sesión">
+                        <StackPanel Orientation="Horizontal"><Path Data="M8,1 H2 V15 H8 M6,8 H16 M12,4 L16,8 12,12" Stroke="{DynamicResource UI.SidebarText}" StrokeThickness="1.5" Width="17" Height="16" Margin="0,0,10,0" /><TextBlock Text="Cerrar sesión" /></StackPanel>
+                    </Button>
                 </StackPanel>
             </Grid>
         </Border>
@@ -142,8 +138,8 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <TextBlock x:Name="TxtTitulo" Text="Funcionamiento" FontFamily="{StaticResource HotelSerifFont}"
-                               FontSize="26" FontWeight="SemiBold"
+                    <TextBlock x:Name="TxtTitulo" Text="Funcionamiento" FontFamily="{StaticResource HotelSansFont}"
+                               FontSize="24" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Page}}" />
                     <TextBlock x:Name="TxtSubtitulo" Style="{StaticResource MutedText}" FontSize="12.5" Margin="0,5,0,0"
                                Text="Ocupación, llegadas, salidas y movimientos del día." />
@@ -151,9 +147,9 @@
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top">
                     <TextBlock x:Name="TxtFecha" Style="{StaticResource MutedText}" VerticalAlignment="Center"
                                Margin="0,0,14,0" FontSize="12" />
-                    <ToggleButton x:Name="ThemeToggle" Style="{StaticResource HotelThemeToggle}"
+                    <Button x:Name="ThemeToggle" Style="{StaticResource HotelThemeToggle}"
                                   AutomationProperties.Name="Cambiar apariencia"
-                                  ToolTip="Cambiar entre apariencia clara y oscura" />
+                                  ToolTip="Cambiar apariencia: claro, oscuro y de marca" />
                 </StackPanel>
             </Grid>
 

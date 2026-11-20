@@ -28,6 +28,15 @@ namespace Crown__.Frontend.Views.Sections
 
             DpInicio.SelectedDate = DateTime.Today;
             DpFin.SelectedDate = DateTime.Today.AddDays(1);
+            DpInicio.SelectedDateChanged += OnFilterChanged;
+            DpFin.SelectedDateChanged += OnFilterChanged;
+            CmbCapacidad.SelectionChanged += OnFilterChanged;
+            CmbCalidadHabitacion.SelectionChanged += OnFilterChanged;
+        }
+
+        private void OnFilterChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (IsLoaded && (DpFin.SelectedDate ?? DateTime.Today.AddDays(1)) > (DpInicio.SelectedDate ?? DateTime.Today)) Cargar();
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)

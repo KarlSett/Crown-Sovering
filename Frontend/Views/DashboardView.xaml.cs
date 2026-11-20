@@ -141,9 +141,13 @@ namespace Crown__.Frontend.Views
         {
             AplicarSesion();
 
-            TxtFecha.Text = Formato.DiaDeSemana(DateTime.Today);
+            TxtFecha.Text = DateTime.Today.ToString("dd MMM yyyy", new System.Globalization.CultureInfo("es-BO"));
 
+            VistaReservas.CambiosRealizados -= OnCambiosRealizados;
             VistaReservas.CambiosRealizados += OnCambiosRealizados;
+            VistaFuncionamiento.Cargar();
+            VistaHabitaciones.Cargar();
+            VistaIngresos.Cargar();
 
             string inicial = SeccionInicial();
             NavDe(inicial).IsChecked = true;

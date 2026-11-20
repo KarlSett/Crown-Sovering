@@ -7,16 +7,16 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Text="Facturación" VerticalAlignment="Center" />
-            <TextBlock Text="Buscar…" VerticalAlignment="Center" />
-            <TextBox Width="180" />
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"><StackPanel Orientation="Horizontal">
+            <TextBlock Text="Facturación" VerticalAlignment="Center" Margin="0,0,8,0" />
+            <TextBlock Text="Buscar…" VerticalAlignment="Center" Margin="0,0,8,0" />
+            <TextBox Width="180" Margin="0,2,6,2" />
             <Button Content="Buscar" />
             <Button Content="Nuevo folio" />
             <Button Content="Transferir cargo" />
             <Button Content="Emitir factura" />
             <Button Content="Nota de crédito" />
-        </StackPanel>
+        </StackPanel></ScrollViewer>
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -49,12 +49,12 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Huésped" VerticalAlignment="Center" />
-                        <TextBox Grid.Column="1" IsReadOnly="True" />
-                        <TextBlock Grid.Column="2" Text="Estado" VerticalAlignment="Center" />
-                        <TextBox Grid.Column="3" IsReadOnly="True" />
-                        <TextBlock Grid.Column="4" Text="Saldo" VerticalAlignment="Center" />
-                        <TextBox Grid.Column="5" IsReadOnly="True" />
+                        <TextBlock Text="Huésped" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Grid.Column="1" IsReadOnly="True" Margin="0,2,6,2" />
+                        <TextBlock Grid.Column="2" Text="Estado" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Grid.Column="3" IsReadOnly="True" Margin="0,2,6,2" />
+                        <TextBlock Grid.Column="4" Text="Saldo" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Grid.Column="5" IsReadOnly="True" Margin="0,2,6,2" />
                     </Grid>
                 </GroupBox>
 
@@ -65,17 +65,17 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Concepto" VerticalAlignment="Center" />
-                                <ComboBox Width="140" />
-                                <TextBlock Text="Descripción" VerticalAlignment="Center" />
-                                <TextBox Width="200" />
-                                <TextBlock Text="Cantidad" VerticalAlignment="Center" />
-                                <TextBox Width="70" />
-                                <TextBlock Text="Precio" VerticalAlignment="Center" />
-                                <TextBox Width="90" />
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"><StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Concepto" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <ComboBox Width="140" Margin="0,2,6,2" />
+                                <TextBlock Text="Descripción" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBox Width="200" Margin="0,2,6,2" />
+                                <TextBlock Text="Cantidad" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBox Width="70" Margin="0,2,6,2" />
+                                <TextBlock Text="Precio" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBox Width="90" Margin="0,2,6,2" />
                                 <Button Content="Agregar" />
-                            </StackPanel>
+                            </StackPanel></ScrollViewer>
                             <DataGrid Grid.Row="1" AutoGenerateColumns="False">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Fecha" />
@@ -94,13 +94,13 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                                <TextBox Width="180" />
-                                <TextBlock Text="Categoría" VerticalAlignment="Center" />
-                                <TextBox Width="150" />
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"><StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Nombre" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBox Width="180" Margin="0,2,6,2" />
+                                <TextBlock Text="Categoría" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBox Width="150" Margin="0,2,6,2" />
                                 <Button Content="Guardar" />
-                            </StackPanel>
+                            </StackPanel></ScrollViewer>
                             <DataGrid Grid.Row="1" AutoGenerateColumns="False">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Concepto" />
@@ -129,15 +129,15 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Factura" VerticalAlignment="Center" />
-                                <ComboBox Width="140" />
-                                <TextBlock Text="Motivo" VerticalAlignment="Center" />
-                                <TextBox Width="220" />
-                                <TextBlock Text="Monto" VerticalAlignment="Center" />
-                                <TextBox Width="90" />
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"><StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Factura" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <ComboBox Width="140" Margin="0,2,6,2" />
+                                <TextBlock Text="Motivo" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBox Width="220" Margin="0,2,6,2" />
+                                <TextBlock Text="Monto" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBox Width="90" Margin="0,2,6,2" />
                                 <Button Content="Crear" />
-                            </StackPanel>
+                            </StackPanel></ScrollViewer>
                             <DataGrid Grid.Row="1" AutoGenerateColumns="False">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Número" />

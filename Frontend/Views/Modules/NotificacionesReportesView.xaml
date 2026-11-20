@@ -28,9 +28,9 @@
                     <GroupBox Header="Mensaje">
                         <StackPanel>
                             <TextBlock Text="Título" />
-                            <TextBox IsReadOnly="True" />
+                            <TextBox IsReadOnly="True" Margin="0,2,6,2" />
                             <TextBlock Text="Mensaje" />
-                            <TextBox Height="80" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" />
+                            <TextBox Height="80" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" Margin="0,2,6,2" />
                         </StackPanel>
                     </GroupBox>
 
@@ -48,11 +48,11 @@
                     <GroupBox Grid.Row="2" Header="Nueva notificación">
                         <StackPanel>
                             <WrapPanel>
-                                <TextBlock Text="Rol" VerticalAlignment="Center" />
-                                <ComboBox Width="160" />
+                                <TextBlock Text="Rol" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <ComboBox Width="160" Margin="0,2,6,2" />
                                 <Button Content="Enviar" />
                             </WrapPanel>
-                            <TextBox Height="50" AcceptsReturn="True" />
+                            <TextBox Height="50" AcceptsReturn="True" Margin="0,2,6,2" />
                         </StackPanel>
                     </GroupBox>
                 </Grid>
@@ -66,16 +66,16 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <WrapPanel>
-                    <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                    <TextBox Width="160" />
-                    <TextBlock Text="Tipo" VerticalAlignment="Center" />
-                    <ComboBox Width="120" />
-                    <TextBlock Text="Formato" VerticalAlignment="Center" />
-                    <ComboBox Width="100" />
-                    <TextBlock Text="Frecuencia" VerticalAlignment="Center" />
-                    <ComboBox Width="120" />
-                    <TextBlock Text="Correo" VerticalAlignment="Center" />
-                    <TextBox Width="160" />
+                    <TextBlock Text="Nombre" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Width="160" Margin="0,2,6,2" />
+                    <TextBlock Text="Tipo" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <ComboBox Width="120" Margin="0,2,6,2" />
+                    <TextBlock Text="Formato" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <ComboBox Width="100" Margin="0,2,6,2" />
+                    <TextBlock Text="Frecuencia" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <ComboBox Width="120" Margin="0,2,6,2" />
+                    <TextBlock Text="Correo" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Width="160" Margin="0,2,6,2" />
                     <CheckBox Content="Activo" VerticalAlignment="Center" />
                     <Button Content="Guardar" />
                 </WrapPanel>
@@ -99,13 +99,13 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <WrapPanel>
-                    <TextBlock Text="Reporte" VerticalAlignment="Center" />
-                    <ComboBox Width="180" />
-                    <TextBlock Text="Estado" VerticalAlignment="Center" />
-                    <ComboBox Width="120" />
-                    <TextBlock Text="Desde" VerticalAlignment="Center" />
+                    <TextBlock Text="Reporte" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <ComboBox Width="180" Margin="0,2,6,2" />
+                    <TextBlock Text="Estado" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <ComboBox Width="120" Margin="0,2,6,2" />
+                    <TextBlock Text="Desde" VerticalAlignment="Center" Margin="0,0,8,0" />
                     <DatePicker />
-                    <TextBlock Text="Hasta" VerticalAlignment="Center" />
+                    <TextBlock Text="Hasta" VerticalAlignment="Center" Margin="0,0,8,0" />
                     <DatePicker />
                     <Button Content="Buscar" />
                 </WrapPanel>

@@ -14,6 +14,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -42,25 +43,42 @@
             <Button Grid.Column="5" Content="Buscar disponibilidad" Style="{StaticResource PrimaryButton}"
                     VerticalAlignment="Bottom" Click="OnBuscarDisponibilidad" />
         </Grid>
+        </ScrollViewer>
 
         <TextBlock x:Name="TxtResumenHabitaciones" Grid.Row="1" Style="{StaticResource MutedText}"
                    Margin="2,14,10,0" FontSize="12.5" />
 
         <Border Grid.Row="2" Style="{StaticResource Card}" Margin="0,12,10,0" Padding="0">
+            <Grid>
             <DataGrid x:Name="GridHabitaciones" Style="{StaticResource HotelDataGrid}" Margin="4"
-                      CanUserSortColumns="False">
+                      CanUserSortColumns="False" RowDetailsVisibilityMode="VisibleWhenSelected">
+                <DataGrid.RowDetailsTemplate>
+                    <DataTemplate>
+                        <Border Background="{DynamicResource UI.Selection}" Padding="16,12" Margin="0,0,0,4">
+                            <StackPanel>
+                                <TextBlock Foreground="{DynamicResource UI.Text}" FontWeight="SemiBold"><Run Text="Habitación " /><Run Text="{Binding Numero}" /><Run Text=" · " /><Run Text="{Binding Tipo}" /><Run Text=" · " /><Run Text="{Binding Calidad}" /></TextBlock>
+                                <TextBlock Foreground="{DynamicResource UI.Muted}" Margin="0,5,0,0"><Run Text="{Binding Tarifa}" /><Run Text=" por noche · " /><Run Text="{Binding Capacidad}" /><Run Text=" · " /><Run Text="{Binding Extras}" /></TextBlock>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </DataGrid.RowDetailsTemplate>
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Hab." Binding="{Binding Numero}" Width="62" />
-                    <DataGridTextColumn Header="Piso" Binding="{Binding Piso}" Width="52" />
-                    <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" Width="84" />
-                    <DataGridTextColumn Header="Calidad" Binding="{Binding Calidad}" Width="112" />
-                    <DataGridTextColumn Header="Capacidad" Binding="{Binding Capacidad}" Width="82" />
-                    <DataGridTextColumn Header="Tarifa" Binding="{Binding Tarifa}" Width="94" />
+                    <DataGridTemplateColumn Header="Hab." Width="64" MinWidth="64"><DataGridTemplateColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Numero}" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center" /></DataTemplate></DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Piso" Binding="{Binding Piso}" Width="52" MinWidth="52" />
+                    <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" Width="84" MinWidth="84" />
+                    <DataGridTextColumn Header="Calidad" Binding="{Binding Calidad}" Width="112" MinWidth="112" />
+                    <DataGridTextColumn Header="Capacidad" Binding="{Binding Capacidad}" Width="82" MinWidth="82" />
+                    <DataGridTextColumn Header="Tarifa" Binding="{Binding Tarifa}" Width="94" MinWidth="94" />
                     <DataGridTextColumn Header="Atributos" Binding="{Binding Extras}" Width="*" />
-                    <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="112" />
-                    <DataGridTextColumn Header="Disponibilidad" Binding="{Binding Disponibilidad}" Width="150" />
+                    <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="112" MinWidth="112" />
+                    <DataGridTemplateColumn Header="Disponibilidad" Width="154" MinWidth="154"><DataGridTemplateColumn.CellTemplate><DataTemplate><Border Style="{StaticResource AvailabilityBadge}" Margin="6,0" VerticalAlignment="Center"><TextBlock Text="{Binding Disponibilidad}" Style="{StaticResource AvailabilityText}" /></Border></DataTemplate></DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
+                <TextBlock Text="No hay habitaciones con estos filtros. Prueba otro tipo o calidad." Foreground="{DynamicResource UI.Muted}"
+                           TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="24">
+                    <TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Visibility" Value="Collapsed" /><Style.Triggers><DataTrigger Binding="{Binding Items.Count, ElementName=GridHabitaciones}" Value="0"><Setter Property="Visibility" Value="Visible" /></DataTrigger></Style.Triggers></Style></TextBlock.Style>
+                </TextBlock>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

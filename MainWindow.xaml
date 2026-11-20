@@ -14,12 +14,12 @@
     </shell:WindowChrome.WindowChrome>
     <Window.Style>
         <Style TargetType="Window">
-            <Setter Property="Background" Value="{StaticResource Light.Page}" />
-            <Setter Property="Foreground" Value="{StaticResource Light.Ink}" />
+            <Setter Property="Background" Value="{DynamicResource UI.Page}" />
+            <Setter Property="Foreground" Value="{DynamicResource UI.Text}" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Content.Tag, ElementName=LoginFrame}" Value="Dark">
-                    <Setter Property="Background" Value="{StaticResource Dark.Page}" />
-                    <Setter Property="Foreground" Value="{StaticResource Dark.Ink}" />
+                    <Setter Property="Background" Value="{DynamicResource UI.Page}" />
+                    <Setter Property="Foreground" Value="{DynamicResource UI.Text}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
