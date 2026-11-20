@@ -10,14 +10,14 @@ namespace Crown__.Backend.Models
 
         public static string Moneda(decimal valor)
         {
-            return "$" + valor.ToString("N2", Cultura);
+            return "Bs " + valor.ToString("N2", Cultura);
         }
 
         public static string MonedaCorto(decimal valor)
         {
             if (Math.Abs(valor) >= 1000)
-                return "$" + (valor / 1000m).ToString("0.0", Cultura) + "k";
-            return "$" + valor.ToString("N0", Cultura);
+                return "Bs " + (valor / 1000m).ToString("0.0", Cultura) + "k";
+            return "Bs " + valor.ToString("N0", Cultura);
         }
 
         public static string Porcentaje(double valor)

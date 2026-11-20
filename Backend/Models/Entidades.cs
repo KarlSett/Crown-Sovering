@@ -84,7 +84,7 @@ namespace Crown__.Backend.Models
 
     public class Huesped
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string Nombres { get; set; }
         public string Apellidos { get; set; }
         public string TipoDocumento { get; set; }
@@ -98,13 +98,18 @@ namespace Crown__.Backend.Models
         {
             get { return Nombres + " " + Apellidos; }
         }
+
+        public override string ToString()
+        {
+            return NombreCompleto + " · " + TipoDocumento + " " + NumeroDocumento;
+        }
     }
 
     public class Reserva
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string CodigoReserva { get; set; }
-        public Guid HuespedId { get; set; }
+        public int HuespedId { get; set; }
         public int HabitacionId { get; set; }
         public CanalReserva Canal { get; set; }
         public EstadoReserva Estado { get; set; }
@@ -131,9 +136,9 @@ namespace Crown__.Backend.Models
 
     public class Folio
     {
-        public Guid Id { get; set; }
-        public Guid ReservaId { get; set; }
-        public Guid HuespedId { get; set; }
+        public int Id { get; set; }
+        public int ReservaId { get; set; }
+        public int HuespedId { get; set; }
         public string TipoFolio { get; set; }
         public string Estado { get; set; }  // Abierto / Cerrado
         public decimal SaldoPendiente { get; set; }
@@ -142,7 +147,7 @@ namespace Crown__.Backend.Models
     public class Transaccion
     {
         public int Id { get; set; }
-        public Guid FolioId { get; set; }
+        public int FolioId { get; set; }
         public DateTime Fecha { get; set; }
         public string Concepto { get; set; }
         public decimal Cargo { get; set; }
