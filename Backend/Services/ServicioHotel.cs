@@ -264,25 +264,19 @@ namespace Crown__.Backend.Services
         {
             IEnumerable<Reserva> consulta = DatosHotel.Reservas;
 
-            if (!string.IsNullOrWhiteSpace(texto))
-            {
-                string buscado = texto.Trim().ToLowerInvariant();
-                consulta = consulta.Where(r =>
-                    r.CodigoReserva.ToLowerInvariant().Contains(buscado) ||
-                    NombreHuesped(r.HuespedId).ToLowerInvariant().Contains(buscado) ||
-                    NumeroHabitacion(r.HabitacionId).ToLowerInvariant().Contains(buscado));
-            }
-
             if (!string.IsNullOrEmpty(estado) && estado != "Todas")
                 consulta = consulta.Where(r => r.Estado.ToString() == estado);
 
             if (!string.IsNullOrEmpty(canal) && canal != "Todos")
                 consulta = consulta.Where(r => r.Canal.ToString() == canal);
 
-            return consulta
-                .OrderBy(r => Prioridad(r.Estado))
-                .ThenBy(r => r.FechaCheckinEsperado)
-                .Select(AColumna)
+            var search = new BusquedaTolerante(texto);
+            return consulta.Select(r => new { Reservation = r, Score = search.Puntuar(NombreHuesped(r.HuespedId), r.CodigoReserva, NumeroHabitacion(r.HabitacionId)) })
+                .Where(item => item.Score >= 0)
+                .OrderBy(item => item.Score)
+                .ThenBy(item => Prioridad(item.Reservation.Estado))
+                .ThenBy(item => item.Reservation.FechaCheckinEsperado)
+                .Select(item => AColumna(item.Reservation))
                 .ToList();
         }
 

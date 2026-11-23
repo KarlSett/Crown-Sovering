@@ -7,8 +7,10 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Frontend/Themes/HotelPalette.xaml" />
+                <ResourceDictionary Source="Frontend/Styles/ModernControls.xaml" />
                 <ResourceDictionary Source="Frontend/Styles/LiquidGlassStyles.xaml" />
                 <ResourceDictionary Source="Frontend/Styles/DashboardStyles.xaml" />
+                <ResourceDictionary Source="Frontend/Styles/OperationsStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

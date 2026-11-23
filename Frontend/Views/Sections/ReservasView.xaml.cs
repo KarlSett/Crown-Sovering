@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using Crown__.Backend.Models;
 using Crown__.Backend.Services;
 
@@ -12,9 +13,17 @@ namespace Crown__.Frontend.Views.Sections
     /// <summary>Listado y operación de reservas, con alta en panel emergente.</summary>
     public partial class ReservasView : UserControl
     {
+        private readonly DispatcherTimer searchDelay = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(180) };
         private readonly ServicioHotel servicio = ServicioHotel.Instancia;
         private bool cargando = true;
         private ReservaVista seleccion;
+
+        private sealed class RoomChoice : HabitacionOpcion
+        {
+            public string Titulo { get; set; }
+            public string Calidad { get; set; }
+            public string Tarifa { get; set; }
+        }
 
         /// <summary>Se dispara cuando una reserva cambia y el panel debe refrescarse.</summary>
         public event EventHandler CambiosRealizados;
@@ -22,6 +31,8 @@ namespace Crown__.Frontend.Views.Sections
         public ReservasView()
         {
             InitializeComponent();
+            searchDelay.Tick += delegate { searchDelay.Stop(); CargarReservas(); };
+            Unloaded += delegate { searchDelay.Stop(); };
             LlenarFiltros();
         }
 
@@ -73,12 +84,12 @@ namespace Crown__.Frontend.Views.Sections
 
         private void OnBuscarTextoChanged(object sender, TextChangedEventArgs e)
         {
-            if (!cargando)
-                CargarReservas();
+            if (!cargando) { searchDelay.Stop(); searchDelay.Start(); }
         }
 
         private void OnFiltroComboChanged(object sender, SelectionChangedEventArgs e)
         {
+            searchDelay.Stop();
             if (!cargando)
                 CargarReservas();
         }
@@ -226,9 +237,12 @@ namespace Crown__.Frontend.Views.Sections
             DateTime fin = salida.Value <= inicio ? inicio.AddDays(1) : salida.Value;
 
             var opciones = servicio.HabitacionesLibres(inicio, fin)
-                .Select(h => new HabitacionOpcion
+                .Select(h => new RoomChoice
                 {
                     Id = h.Id,
+                    Titulo = h.NumeroHabitacion + " · " + h.CapacidadTipo,
+                    Calidad = h.Calidad + " · " + h.CapacidadPersonas + " personas",
+                    Tarifa = Formato.Moneda(h.TarifaBase) + " / noche",
                     Texto = h.NumeroHabitacion + " · " + h.CapacidadTipo + " · " + h.Calidad + " · " +
                             Formato.Moneda(h.TarifaBase)
                 })

@@ -1,4 +1,4 @@
-﻿<Page x:Class="Crown__.Frontend.Views.LoginView"
+<Page x:Class="Crown__.Frontend.Views.LoginView"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -10,16 +10,9 @@
       TextOptions.TextFormattingMode="Display" Loaded="OnLoaded" Unloaded="OnUnloaded">
     <Page.Style>
         <Style TargetType="Page">
-            <Setter Property="Tag" Value="Light" />
-            <Setter Property="Background" Value="{StaticResource Light.Page}" />
-            <Setter Property="Foreground" Value="{StaticResource Light.Ink}" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsChecked, ElementName=ThemeToggle}" Value="True">
-                    <Setter Property="Tag" Value="Dark" />
-                    <Setter Property="Background" Value="{StaticResource Dark.Page}" />
-                    <Setter Property="Foreground" Value="{StaticResource Dark.Ink}" />
-                </DataTrigger>
-            </Style.Triggers>
+            <Setter Property="Tag" Value="{DynamicResource UI.Mode}" />
+            <Setter Property="Background" Value="{DynamicResource UI.Page}" />
+            <Setter Property="Foreground" Value="{DynamicResource UI.Text}" />
         </Style>
     </Page.Style>
     <!-- Frontend only: no credentials are validated, saved, or sent. -->
@@ -92,10 +85,10 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="48" />
             </Grid.RowDefinitions>
-            <ToggleButton x:Name="ThemeToggle" IsChecked="False" Margin="0,0,20,0"
+            <Button x:Name="ThemeToggle" Margin="0,0,20,0"
                           HorizontalAlignment="Right" VerticalAlignment="Center"
-                          Style="{StaticResource HotelThemeToggle}" AutomationProperties.Name="Tema oscuro"
-                          ToolTip="Cambiar entre apariencia clara y oscura" KeyboardNavigation.TabIndex="6" />
+                          Style="{StaticResource HotelThemeToggle}" AutomationProperties.Name="Cambiar apariencia"
+                          ToolTip="Cambiar apariencia: claro, oscuro y de marca" KeyboardNavigation.TabIndex="6" />
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
                           Focusable="False" Padding="0,8,0,12">
                 <Grid Margin="36,0" MaxWidth="344" VerticalAlignment="Center">

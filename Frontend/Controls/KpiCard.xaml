@@ -7,9 +7,13 @@
     <!-- Tarjeta de indicador reutilizable: título, valor y pista inferior. -->
     <Border Style="{StaticResource Card}" Padding="16,14">
         <StackPanel>
-            <TextBlock x:Name="TxtTitulo" Style="{StaticResource EyebrowText}"
-                       AutomationProperties.Name="Indicador" />
-            <TextBlock x:Name="TxtValor" Style="{StaticResource KpiValue}" Text="—" Margin="0,6,0,0" />
+            <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                <TextBlock x:Name="TxtTitulo" Style="{StaticResource EyebrowText}" FontWeight="Medium" VerticalAlignment="Center" AutomationProperties.Name="Indicador" />
+                <Border Grid.Column="1" Background="{DynamicResource UI.Inset}" CornerRadius="7" Width="28" Height="28" Margin="6,0,0,0">
+                    <Path x:Name="MetricGlyph" Data="M2,16 V9 H6 V16 M9,16 V4 H13 V16 M16,16 V1 H20 V16" Stroke="{DynamicResource UI.Muted}" StrokeThickness="1.4" Width="16" Height="16" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+            </Grid>
+            <TextBlock x:Name="TxtValor" Style="{StaticResource KpiValue}" FontSize="30" FontWeight="SemiBold" Text="—" Margin="0,8,0,0" />
             <TextBlock x:Name="TxtPista" Style="{StaticResource MutedText}" Text=" " Margin="0,4,0,0" />
         </StackPanel>
     </Border>

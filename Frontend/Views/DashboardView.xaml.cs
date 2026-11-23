@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Crown__.Backend.Models;
 using Crown__.Frontend.Views.Sections;
+using Crown__.Frontend.Views.Modules;
 
 namespace Crown__.Frontend.Views
 {
@@ -33,6 +34,45 @@ namespace Crown__.Frontend.Views
             { "configuracion", new[] { Rol.Administrador } },
             { "seguridad", new[] { Rol.Administrador } }
         };
+
+        private readonly Dictionary<string, UserControl> views = new Dictionary<string, UserControl>();
+        private UserControl ObtenerVista(string section)
+        {
+            UserControl view;
+            if (views.TryGetValue(section, out view)) return view;
+            string name;
+            switch (section)
+            {
+                case "funcionamiento": view = new FuncionamientoView(); name = "VistaFuncionamiento"; break;
+                case "reservas": view = new ReservasView(); name = "VistaReservas"; break;
+                case "habitaciones": view = new HabitacionesView(); name = "VistaHabitaciones"; break;
+                case "ingresos": view = new IngresosView(); name = "VistaIngresos"; break;
+                case "huespedes": view = new HuespedesView(); name = "VistaHuespedes"; break;
+                case "inventario": view = new HabitacionesGestionView(); name = "VistaInventario"; break;
+                case "estancias": view = new EstanciasView(); name = "VistaEstancias"; break;
+                case "facturacion": view = new FacturacionFoliosView(); name = "VistaFacturacion"; break;
+                case "pagos": view = new PagosCajaView(); name = "VistaPagos"; break;
+                case "reservasadmin": view = new ReservasGestionView(); name = "VistaReservasAdmin"; break;
+                case "notificaciones": view = new NotificacionesReportesView(); name = "VistaNotificaciones"; break;
+                case "tarifas": view = new TarifasView(); name = "VistaTarifas"; break;
+                case "convenios": view = new ConveniosView(); name = "VistaConvenios"; break;
+                case "limpieza": view = new LimpiezaView(); name = "VistaLimpieza"; break;
+                case "consumos": view = new ConsumosView(); name = "VistaConsumos"; break;
+                case "configuracion": view = new ConfiguracionHotelView(); name = "VistaConfiguracion"; break;
+                case "seguridad": view = new SeguridadView(); name = "VistaSeguridad"; break;
+                default: throw new ArgumentException("Unknown section", "section");
+            }
+            view.Name = name;
+            RegisterName(name, view);
+            views.Add(section, view);
+            ViewHost.Children.Add(view);
+            var reservations = view as ReservasView;
+            if (reservations != null) reservations.CambiosRealizados += OnCambiosRealizados;
+            var operation = view as FuncionamientoView; if (operation != null) operation.Cargar();
+            var rooms = view as HabitacionesView; if (rooms != null) rooms.Cargar();
+            var income = view as IngresosView; if (income != null) income.Cargar();
+            return view;
+        }
 
         private bool cargando = true;
 
@@ -141,9 +181,7 @@ namespace Crown__.Frontend.Views
         {
             AplicarSesion();
 
-            TxtFecha.Text = Formato.DiaDeSemana(DateTime.Today);
-
-            VistaReservas.CambiosRealizados += OnCambiosRealizados;
+            TxtFecha.Text = DateTime.Today.ToString("dd MMM yyyy", new System.Globalization.CultureInfo("es-BO"));
 
             string inicial = SeccionInicial();
             NavDe(inicial).IsChecked = true;
@@ -154,9 +192,12 @@ namespace Crown__.Frontend.Views
 
         private void OnCambiosRealizados(object sender, EventArgs e)
         {
-            VistaFuncionamiento.Cargar();
-            VistaHabitaciones.Cargar();
-            VistaIngresos.Cargar();
+            foreach (var view in views.Values)
+            {
+                var operation = view as FuncionamientoView; if (operation != null) operation.Cargar();
+                var rooms = view as HabitacionesView; if (rooms != null) rooms.Cargar();
+                var income = view as IngresosView; if (income != null) income.Cargar();
+            }
         }
 
         private void OnNavChecked(object sender, RoutedEventArgs e)
@@ -176,25 +217,8 @@ namespace Crown__.Frontend.Views
             if (string.IsNullOrEmpty(seccion))
                 return;
 
-            VistaFuncionamiento.Visibility = Visible(seccion, "funcionamiento");
-            VistaReservas.Visibility = Visible(seccion, "reservas");
-            VistaHabitaciones.Visibility = Visible(seccion, "habitaciones");
-            VistaIngresos.Visibility = Visible(seccion, "ingresos");
-
-            VistaHuespedes.Visibility = Visible(seccion, "huespedes");
-            VistaInventario.Visibility = Visible(seccion, "inventario");
-            VistaEstancias.Visibility = Visible(seccion, "estancias");
-            VistaFacturacion.Visibility = Visible(seccion, "facturacion");
-            VistaPagos.Visibility = Visible(seccion, "pagos");
-            VistaReservasAdmin.Visibility = Visible(seccion, "reservasadmin");
-            VistaNotificaciones.Visibility = Visible(seccion, "notificaciones");
-
-            VistaTarifas.Visibility = Visible(seccion, "tarifas");
-            VistaConvenios.Visibility = Visible(seccion, "convenios");
-            VistaLimpieza.Visibility = Visible(seccion, "limpieza");
-            VistaConsumos.Visibility = Visible(seccion, "consumos");
-            VistaConfiguracion.Visibility = Visible(seccion, "configuracion");
-            VistaSeguridad.Visibility = Visible(seccion, "seguridad");
+            foreach (var view in views.Values) view.Visibility = Visibility.Collapsed;
+            ObtenerVista(seccion).Visibility = Visibility.Visible;
 
             switch (seccion)
             {
