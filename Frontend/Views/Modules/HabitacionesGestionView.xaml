@@ -1,8 +1,10 @@
 <UserControl x:Class="Crown__.Frontend.Views.Modules.HabitacionesGestionView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Loaded="OnLoaded">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Loaded="OnLoaded">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
@@ -10,16 +12,18 @@
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="Inventario de habitaciones" VerticalAlignment="Center" />
             <TextBlock Text="Buscar…" VerticalAlignment="Center" />
-            <TextBox x:Name="TxtBuscar" Width="180" TextChanged="OnBuscar" />
+            <TextBox x:Name="TxtBuscar" Width="180" TextChanged="OnBuscarCambia" />
             <Button Content="Buscar" Click="OnBuscar" />
             <Button Content="Nueva habitación" Click="OnNuevaHabitacion" />
-            <Button Content="Cambiar estado" Click="OnCambiarEstado" />
+            <Button Content="Bloquear" Click="OnIrABloqueos" />
         </StackPanel>
 
-        <Grid Grid.Row="1">
+        <TextBlock x:Name="TxtAviso" Grid.Row="1" Margin="0,4,0,4" />
+
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="150" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="3*" />
             </Grid.ColumnDefinitions>
 
             <GroupBox Header="Pisos">
@@ -28,10 +32,10 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <ListBox x:Name="LstPisos" SelectionChanged="OnPiso" />
+                    <ListBox x:Name="ListaPisos" SelectionChanged="OnPisoCambia" />
                     <StackPanel Grid.Row="1">
                         <TextBlock Text="Nuevo piso" />
-                        <TextBox />
+                        <TextBox x:Name="TxtPiso" />
                         <Button Content="Agregar piso" Click="OnAgregarPiso" />
                     </StackPanel>
                 </Grid>
@@ -41,11 +45,13 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="220" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
                 <GroupBox Header="Habitaciones del piso">
-                    <DataGrid x:Name="GridHabitaciones" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="OnHabitacion"><DataGrid.Columns><DataGridTextColumn Header="N.º" Binding="{Binding NumeroHabitacion}"/><DataGridTextColumn Header="Tipo" Binding="{Binding CapacidadTipo}"/><DataGridTextColumn Header="Calidad" Binding="{Binding Calidad}"/><DataGridTextColumn Header="Estado" Binding="{Binding Estado}"/><DataGridTextColumn Header="Tarifa" Binding="{Binding TarifaBase}"/></DataGrid.Columns></DataGrid>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <WrapPanel x:Name="PanelHabitaciones" />
+                    </ScrollViewer>
                 </GroupBox>
 
                 <GroupBox Grid.Row="1" Header="Detalle de la habitación">
@@ -56,18 +62,23 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="N.º" VerticalAlignment="Center" />
                         <TextBox x:Name="TxtNumero" Grid.Column="1" IsReadOnly="True" />
                         <TextBlock Grid.Column="2" Text="Tipo" VerticalAlignment="Center" />
                         <ComboBox x:Name="CmbTipo" Grid.Column="3" />
-                        <StackPanel Grid.Column="4" Orientation="Horizontal">
-                            <Button Content="Guardar tipo" Click="OnGuardarTipo" />
+                        <TextBlock Grid.Column="4" Text="Estado" VerticalAlignment="Center" />
+                        <TextBox x:Name="TxtEstado" Grid.Column="5" IsReadOnly="True" />
+                        <StackPanel Grid.Column="6" Orientation="Horizontal">
+                            <Button x:Name="BtnGuardar" Content="Guardar" Click="OnGuardarTipo" IsEnabled="False" />
+                            <Button x:Name="BtnEstado" Content="Cambiar estado" Click="OnCambiarEstado" IsEnabled="False" />
                         </StackPanel>
                     </Grid>
                 </GroupBox>
 
-                <TabControl Grid.Row="2">
+                <TabControl x:Name="Pestanas" Grid.Row="2">
                     <TabItem Header="Historial de estados">
                         <Grid>
                             <Grid.RowDefinitions>
@@ -76,45 +87,45 @@
                             </Grid.RowDefinitions>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Desde" VerticalAlignment="Center" />
-                                <DatePicker x:Name="DpHistorialDesde" />
+                                <DatePicker x:Name="DpHistDesde" />
                                 <TextBlock Text="Hasta" VerticalAlignment="Center" />
-                                <DatePicker x:Name="DpHistorialHasta" />
+                                <DatePicker x:Name="DpHistHasta" />
                                 <Button Content="Buscar" Click="OnBuscarHistorial" />
                             </StackPanel>
                             <DataGrid x:Name="GridHistorial" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" />
-                                    <DataGridTextColumn Header="Inicio" Binding="{Binding Inicio, StringFormat={}{0:g}}" />
-                                    <DataGridTextColumn Header="Fin" Binding="{Binding Fin, StringFormat={}{0:g}}" />
-                                    <DataGridTextColumn Header="Motivo" Binding="{Binding Motivo}" />
+                                    <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="*" />
+                                    <DataGridTextColumn Header="Inicio" Binding="{Binding InicioTexto}" Width="*" />
+                                    <DataGridTextColumn Header="Fin" Binding="{Binding FinTexto}" Width="*" />
+                                    <DataGridTextColumn Header="Motivo" Binding="{Binding Motivo}" Width="2*" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>
                     </TabItem>
 
-                    <TabItem Header="Bloqueos">
+                    <TabItem x:Name="PestanaBloqueos" Header="Bloqueos">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <StackPanel Orientation="Horizontal">
+                            <WrapPanel>
                                 <TextBlock Text="Habitación" VerticalAlignment="Center" />
-                                <ComboBox x:Name="CmbHabitacionBloqueo" Width="110" DisplayMemberPath="NumeroHabitacion" />
+                                <ComboBox x:Name="CmbHabitacionBloqueo" Width="130" />
                                 <TextBlock Text="Desde" VerticalAlignment="Center" />
-                                <DatePicker x:Name="DpBloqueoInicio" />
+                                <DatePicker x:Name="DpBloqueoDesde" />
                                 <TextBlock Text="Hasta" VerticalAlignment="Center" />
-                                <DatePicker x:Name="DpBloqueoFin" />
+                                <DatePicker x:Name="DpBloqueoHasta" />
                                 <TextBlock Text="Motivo" VerticalAlignment="Center" />
                                 <TextBox x:Name="TxtMotivoBloqueo" Width="180" />
                                 <Button Content="Bloquear" Click="OnBloquear" />
-                            </StackPanel>
+                            </WrapPanel>
                             <DataGrid x:Name="GridBloqueos" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Habitación" Binding="{Binding HabitacionId}" />
-                                    <DataGridTextColumn Header="Inicio" Binding="{Binding Inicio, StringFormat={}{0:d}}" />
-                                    <DataGridTextColumn Header="Fin" Binding="{Binding Fin, StringFormat={}{0:d}}" />
-                                    <DataGridTextColumn Header="Motivo" Binding="{Binding Motivo}" />
+                                    <DataGridTextColumn Header="Habitación" Binding="{Binding Habitacion}" Width="*" />
+                                    <DataGridTextColumn Header="Inicio" Binding="{Binding InicioTexto}" Width="*" />
+                                    <DataGridTextColumn Header="Fin" Binding="{Binding FinTexto}" Width="*" />
+                                    <DataGridTextColumn Header="Motivo" Binding="{Binding Motivo}" Width="2*" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>
@@ -130,13 +141,13 @@
                                 <TextBlock Text="Nombre" VerticalAlignment="Center" />
                                 <TextBox x:Name="TxtTipoNombre" Width="150" />
                                 <TextBlock Text="Capacidad" VerticalAlignment="Center" />
-                                <TextBox x:Name="TxtTipoCapacidad" Width="70" />
-                                <Button Content="Guardar" Click="OnGuardarTipoHabitacion" />
+                                <TextBox x:Name="TxtTipoCapacidad" Width="70" Text="2" />
+                                <Button Content="Guardar" Click="OnGuardarTipoNuevo" />
                             </StackPanel>
                             <DataGrid x:Name="GridTipos" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Tipo" Binding="{Binding Nombre}" />
-                                    <DataGridTextColumn Header="Capacidad" Binding="{Binding Capacidad}" />
+                                    <DataGridTextColumn Header="Tipo" Binding="{Binding Nombre}" Width="*" />
+                                    <DataGridTextColumn Header="Capacidad" Binding="{Binding Capacidad}" Width="*" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>

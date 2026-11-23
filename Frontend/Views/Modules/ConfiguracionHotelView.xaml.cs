@@ -3,60 +3,121 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Crown__.Backend.Data;
+using Crown__.Backend.Models;
 using Crown__.Backend.Services;
 
 namespace Crown__.Frontend.Views.Modules
 {
+    /// <summary>Datos del hotel, parámetros, políticas, impuestos, módulos y auditoría.</summary>
     public partial class ConfiguracionHotelView : UserControl
     {
-        private readonly ServicioHotel servicio = ServicioHotel.Instancia;
+        private readonly SeguridadService servicio = new SeguridadService();
+        private HotelVista hotel;
+
         public ConfiguracionHotelView()
         {
             InitializeComponent();
-            CmbCategoria.ItemsSource = new[] { 3, 4, 5 }; CmbMoneda.ItemsSource = new[] { "USD", "BOB", "EUR" };
-            GridModulos.ItemsSource = new[] { "Funcionamiento", "Reservas", "Inventario", "Facturación", "Caja", "Servicios", "Reportes" };
+            CmbCategoria.ItemsSource = new[] { 1, 2, 3, 4, 5 };
+            CmbMoneda.ItemsSource = new[] { "BOB", "USD" };
         }
-        private void OnLoaded(object sender, RoutedEventArgs e)
+
+        private string Actor { get { return Sesion.UsuarioId.ToString(); } }
+
+        private void OnLoaded(object sender, RoutedEventArgs e) { Cargar(); }
+
+        public void Cargar()
         {
-            TxtNombreHotel.Text = DatosHotel.NombreHotel; TxtDireccion.Text = DatosHotel.Direccion;
-            TxtTelefono.Text = DatosHotel.TelefonoHotel; TxtCorreo.Text = DatosHotel.EmailHotel;
-            CmbCategoria.SelectedItem = DatosHotel.Categoria; CmbMoneda.SelectedItem = DatosHotel.Moneda;
+            try
+            {
+                hotel = servicio.DatosHotel();
+                if (hotel != null)
+                {
+                    TxtNombre.Text = hotel.Nombre;
+                    TxtDireccion.Text = hotel.Direccion;
+                    TxtTelefono.Text = hotel.Telefono;
+                    TxtCorreo.Text = hotel.Correo;
+                    CmbCategoria.SelectedItem = hotel.Categoria;
+                }
+                string moneda = servicio.Moneda();
+                CmbMoneda.SelectedItem = string.IsNullOrEmpty(moneda) ? "BOB" : moneda;
+                GridParametros.ItemsSource = servicio.Parametros();
+                GridPoliticas.ItemsSource = servicio.Politicas();
+                GridImpuestos.ItemsSource = servicio.Impuestos();
+                GridModulos.ItemsSource = servicio.Modulos();
+                OnBuscarAuditoria(null, null);
+                TxtAviso.Text = hotel == null ? "No hay un hotel registrado en la base." : string.Empty;
+            }
+            catch (Exception ex)
+            {
+                TxtAviso.Text = "No se pudo leer la base de datos: " + ex.Message;
+            }
+        }
+
+        private static bool Numero(string texto, out decimal valor)
+        {
+            return decimal.TryParse((texto ?? string.Empty).Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out valor);
+        }
+
+        private void Aplicar(Func<string> operacion, string exito)
+        {
+            string error;
+            try { error = operacion(); }
+            catch (Exception ex) { error = "No se pudo guardar.\n" + ex.Message; }
+
+            if (error != null) { MessageBox.Show(error, "Configuración", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
             Cargar();
+            TxtAviso.Text = exito;
         }
-        private void Cargar()
-        {
-            GridConfiguraciones.ItemsSource = DatosHotel.Configuraciones.OrderBy(c => c.Clave).ToList();
-            GridPoliticas.ItemsSource = DatosHotel.Politicas.ToList(); GridImpuestos.ItemsSource = DatosHotel.Impuestos.ToList();
-            GridAuditoria.ItemsSource = DatosHotel.Auditoria.OrderByDescending(a => a.Fecha).ToList();
-        }
+
         private void OnGuardarHotel(object sender, RoutedEventArgs e)
         {
-            try { servicio.ActualizarHotel(TxtNombreHotel.Text, CmbCategoria.SelectedItem == null ? 0 : (int)CmbCategoria.SelectedItem,
-                TxtDireccion.Text, TxtTelefono.Text, TxtCorreo.Text, CmbMoneda.SelectedItem as string); Cargar(); }
-            catch (InvalidOperationException ex) { MessageBox.Show(ex.Message, "Configuración del hotel", MessageBoxButton.OK, MessageBoxImage.Information); }
+            if (hotel == null) return;
+            var datos = new HotelVista
+            {
+                Id = hotel.Id, Nombre = TxtNombre.Text, Direccion = TxtDireccion.Text, Telefono = TxtTelefono.Text, Correo = TxtCorreo.Text,
+                Categoria = CmbCategoria.SelectedItem is int ? (int)CmbCategoria.SelectedItem : 0
+            };
+            Aplicar(() => servicio.GuardarHotel(Actor, datos, CmbMoneda.SelectedItem as string), "Datos del hotel guardados.");
         }
-        private void OnGuardarConfiguracion(object sender, RoutedEventArgs e)
+
+        private void OnGuardarParametro(object sender, RoutedEventArgs e)
         {
-            try { servicio.GuardarConfiguracion(TxtClave.Text, TxtValor.Text); TxtClave.Clear(); TxtValor.Clear(); Cargar(); }
-            catch (InvalidOperationException ex) { MessageBox.Show(ex.Message, "Parámetros", MessageBoxButton.OK, MessageBoxImage.Information); }
+            Aplicar(() => servicio.GuardarParametro(Actor, TxtClave.Text, TxtValor.Text), "Parámetro guardado.");
+            TxtClave.Clear(); TxtValor.Clear();
         }
+
         private void OnGuardarPolitica(object sender, RoutedEventArgs e)
         {
-            try { servicio.GuardarPolitica(TxtPolitica.Text, TxtValorPolitica.Text, TxtDescripcionPolitica.Text); TxtPolitica.Clear(); TxtValorPolitica.Clear(); TxtDescripcionPolitica.Clear(); Cargar(); }
-            catch (InvalidOperationException ex) { MessageBox.Show(ex.Message, "Políticas", MessageBoxButton.OK, MessageBoxImage.Information); }
+            Aplicar(() => servicio.GuardarPolitica(Actor, TxtPoliticaNombre.Text, TxtPoliticaValor.Text, TxtPoliticaDescripcion.Text), "Política guardada.");
+            TxtPoliticaNombre.Clear(); TxtPoliticaValor.Clear(); TxtPoliticaDescripcion.Clear();
         }
+
         private void OnGuardarImpuesto(object sender, RoutedEventArgs e)
         {
             decimal porcentaje;
-            if (!decimal.TryParse(TxtPorcentaje.Text, NumberStyles.Number, CultureInfo.CurrentCulture, out porcentaje)) { MessageBox.Show("El porcentaje no es válido.", "Impuestos", MessageBoxButton.OK, MessageBoxImage.Information); return; }
-            try { servicio.GuardarImpuesto(TxtImpuesto.Text, porcentaje, ChkImpuestoActivo.IsChecked == true); TxtImpuesto.Clear(); TxtPorcentaje.Clear(); Cargar(); }
-            catch (InvalidOperationException ex) { MessageBox.Show(ex.Message, "Impuestos", MessageBoxButton.OK, MessageBoxImage.Information); }
+            if (!Numero(TxtImpuestoPorcentaje.Text, out porcentaje))
+            {
+                MessageBox.Show("Escribe el porcentaje como número, por ejemplo 13.", "Impuestos", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            Aplicar(() => servicio.GuardarImpuesto(Actor, TxtImpuestoNombre.Text, porcentaje, ChkImpuestoActivo.IsChecked == true), "Impuesto guardado.");
+            TxtImpuestoNombre.Clear(); TxtImpuestoPorcentaje.Clear();
         }
+
+        private void CambiarModulo(bool activo)
+        {
+            var m = GridModulos.SelectedItem as ModuloVista;
+            if (m == null) { MessageBox.Show("Selecciona un módulo de la tabla.", "Módulos", MessageBoxButton.OK, MessageBoxImage.Information); return; }
+            Aplicar(() => servicio.CambiarModulo(Actor, m, activo), "Módulo actualizado.");
+        }
+
+        private void OnActivarModulo(object sender, RoutedEventArgs e) { CambiarModulo(true); }
+        private void OnDesactivarModulo(object sender, RoutedEventArgs e) { CambiarModulo(false); }
+
         private void OnBuscarAuditoria(object sender, RoutedEventArgs e)
         {
-            string q = (TxtFiltroAudit.Text ?? "").Trim();
-            GridAuditoria.ItemsSource = DatosHotel.Auditoria.Where(a => q.Length == 0 || a.Usuario.IndexOf(q, StringComparison.CurrentCultureIgnoreCase) >= 0 || a.Cambio.IndexOf(q, StringComparison.CurrentCultureIgnoreCase) >= 0).OrderByDescending(a => a.Fecha).ToList();
+            try { GridAuditoria.ItemsSource = servicio.Auditoria(TxtAuditoriaUsuario.Text, DpAuditoriaDesde.SelectedDate, DpAuditoriaHasta.SelectedDate); }
+            catch (Exception ex) { TxtAviso.Text = "No se pudo leer la auditoría: " + ex.Message; }
         }
     }
 }

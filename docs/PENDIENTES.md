@@ -1,24 +1,26 @@
 # Pendientes para completar la entrega
 
-La aplicación ofrece flujos de demostración en memoria para operación, reservas, inventario, huéspedes, consentimiento, estancias, cargos, cobros, devoluciones, facturas, convenios, limpieza, consumos, configuración y reportes CSV. Los datos desaparecen al cerrar la aplicación.
+La integración PostgreSQL, los repositorios y servicios de operación están en el proyecto y las pantallas principales usan esos servicios. Para ejecutar el sistema conectado se necesita una instancia PostgreSQL con el esquema compatible y una configuración local válida. No se versionan credenciales.
 
-## Datos que debe proporcionar o confirmar el equipo
+## Requiere información o recursos del equipo
 
-- Acceso a PostgreSQL y un script de esquema ejecutable, o autorización para preparar una migración con el equipo de backend. El archivo de esquema adjunto es solo contexto y no incluye una instancia o credenciales.
-- Política de identidad: proveedor de usuarios, hash de contraseñas, restablecimiento, bloqueo, sesiones y autorización por operación. El selector de rol no autentica.
-- Imágenes finales de habitaciones, productos y perfiles, con procedencia/licencia. El fondo y el emblema actual ya funcionan.
-- Moneda y zona horaria del hotel, impuestos aplicables y reglas de caja para calcular los totales legales.
-- Credenciales SMTP si se requiere entregar notificaciones y reportes por correo.
+- Configurar `Conexion.config` local usando [Conexion.config.example](../Conexion.config.example), y proporcionar acceso a una instancia PostgreSQL donde se haya aplicado el esquema del equipo.
+- Imágenes finales de habitaciones, productos y perfiles, con procedencia/licencia. El fondo y el emblema actuales son locales y funcionan.
+- Confirmar moneda, zona horaria, impuestos y reglas contables de caja antes de usar importes como valores legales.
+- Proporcionar SMTP y destinatarios si se requiere el envío real de notificaciones por correo.
 
-## Trabajo de integración para producción
+## Trabajo pendiente para producción
 
-- Reemplazar el almacén volátil por repositorios PostgreSQL con transacciones, concurrencia y mapeo de las claves del esquema. El modelo de demostración usa `Guid` para algunos agregados, mientras que el SQL usa claves enteras.
-- Aplicar impuestos, temporadas, tarifas por canal, paquetes y descuentos al cálculo de reservas, folios y facturas. El demo permite mantener catálogos, pero no determina reglas fiscales ni recalcula reservas con ellos.
-- Completar las tablas específicas de reservas avanzadas (grupos, lista de espera, recursos y solicitudes especiales) y el flujo detallado de inspecciones, mantenimiento y objetos olvidados.
-- Persistir auditoría, historial de habitaciones, turnos y cierres, devoluciones y consentimientos con permisos de servidor.
-- Activar entregas reales de correo y ejecución automática de reportes. La generación manual disponible produce archivos CSV locales; no envía correos ni exporta PDF/XLSX.
-- Definir y aplicar las reglas de caja para cierres, anulaciones, reaperturas y conciliación por método de pago.
+- Revisar contra la versión definitiva del esquema los nombres y tipos de columnas y ejecutar las operaciones contra una base de integración. El archivo de esquema adjunto al encargo es solo contexto.
+- Completar la cobertura de datos para reservas avanzadas, solicitudes especiales, inspecciones, mantenimiento y objetos olvidados donde el esquema lo permita.
+- Definir reglas fiscales, tarifas por canal, paquetes, descuentos, conciliación y reapertura de caja; el código no puede inferir políticas del hotel.
+- Verificar el alcance de permisos por operación y revisar los datos semilla antes de ejecutarlos en cualquier entorno compartido.
+- Configurar SMTP para envíos automáticos. La exportación local CSV no equivale al envío de reportes.
 
-## Validación del entorno
+## Imágenes
 
-El proyecto es WPF clásico para .NET Framework 4.7.2. En este entorno no se pudo completar la compilación de WPF porque el SDK instalado no generó los archivos de `InitializeComponent`; ábrase y compílese en Visual Studio con el Developer Pack de .NET Framework 4.7.2.
+Las imágenes finales de habitaciones, productos y perfiles quedan pendientes hasta que el equipo indique sus archivos y cómo desea administrarlos.
+
+## Validación
+
+El proyecto es WPF clásico para .NET Framework 4.7.2. Para una compilación reproducible se necesita Visual Studio con el Developer Pack de .NET Framework 4.7.2 y restaurar los paquetes declarados (Npgsql y BCrypt.Net-Next).

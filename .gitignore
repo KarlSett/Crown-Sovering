@@ -32,3 +32,5 @@ artifacts/
 .DS_Store
 Thumbs.db
 Desktop.ini
+# Local PostgreSQL connection settings
+Conexion.config

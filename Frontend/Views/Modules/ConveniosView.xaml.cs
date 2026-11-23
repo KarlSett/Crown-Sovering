@@ -1,61 +1,116 @@
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Crown__.Backend.Data;
 using Crown__.Backend.Models;
 using Crown__.Backend.Services;
-using Crown__.Frontend.Controls;
+using Crown__.Frontend.Views.Dialogs;
 
 namespace Crown__.Frontend.Views.Modules
 {
+    /// <summary>Convenios corporativos, sus reservas y su historial de saldos.</summary>
     public partial class ConveniosView : UserControl
     {
-        private readonly ServicioHotel servicio = ServicioHotel.Instancia;
-        private ConvenioDemo convenioActual;
-        public ConveniosView() { InitializeComponent(); DpVence.SelectedDate = DateTime.Today.AddYears(1); }
-        private void OnLoaded(object sender, RoutedEventArgs e) { Cargar(); }
-        private void Cargar() { ListaConvenios.ItemsSource = DatosHotel.Convenios.Where(c => c.Activo).ToList(); GridSaldos.ItemsSource = DatosHotel.Convenios.ToList(); }
-        private void OnNuevo(object sender, RoutedEventArgs e) { TabsConvenios.SelectedIndex = 2; TxtNombre.Focus(); }
-        private void OnActualizar(object sender, RoutedEventArgs e) { Cargar(); }
-        private void OnGuardar(object sender, RoutedEventArgs e)
+        private readonly AdministracionService servicio = new AdministracionService();
+
+        public ConveniosView()
         {
-            decimal tarifa, limite;
-            if (!decimal.TryParse(TxtTarifa.Text, NumberStyles.Number, CultureInfo.CurrentCulture, out tarifa) || !decimal.TryParse(TxtLimite.Text, NumberStyles.Number, CultureInfo.CurrentCulture, out limite))
-            { MessageBox.Show("Indica tarifa y límite válidos.", "Convenios", MessageBoxButton.OK, MessageBoxImage.Information); return; }
-            try { servicio.CrearConvenio(TxtNombre.Text, TxtEmpresa.Text, tarifa, limite, DpVence.SelectedDate ?? DateTime.Today.AddYears(1)); TxtNombre.Clear(); TxtEmpresa.Clear(); TxtTarifa.Clear(); TxtLimite.Clear(); Cargar(); }
-            catch (InvalidOperationException ex) { MessageBox.Show(ex.Message, "Convenios", MessageBoxButton.OK, MessageBoxImage.Information); }
+            InitializeComponent();
         }
+
+        private string Actor { get { return Sesion.UsuarioId.ToString(); } }
+        private ConvenioVista Convenio { get { return GridConvenios.SelectedItem as ConvenioVista; } }
+
+        private void OnLoaded(object sender, RoutedEventArgs e) { Cargar(); }
+        private void OnActualizar(object sender, RoutedEventArgs e) { Cargar(); }
+
+        public void Cargar()
+        {
+            try
+            {
+                int id = Convenio == null ? 0 : Convenio.Id;
+                var lista = servicio.Convenios();
+                GridConvenios.ItemsSource = lista;
+                GridConvenios.SelectedItem = lista.Find(c => c.Id == id);
+                TxtAviso.Text = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                TxtAviso.Text = "No se pudo leer la base de datos: " + ex.Message;
+            }
+            Mostrar();
+        }
+
+        private void OnSeleccion(object sender, SelectionChangedEventArgs e) { Mostrar(); }
+
+        private void Mostrar()
+        {
+            try
+            {
+                GridReservas.ItemsSource = servicio.ReservasDelConvenio(Convenio);
+                GridSaldos.ItemsSource = servicio.SaldosDelConvenio(Convenio);
+            }
+            catch (Exception ex) { TxtAviso.Text = "No se pudo leer el convenio: " + ex.Message; }
+        }
+
+        private static bool Numero(string texto, out decimal valor)
+        {
+            return decimal.TryParse((texto ?? string.Empty).Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out valor);
+        }
+
+        private void Aplicar(Func<string> operacion, string exito)
+        {
+            string error;
+            try { error = operacion(); }
+            catch (Exception ex) { error = "No se pudo guardar.\n" + ex.Message; }
+
+            if (error != null) { MessageBox.Show(error, "Convenios", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+            Cargar();
+            TxtAviso.Text = exito;
+        }
+
+        private void OnNuevo(object sender, RoutedEventArgs e) { Abrir(null); }
+
         private void OnEditar(object sender, RoutedEventArgs e)
         {
-            var c = (sender as Button)?.Tag as ConvenioDemo; if (c == null) return;
-            var d = DialogoRapido.Mostrar(Window.GetWindow(this), "Editar convenio", "Tarifa preferencial (" + c.TarifaPreferencial + ")", "Límite de crédito (" + c.LimiteCredito + ")", "Vencimiento (AAAA-MM-DD)");
-            if (d == null) return;
-            decimal tarifa, limite; DateTime fecha;
-            if (!decimal.TryParse(d[0], NumberStyles.Number, CultureInfo.CurrentCulture, out tarifa) || !decimal.TryParse(d[1], NumberStyles.Number, CultureInfo.CurrentCulture, out limite) || !DateTime.TryParse(d[2], out fecha))
-            { MessageBox.Show("Los valores no son válidos.", "Convenios", MessageBoxButton.OK, MessageBoxImage.Information); return; }
-            try { servicio.ActualizarConvenio(c.Id, tarifa, limite, fecha, true); Cargar(); }
-            catch (InvalidOperationException ex) { MessageBox.Show(ex.Message, "Convenios", MessageBoxButton.OK, MessageBoxImage.Information); }
+            if (Convenio == null) { MessageBox.Show("Selecciona un convenio de la tabla.", "Convenios", MessageBoxButton.OK, MessageBoxImage.Information); return; }
+            Abrir(Convenio);
         }
-        private void OnReservas(object sender, RoutedEventArgs e)
+
+        private void Abrir(ConvenioVista c)
         {
-            var c = (sender as Button)?.Tag as ConvenioDemo; if (c == null) return;
-            convenioActual = c;
-            GridReservas.ItemsSource = DatosHotel.Reservas.Where(r => !r.ConvenioId.HasValue || r.ConvenioId.Value == c.Id).ToList();
-            TabsConvenios.SelectedIndex = 0;
+            var estados = new object[] { "Activo", "Inactivo" };
+            var v = FormularioWindow.Pedir(Window.GetWindow(this), c == null ? "Nuevo convenio" : "Editar convenio",
+                Campo.Texto("Nombre", c == null ? "" : c.Nombre), Campo.Texto("Empresa", c == null ? "" : c.Empresa),
+                Campo.Texto("Tarifa preferencial por noche (Bs)", c == null ? "0" : c.Tarifa.ToString("0.00", CultureInfo.InvariantCulture)),
+                Campo.Texto("Límite de crédito (Bs)", c == null ? "0" : c.Limite.ToString("0.00", CultureInfo.InvariantCulture)),
+                Campo.Fecha("Vencimiento", c != null && c.Vence.HasValue ? c.Vence.Value : DateTime.Today.AddYears(1)),
+                Campo.Lista("Estado", estados));
+            if (v == null) return;
+
+            decimal tarifa, limite;
+            if (!Numero((string)v[2], out tarifa) || !Numero((string)v[3], out limite))
+            {
+                MessageBox.Show("Escribe la tarifa y el límite como números.", "Convenios", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            var datos = new ConvenioVista
+            {
+                Id = c == null ? 0 : c.Id, Nombre = (string)v[0], Empresa = (string)v[1], Tarifa = tarifa, Limite = limite,
+                Vence = (DateTime?)v[4], Estado = (string)v[5]
+            };
+            Aplicar(() => servicio.GuardarConvenio(Actor, datos), "Convenio guardado.");
         }
-        private void OnAsociarReserva(object sender, RoutedEventArgs e)
+
+        private void OnRegistrarSaldo(object sender, RoutedEventArgs e)
         {
-            var reserva = GridReservas.SelectedItem as Reserva;
-            if (convenioActual == null || reserva == null) { MessageBox.Show("Selecciona un convenio y una reserva.", "Convenios", MessageBoxButton.OK, MessageBoxImage.Information); return; }
-            try { servicio.AsociarReservaConvenio(convenioActual.Id, reserva.Id); OnReservasSeleccionConvenio(); }
-            catch (InvalidOperationException ex) { MessageBox.Show(ex.Message, "Convenios", MessageBoxButton.OK, MessageBoxImage.Information); }
-        }
-        private void OnReservasSeleccionConvenio()
-        {
-            if (convenioActual == null) return;
-            GridReservas.ItemsSource = DatosHotel.Reservas.Where(r => !r.ConvenioId.HasValue || r.ConvenioId.Value == convenioActual.Id).ToList();
+            var c = Convenio;
+            if (c == null) { MessageBox.Show("Selecciona un convenio de la tabla.", "Convenios", MessageBoxButton.OK, MessageBoxImage.Information); return; }
+            var v = FormularioWindow.Pedir(Window.GetWindow(this), "Registrar saldo · " + c.Nombre, Campo.Texto("Saldo actual (Bs)"), Campo.Texto("Descripción"));
+            decimal saldo;
+            if (v == null) return;
+            if (!Numero((string)v[0], out saldo)) { MessageBox.Show("Escribe el saldo como número.", "Convenios", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+            Aplicar(() => servicio.RegistrarSaldo(Actor, c, saldo, (string)v[1]), "Saldo registrado.");
         }
     }
 }

@@ -1,7 +1,7 @@
 <Window x:Class="Crown__.Frontend.Views.Dialogs.NuevaReservaWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Nueva reserva" Width="480" Height="470"
+        Title="Nueva reserva" Width="480" Height="560"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
     <StackPanel Margin="16">
         <TextBlock Text="Huésped principal" />
@@ -14,12 +14,13 @@
         <DatePicker x:Name="DpSalida" SelectedDateChanged="OnFechasCambian" />
         <TextBlock Text="Personas" />
         <TextBox x:Name="TxtPersonas" Text="1" />
-        <TextBlock Text="Habitación" />
-        <ComboBox x:Name="CmbHabitacion" SelectionChanged="OnHabitacion" />
-        <TextBlock Text="Tarifa por noche" />
+        <TextBlock Text="Habitación (libres en esas fechas)" />
+        <ComboBox x:Name="CmbHabitacion" SelectionChanged="OnHabitacionCambia" />
+        <TextBlock Text="Tarifa por noche (la del tipo de habitación)" />
         <TextBox x:Name="TxtTarifa" IsReadOnly="True" />
         <TextBlock Text="Observaciones" />
         <TextBox x:Name="TxtObservaciones" Height="50" AcceptsReturn="True" />
+        <TextBlock x:Name="TxtError" Foreground="Firebrick" TextWrapping="Wrap" Margin="0,8,0,0" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="Cancelar" Click="OnCancelar" />
             <Button Content="Guardar" IsDefault="True" Click="OnGuardar" />

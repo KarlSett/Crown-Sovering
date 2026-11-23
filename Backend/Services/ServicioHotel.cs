@@ -1,8 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Text;
 using System.Linq;
 using System.Windows.Media;
 using Crown__.Backend.Data;
@@ -43,7 +41,7 @@ namespace Crown__.Backend.Services
                 Mantenimiento = habitaciones.Count(h => h.Estado == EstadoHabitacion.Mantenimiento),
                 FueraDeServicio = habitaciones.Count(h => h.Estado == EstadoHabitacion.FueraDeServicio),
                 Disponibles = habitaciones.Count(h => h.Estado == EstadoHabitacion.Disponible &&
-                                                       !ReservasSolapan(h.Id, hoy, hoy.AddDays(1), null) && !BloqueosSolapan(h.Id, hoy, hoy.AddDays(1))),
+                                                       !ReservasSolapan(h.Id, hoy, hoy.AddDays(1), null)),
                 EnCasa = reservas.Count(r => r.Estado == EstadoReserva.EnCurso),
                 ReservasActivas = reservas.Count(r => r.Estado == EstadoReserva.Confirmada ||
                                                       r.Estado == EstadoReserva.EnCurso),
@@ -139,7 +137,7 @@ namespace Crown__.Backend.Services
                     bool bloqueadaHoy = inicio.Date <= DateTime.Today &&
                                         (h.Estado == EstadoHabitacion.Ocupada || h.Estado == EstadoHabitacion.Limpieza);
 
-                    bool libre = !noOperativa && !bloqueadaHoy && !ReservasSolapan(h.Id, inicio, fin, null) && !BloqueosSolapan(h.Id, inicio, fin);
+                    bool libre = !noOperativa && !bloqueadaHoy && !ReservasSolapan(h.Id, inicio, fin, null);
 
                     string disponibilidad;
                     if (libre)
@@ -148,8 +146,6 @@ namespace Crown__.Backend.Services
                         disponibilidad = "No operativa";
                     else if (bloqueadaHoy)
                         disponibilidad = h.Estado == EstadoHabitacion.Ocupada ? "Ocupada hoy" : "En limpieza";
-                    else if (BloqueosSolapan(h.Id, inicio, fin))
-                        disponibilidad = "Bloqueada";
                     else
                         disponibilidad = "Ocupada en el rango";
 
@@ -183,13 +179,12 @@ namespace Crown__.Backend.Services
                             h.Estado != EstadoHabitacion.FueraDeServicio &&
                             !(empiezaHoy && (h.Estado == EstadoHabitacion.Ocupada ||
                                              h.Estado == EstadoHabitacion.Limpieza)) &&
-                            !BloqueosSolapan(h.Id, inicio, fin) &&
                             !ReservasSolapan(h.Id, inicio, fin, null))
                 .OrderBy(h => h.Piso).ThenBy(h => h.NumeroHabitacion)
                 .ToList();
         }
 
-        public bool HabitacionDisponible(int habitacionId, DateTime inicio, DateTime fin, Guid? excluirReserva)
+        public bool HabitacionDisponible(int habitacionId, DateTime inicio, DateTime fin, int? excluirReserva)
         {
             var hab = DatosHotel.Habitaciones.FirstOrDefault(h => h.Id == habitacionId);
             if (hab == null)
@@ -199,55 +194,10 @@ namespace Crown__.Backend.Services
             if (inicio.Date <= DateTime.Today &&
                 (hab.Estado == EstadoHabitacion.Ocupada || hab.Estado == EstadoHabitacion.Limpieza))
                 return false;
-            if (BloqueosSolapan(habitacionId, inicio, fin)) return false;
             return !ReservasSolapan(habitacionId, inicio, fin, excluirReserva);
         }
 
-        private static bool BloqueosSolapan(int habitacionId, DateTime inicio, DateTime fin)
-        {
-            return DatosHotel.BloqueosHabitacion.Any(b => b.HabitacionId == habitacionId && b.Inicio.Date < fin.Date && b.Fin.Date > inicio.Date);
-        }
-
-        private static void RegistrarEstado(Habitacion habitacion, EstadoHabitacion estado, string motivo)
-        {
-            if (habitacion.Estado == estado) return;
-            var vigente = DatosHotel.HistorialHabitaciones.LastOrDefault(h => h.HabitacionId == habitacion.Id && !h.Fin.HasValue);
-            if (vigente != null) vigente.Fin = DateTime.Now;
-            habitacion.Estado = estado;
-            DatosHotel.HistorialHabitaciones.Add(new HistorialHabitacionDemo { HabitacionId = habitacion.Id, Estado = estado.ToString(), Inicio = DateTime.Now, Motivo = motivo });
-        }
-
-        public void BloquearHabitacion(int habitacionId, DateTime inicio, DateTime fin, string motivo)
-        {
-            if (fin.Date <= inicio.Date || string.IsNullOrWhiteSpace(motivo)) throw new InvalidOperationException("Indica un rango de fechas y motivo válidos.");
-            var h = DatosHotel.Habitaciones.FirstOrDefault(x => x.Id == habitacionId);
-            if (h == null) throw new InvalidOperationException("Selecciona una habitación.");
-            if (ReservasSolapan(habitacionId, inicio, fin, null)) throw new InvalidOperationException("Hay reservas que coinciden con ese bloqueo.");
-            DatosHotel.BloqueosHabitacion.Add(new BloqueoHabitacionDemo { Id = DatosHotel.BloqueosHabitacion.Count + 1, HabitacionId = habitacionId, Inicio = inicio.Date, Fin = fin.Date, Motivo = motivo.Trim() });
-        }
-
-        public List<BloqueoHabitacionDemo> ListarBloqueos()
-        {
-            return DatosHotel.BloqueosHabitacion.OrderByDescending(b => b.Inicio).ToList();
-        }
-
-        public List<HistorialHabitacionDemo> ListarHistorialHabitaciones(int id)
-        {
-            return DatosHotel.HistorialHabitaciones.Where(h => h.HabitacionId == id).OrderByDescending(h => h.Inicio).ToList();
-        }
-
-        public List<TipoHabitacionDemo> ListarTiposHabitacion() { return DatosHotel.TiposHabitacion.OrderBy(t => t.Nombre).ToList(); }
-        public List<int> ListarPisos() { return DatosHotel.Pisos.OrderBy(p => p).ToList(); }
-        public int AgregarPiso() { int piso = DatosHotel.Pisos.Count == 0 ? 1 : DatosHotel.Pisos.Max() + 1; DatosHotel.Pisos.Add(piso); return piso; }
-
-        public void RegistrarTipoHabitacion(string nombre, int capacidad)
-        {
-            if (string.IsNullOrWhiteSpace(nombre) || capacidad < 1) throw new InvalidOperationException("Nombre y capacidad positiva son obligatorios.");
-            if (DatosHotel.TiposHabitacion.Any(t => t.Nombre.Equals(nombre.Trim(), StringComparison.CurrentCultureIgnoreCase))) throw new InvalidOperationException("Ya existe ese tipo de habitación.");
-            DatosHotel.TiposHabitacion.Add(new TipoHabitacionDemo { Nombre = nombre.Trim(), Capacidad = capacidad });
-        }
-
-        private static bool ReservasSolapan(int habitacionId, DateTime inicio, DateTime fin, Guid? excluirReserva)
+        private static bool ReservasSolapan(int habitacionId, DateTime inicio, DateTime fin, int? excluirReserva)
         {
             return DatosHotel.Reservas.Any(r =>
                 r.HabitacionId == habitacionId &&
@@ -264,19 +214,25 @@ namespace Crown__.Backend.Services
         {
             IEnumerable<Reserva> consulta = DatosHotel.Reservas;
 
+            if (!string.IsNullOrWhiteSpace(texto))
+            {
+                string buscado = texto.Trim().ToLowerInvariant();
+                consulta = consulta.Where(r =>
+                    r.CodigoReserva.ToLowerInvariant().Contains(buscado) ||
+                    NombreHuesped(r.HuespedId).ToLowerInvariant().Contains(buscado) ||
+                    NumeroHabitacion(r.HabitacionId).ToLowerInvariant().Contains(buscado));
+            }
+
             if (!string.IsNullOrEmpty(estado) && estado != "Todas")
                 consulta = consulta.Where(r => r.Estado.ToString() == estado);
 
             if (!string.IsNullOrEmpty(canal) && canal != "Todos")
                 consulta = consulta.Where(r => r.Canal.ToString() == canal);
 
-            var search = new BusquedaTolerante(texto);
-            return consulta.Select(r => new { Reservation = r, Score = search.Puntuar(NombreHuesped(r.HuespedId), r.CodigoReserva, NumeroHabitacion(r.HabitacionId)) })
-                .Where(item => item.Score >= 0)
-                .OrderBy(item => item.Score)
-                .ThenBy(item => Prioridad(item.Reservation.Estado))
-                .ThenBy(item => item.Reservation.FechaCheckinEsperado)
-                .Select(item => AColumna(item.Reservation))
+            return consulta
+                .OrderBy(r => Prioridad(r.Estado))
+                .ThenBy(r => r.FechaCheckinEsperado)
+                .Select(AColumna)
                 .ToList();
         }
 
@@ -329,459 +285,30 @@ namespace Crown__.Backend.Services
             return DatosHotel.Huespedes.OrderBy(h => h.Apellidos).ToList();
         }
 
-        public Huesped CrearHuesped(string nombres, string apellidos, string documento, string correo,
-                                    string telefono, DateTime? nacimiento, bool autorizaDatos)
-        {
-            if (string.IsNullOrWhiteSpace(nombres) || string.IsNullOrWhiteSpace(apellidos))
-                throw new InvalidOperationException("El nombre y los apellidos son obligatorios.");
-            if (!string.IsNullOrWhiteSpace(documento) && DatosHotel.Huespedes.Any(h =>
-                string.Equals(h.NumeroDocumento, documento.Trim(), StringComparison.OrdinalIgnoreCase)))
-                throw new InvalidOperationException("Ya existe un huésped con ese documento.");
+        // Quién opera: lo fija el inicio de sesión. Los permisos se validan en los servicios del backend.
+        public static string ActorId { get; set; }
 
-            var huesped = new Huesped { Id = Guid.NewGuid(), Nombres = nombres.Trim(), Apellidos = apellidos.Trim(),
-                NumeroDocumento = documento == null ? null : documento.Trim(), Correo = correo == null ? null : correo.Trim(),
-                Telefono = telefono == null ? null : telefono.Trim(), FechaNacimiento = nacimiento };
-            DatosHotel.Huespedes.Add(huesped);
-            DatosHotel.Consentimientos.Add(new ConsentimientoHuesped { Id = Guid.NewGuid(), HuespedId = huesped.Id,
-                Tipo = "Tratamiento de datos", Autorizado = autorizaDatos, Fecha = DateTime.Now });
-            return huesped;
-        }
+        private readonly ReservaService reservasBd = new ReservaService();
+        private readonly EstanciaService estanciasBd = new EstanciaService();
+        private readonly FolioService foliosBd = new FolioService();
 
-        public void ActualizarHuesped(Guid id, string nombres, string apellidos, string documento, string correo, string telefono, DateTime? nacimiento)
-        {
-            var h = DatosHotel.Huespedes.FirstOrDefault(x => x.Id == id);
-            if (h == null) throw new InvalidOperationException("El huésped seleccionado ya no existe.");
-            if (string.IsNullOrWhiteSpace(nombres) || string.IsNullOrWhiteSpace(apellidos))
-                throw new InvalidOperationException("El nombre y los apellidos son obligatorios.");
-            if (!string.IsNullOrWhiteSpace(documento) && DatosHotel.Huespedes.Any(x => x.Id != id &&
-                string.Equals(x.NumeroDocumento, documento.Trim(), StringComparison.OrdinalIgnoreCase)))
-                throw new InvalidOperationException("Ya existe otro huésped con ese documento.");
-            h.Nombres = nombres.Trim(); h.Apellidos = apellidos.Trim();
-            h.NumeroDocumento = documento == null ? null : documento.Trim();
-            h.Correo = correo == null ? null : correo.Trim(); h.Telefono = telefono == null ? null : telefono.Trim(); h.FechaNacimiento = nacimiento;
-        }
-
-        public List<ConsentimientoHuesped> ListarConsentimientos(Guid huespedId)
-        {
-            return DatosHotel.Consentimientos.Where(c => c.HuespedId == huespedId).OrderByDescending(c => c.Fecha).ToList();
-        }
-
-        public void RegistrarPago(Guid folioId, decimal monto, string metodo)
-        {
-            var folio = DatosHotel.Folios.FirstOrDefault(f => f.Id == folioId);
-            if (folio == null || folio.Estado != "Abierto") throw new InvalidOperationException("El folio no está abierto.");
-            if (monto <= 0 || monto > folio.SaldoPendiente) throw new InvalidOperationException("El pago debe ser positivo y no superar el saldo del folio.");
-            if (!DatosHotel.MetodosPago.Contains(metodo)) throw new InvalidOperationException("Selecciona un método de pago válido.");
-            DatosHotel.Transacciones.Add(new Transaccion { Id = DatosHotel.Transacciones.Count + 1, FolioId = folio.Id,
-                Fecha = DateTime.Now, Concepto = "Pago", Cargo = 0, Abono = monto, MetodoPago = metodo, Usuario = "Demo" });
-            DatosHotel.RecalcularSaldos();
-            if (folio.SaldoPendiente <= 0) folio.Estado = "Cerrado";
-        }
-
-        public void RegistrarCargo(Guid folioId, string concepto, decimal monto, int cantidad)
-        {
-            var folio = DatosHotel.Folios.FirstOrDefault(f => f.Id == folioId && f.Estado == "Abierto");
-            if (folio == null) throw new InvalidOperationException("Selecciona un folio abierto.");
-            if (string.IsNullOrWhiteSpace(concepto) || monto <= 0 || cantidad < 1) throw new InvalidOperationException("Indica concepto, cantidad y un cargo positivo.");
-            DatosHotel.Transacciones.Add(new Transaccion { Id = DatosHotel.Transacciones.Count + 1, FolioId = folio.Id,
-                Fecha = DateTime.Now, Concepto = concepto.Trim(), Cargo = monto, Abono = 0, Cantidad = cantidad, MetodoPago = "Pendiente", Usuario = "Demo" });
-            DatosHotel.RecalcularSaldos();
-        }
-
-        public List<TareaOperativa> ListarTareas()
-        {
-            return DatosHotel.Tareas.OrderBy(t => t.Estado).ThenBy(t => t.Habitacion).ToList();
-        }
-
-        public void CrearTarea(string habitacion, string tipo, string descripcion)
-        {
-            if (string.IsNullOrWhiteSpace(habitacion) || string.IsNullOrWhiteSpace(tipo) || string.IsNullOrWhiteSpace(descripcion))
-                throw new InvalidOperationException("Selecciona habitación, tipo y descripción.");
-            DatosHotel.Tareas.Add(new TareaOperativa { Id = DatosHotel.Tareas.Count == 0 ? 1 : DatosHotel.Tareas.Max(t => t.Id) + 1,
-                Habitacion = habitacion, Tipo = tipo, Descripcion = descripcion.Trim(), Estado = "Pendiente", Fecha = DateTime.Now });
-        }
-
-        public void AvanzarTarea(int id)
-        {
-            var t = DatosHotel.Tareas.FirstOrDefault(x => x.Id == id);
-            if (t == null) throw new InvalidOperationException("Selecciona una tarea.");
-            t.Estado = t.Estado == "Pendiente" ? "En curso" : t.Estado == "En curso" ? "Completada" : "Pendiente";
-            t.Fecha = DateTime.Now;
-            var habitacion = DatosHotel.Habitaciones.FirstOrDefault(h => h.NumeroHabitacion == t.Habitacion);
-            if (habitacion != null && t.Tipo == "Limpieza")
-                RegistrarEstado(habitacion, t.Estado == "Completada" ? EstadoHabitacion.Disponible : EstadoHabitacion.Limpieza, "Tarea de " + t.Tipo);
-        }
-
-        public Folio CrearFolio(Guid reservaId)
-        {
-            var reserva = DatosHotel.Reservas.FirstOrDefault(r => r.Id == reservaId);
-            if (reserva == null) throw new InvalidOperationException("Selecciona una reserva existente.");
-            var folio = new Folio { Id = Guid.NewGuid(), ReservaId = reserva.Id, HuespedId = reserva.HuespedId,
-                TipoFolio = "Adicional", Estado = "Abierto", SaldoPendiente = 0m };
-            DatosHotel.Folios.Add(folio); return folio;
-        }
-
-        public FacturaDemo EmitirFactura(Guid folioId)
-        {
-            var folio = DatosHotel.Folios.FirstOrDefault(f => f.Id == folioId);
-            if (folio == null) throw new InvalidOperationException("Selecciona un folio.");
-            string numero = "F-" + (DatosHotel.Facturas.Count + 1).ToString("00000");
-            decimal subtotal = DatosHotel.Transacciones.Where(t => t.FolioId == folioId).Sum(t => t.Cargo);
-            var factura = new FacturaDemo { Numero = numero, FolioId = folioId, Fecha = DateTime.Now,
-                Subtotal = subtotal, Impuesto = 0m, Estado = "Emitida" };
-            DatosHotel.Facturas.Add(factura); return factura;
-        }
-
-        public NotaCreditoDemo CrearNotaCredito(string facturaNumero, string motivo, decimal monto)
-        {
-            var factura = DatosHotel.Facturas.FirstOrDefault(f => f.Numero == facturaNumero);
-            if (factura == null || string.IsNullOrWhiteSpace(motivo) || monto <= 0 || monto > factura.Total)
-                throw new InvalidOperationException("Selecciona una factura y un monto positivo que no supere el total.");
-            var nota = new NotaCreditoDemo { Numero = "NC-" + (DatosHotel.NotasCredito.Count + 1).ToString("00000"),
-                Factura = facturaNumero, Motivo = motivo.Trim(), Monto = monto, Fecha = DateTime.Now };
-            DatosHotel.NotasCredito.Add(nota); return nota;
-        }
-
-        public void TransferirCargo(int transaccionId, Guid folioDestinoId)
-        {
-            var t = DatosHotel.Transacciones.FirstOrDefault(x => x.Id == transaccionId && x.Cargo > 0);
-            var destino = DatosHotel.Folios.FirstOrDefault(f => f.Id == folioDestinoId && f.Estado == "Abierto");
-            if (t == null || destino == null || t.FolioId == destino.Id) throw new InvalidOperationException("Selecciona un cargo y un folio abierto de destino distinto.");
-            t.FolioId = destino.Id; DatosHotel.RecalcularSaldos();
-        }
-
-        public LlaveDemo EmitirLlave(Guid reservaId)
-        {
-            if (!DatosHotel.Reservas.Any(r => r.Id == reservaId && r.Estado == EstadoReserva.EnCurso))
-                throw new InvalidOperationException("Solo se emiten llaves para una estancia activa.");
-            var llave = new LlaveDemo { Id = DatosHotel.Llaves.Count + 1, ReservaId = reservaId,
-                Codigo = "K-" + (DatosHotel.Llaves.Count + 1).ToString("0000"), Emitida = DateTime.Now, Estado = "Activa" };
-            DatosHotel.Llaves.Add(llave); return llave;
-        }
-
-        public void DevolverLlave(int id)
-        {
-            var llave = DatosHotel.Llaves.FirstOrDefault(k => k.Id == id && k.Estado == "Activa");
-            if (llave == null) throw new InvalidOperationException("Selecciona una llave activa.");
-            llave.Estado = "Devuelta"; llave.Devuelta = DateTime.Now;
-        }
-
-        public void CambiarHabitacionReserva(Guid reservaId, int habitacionId)
-        {
-            var reserva = DatosHotel.Reservas.FirstOrDefault(r => r.Id == reservaId && r.Estado == EstadoReserva.EnCurso);
-            if (reserva == null) throw new InvalidOperationException("Selecciona una estancia activa.");
-            if (!HabitacionDisponible(habitacionId, DateTime.Today, reserva.FechaCheckoutEsperado, reservaId))
-                throw new InvalidOperationException("La habitación destino no está disponible.");
-            var anterior = DatosHotel.Habitaciones.First(h => h.Id == reserva.HabitacionId);
-            RegistrarEstado(anterior, EstadoHabitacion.Limpieza, "Cambio de habitación");
-            reserva.HabitacionId = habitacionId;
-            RegistrarEstado(DatosHotel.Habitaciones.First(h => h.Id == habitacionId), EstadoHabitacion.Ocupada, "Cambio de habitación");
-        }
-
-        public ProductoDemo CrearProducto(string nombre, decimal precio, int stock)
-        {
-            if (string.IsNullOrWhiteSpace(nombre) || precio < 0 || stock < 0) throw new InvalidOperationException("Nombre, precio y stock deben ser válidos.");
-            if (DatosHotel.Productos.Any(item => string.Equals(item.Nombre, nombre.Trim(), StringComparison.CurrentCultureIgnoreCase)))
-                throw new InvalidOperationException("Ya existe un producto con ese nombre.");
-            var p = new ProductoDemo { Id = DatosHotel.Productos.Count == 0 ? 1 : DatosHotel.Productos.Max(x => x.Id) + 1,
-                Nombre = nombre.Trim(), Precio = precio, Stock = stock, Activo = true };
-            DatosHotel.Productos.Add(p); return p;
-        }
-
-        public ConsumoDemo RegistrarConsumo(Guid reservaId, int productoId, int cantidad)
-        {
-            var reserva = DatosHotel.Reservas.FirstOrDefault(r => r.Id == reservaId && r.Estado == EstadoReserva.EnCurso);
-            var producto = DatosHotel.Productos.FirstOrDefault(p => p.Id == productoId && p.Activo);
-            if (reserva == null || producto == null) throw new InvalidOperationException("Selecciona una estancia activa y un producto disponible.");
-            if (cantidad < 1 || cantidad > producto.Stock) throw new InvalidOperationException("La cantidad debe estar entre 1 y el stock disponible.");
-            var folio = DatosHotel.Folios.FirstOrDefault(f => f.ReservaId == reservaId && f.Estado == "Abierto");
-            if (folio == null) throw new InvalidOperationException("La estancia no tiene un folio abierto.");
-            var consumo = new ConsumoDemo { Id = DatosHotel.Consumos.Count + 1, ReservaId = reservaId, Producto = producto.Nombre,
-                Cantidad = cantidad, Precio = producto.Precio, Fecha = DateTime.Now };
-            DatosHotel.Consumos.Add(consumo); producto.Stock -= cantidad;
-            DatosHotel.Transacciones.Add(new Transaccion { Id = DatosHotel.Transacciones.Count + 1, FolioId = folio.Id,
-                Fecha = DateTime.Now, Concepto = producto.Nombre, Cargo = consumo.Total, Cantidad = cantidad, MetodoPago = "Pendiente", Usuario = "Demo" });
-            DatosHotel.RecalcularSaldos(); return consumo;
-        }
-
-        public ConvenioDemo CrearConvenio(string nombre, string empresa, decimal tarifa, decimal limite, DateTime vencimiento)
-        {
-            if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(empresa) || tarifa <= 0 || limite < 0)
-                throw new InvalidOperationException("Completa nombre, empresa y valores positivos.");
-            var c = new ConvenioDemo { Id = DatosHotel.Convenios.Count + 1, Nombre = nombre.Trim(), Empresa = empresa.Trim(),
-                TarifaPreferencial = tarifa, LimiteCredito = limite, Vencimiento = vencimiento, Activo = true };
-            DatosHotel.Convenios.Add(c); return c;
-        }
-
-        public void ActualizarConvenio(int id, decimal tarifa, decimal limite, DateTime vencimiento, bool activo)
-        {
-            var c = DatosHotel.Convenios.FirstOrDefault(x => x.Id == id);
-            if (c == null || tarifa <= 0 || limite < 0) throw new InvalidOperationException("Convenio o valores no válidos.");
-            c.TarifaPreferencial = tarifa; c.LimiteCredito = limite; c.Vencimiento = vencimiento; c.Activo = activo;
-        }
-
-        public void AsociarReservaConvenio(int convenioId, Guid reservaId)
-        {
-            var convenio = DatosHotel.Convenios.FirstOrDefault(c => c.Id == convenioId && c.Activo && c.Vencimiento.Date >= DateTime.Today);
-            var reserva = DatosHotel.Reservas.FirstOrDefault(r => r.Id == reservaId);
-            if (convenio == null || reserva == null) throw new InvalidOperationException("Selecciona un convenio vigente y una reserva.");
-            reserva.ConvenioId = convenioId; reserva.Canal = CanalReserva.Convenio; reserva.TarifaAplicada = convenio.TarifaPreferencial;
-        }
-
-        public void RegistrarTemporada(string nombre, DateTime inicio, DateTime fin)
-        {
-            if (string.IsNullOrWhiteSpace(nombre) || fin < inicio) throw new InvalidOperationException("Indica nombre y un rango de fechas válido.");
-            DatosHotel.Temporadas.Add(new TemporadaDemo { Nombre = nombre.Trim(), Inicio = inicio.Date, Fin = fin.Date });
-        }
-
-        public void RegistrarPaquete(string nombre, string descripcion, decimal precio)
-        {
-            if (string.IsNullOrWhiteSpace(nombre) || precio < 0) throw new InvalidOperationException("Indica nombre y precio válido.");
-            DatosHotel.Paquetes.Add(new PaqueteDemo { Nombre = nombre.Trim(), Descripcion = descripcion ?? "", Precio = precio });
-        }
-
-        public void RegistrarPromocion(string nombre, decimal descuento, DateTime inicio, DateTime fin, bool activa)
-        {
-            if (string.IsNullOrWhiteSpace(nombre) || descuento < 0 || descuento > 100 || fin < inicio)
-                throw new InvalidOperationException("Indica una promoción y fechas válidas, con descuento entre 0 y 100.");
-            DatosHotel.Promociones.Add(new PromocionDemo { Nombre = nombre.Trim(), Descuento = descuento, Inicio = inicio.Date, Fin = fin.Date, Activa = activa });
-        }
-
-        public void ActualizarTarifaBase(string tipo, decimal tarifa)
-        {
-            if (string.IsNullOrWhiteSpace(tipo) || tarifa <= 0) throw new InvalidOperationException("Selecciona un tipo y una tarifa positiva.");
-            foreach (var h in DatosHotel.Habitaciones.Where(x => x.CapacidadTipo == tipo)) h.TarifaBase = tarifa;
-        }
-
-        public void ActualizarHotel(string nombre, int categoria, string direccion, string telefono, string correo, string moneda)
-        {
-            if (string.IsNullOrWhiteSpace(nombre) || (categoria != 3 && categoria != 4 && categoria != 5) || string.IsNullOrWhiteSpace(moneda))
-                throw new InvalidOperationException("Nombre, categoría (3, 4 o 5) y moneda son obligatorios.");
-            RegistrarAuditoria("Datos del hotel", DatosHotel.NombreHotel + " · " + DatosHotel.Categoria, nombre.Trim() + " · " + categoria);
-            DatosHotel.NombreHotel = nombre.Trim(); DatosHotel.Categoria = categoria; DatosHotel.Direccion = direccion ?? "";
-            DatosHotel.TelefonoHotel = telefono ?? ""; DatosHotel.EmailHotel = correo ?? ""; DatosHotel.Moneda = moneda.Trim();
-        }
-
-        public void GuardarConfiguracion(string clave, string valor)
-        {
-            if (string.IsNullOrWhiteSpace(clave)) throw new InvalidOperationException("La clave es obligatoria.");
-            var c = DatosHotel.Configuraciones.FirstOrDefault(x => x.Clave.Equals(clave.Trim(), StringComparison.OrdinalIgnoreCase));
-            string anterior = c == null ? "" : c.Valor;
-            if (c == null) { c = new ConfiguracionDemo { Clave = clave.Trim() }; DatosHotel.Configuraciones.Add(c); }
-            c.Valor = valor ?? ""; c.Fecha = DateTime.Now; RegistrarAuditoria("Configuración " + c.Clave, anterior, c.Valor);
-        }
-
-        public void GuardarPolitica(string nombre, string valor, string descripcion)
-        {
-            if (string.IsNullOrWhiteSpace(nombre)) throw new InvalidOperationException("El nombre de la política es obligatorio.");
-            var p = DatosHotel.Politicas.FirstOrDefault(x => x.Nombre.Equals(nombre.Trim(), StringComparison.OrdinalIgnoreCase));
-            string anterior = p == null ? "" : p.Valor;
-            if (p == null) { p = new PoliticaDemo { Nombre = nombre.Trim() }; DatosHotel.Politicas.Add(p); }
-            p.Valor = valor ?? ""; p.Descripcion = descripcion ?? ""; RegistrarAuditoria("Política " + p.Nombre, anterior, p.Valor);
-        }
-
-        public void GuardarImpuesto(string nombre, decimal porcentaje, bool activo)
-        {
-            if (string.IsNullOrWhiteSpace(nombre) || porcentaje < 0 || porcentaje > 100) throw new InvalidOperationException("Nombre y porcentaje entre 0 y 100 son obligatorios.");
-            var i = DatosHotel.Impuestos.FirstOrDefault(x => x.Nombre.Equals(nombre.Trim(), StringComparison.OrdinalIgnoreCase));
-            string anterior = i == null ? "" : i.Porcentaje + "% · " + i.Activo;
-            if (i == null) { i = new ImpuestoDemo { Nombre = nombre.Trim() }; DatosHotel.Impuestos.Add(i); }
-            i.Porcentaje = porcentaje; i.Activo = activo; RegistrarAuditoria("Impuesto " + i.Nombre, anterior, porcentaje + "% · " + activo);
-        }
-
-        public void EnviarNotificacion(string mensaje, string rol)
-        {
-            if (string.IsNullOrWhiteSpace(mensaje) || string.IsNullOrWhiteSpace(rol)) throw new InvalidOperationException("Escribe un mensaje y selecciona el rol destinatario.");
-            DatosHotel.Notificaciones.Insert(0, new NotificacionDemo { Titulo = mensaje.Trim().Length > 48 ? mensaje.Trim().Substring(0, 48) + "…" : mensaje.Trim(),
-                Mensaje = mensaje.Trim(), Rol = rol, Fecha = DateTime.Now, Estado = "Enviada (demo)" });
-        }
-
-        public void GuardarReporteProgramado(string nombre, string tipo, string formato, string frecuencia, string correo, bool activo)
-        {
-            if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(tipo) || string.IsNullOrWhiteSpace(formato) || string.IsNullOrWhiteSpace(frecuencia))
-                throw new InvalidOperationException("Completa nombre, tipo, formato y frecuencia.");
-            if (!string.Equals(formato, "CSV", StringComparison.OrdinalIgnoreCase)) throw new InvalidOperationException("La exportación disponible en esta demo es CSV.");
-            DatosHotel.ReportesProgramados.Add(new ReporteProgramadoDemo { Nombre = nombre.Trim(), Tipo = tipo, Formato = formato, Frecuencia = frecuencia, Correo = correo ?? "", Activo = activo });
-        }
-
-        public void EjecutarReporte(string nombre)
-        {
-            var reporte = DatosHotel.ReportesProgramados.FirstOrDefault(r => r.Nombre == nombre && r.Activo);
-            if (reporte == null) throw new InvalidOperationException("Selecciona un reporte activo.");
-            string carpeta = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Reportes");
-            Directory.CreateDirectory(carpeta);
-            string archivo = Path.Combine(carpeta, "reporte-" + reporte.Nombre.Replace(" ", "-") + "-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".csv");
-            var lineas = new List<string>();
-            if (reporte.Tipo == "Reservas")
-            {
-                lineas.Add("Codigo,Huesped,Habitacion,Estado,Entrada,Salida,Total");
-                lineas.AddRange(DatosHotel.Reservas.Select(r => Csv(r.CodigoReserva) + "," + Csv(NombreHuesped(r.HuespedId)) + "," + Csv(NumeroHabitacion(r.HabitacionId)) + "," + Csv(r.Estado.ToString()) + "," + Csv(r.FechaCheckinEsperado.ToString("yyyy-MM-dd")) + "," + Csv(r.FechaCheckoutEsperado.ToString("yyyy-MM-dd")) + "," + r.Total.ToString(CultureInfo.InvariantCulture)));
-            }
-            else if (reporte.Tipo == "Ingresos")
-            {
-                lineas.Add("Fecha,Concepto,Cargo,Abono,MetodoPago");
-                lineas.AddRange(DatosHotel.Transacciones.Select(t => Csv(t.Fecha.ToString("s")) + "," + Csv(t.Concepto) + "," + t.Cargo.ToString(CultureInfo.InvariantCulture) + "," + t.Abono.ToString(CultureInfo.InvariantCulture) + "," + Csv(t.MetodoPago)));
-            }
-            else if (reporte.Tipo == "Inventario")
-            {
-                lineas.Add("Habitacion,Piso,Tipo,Calidad,Estado,Tarifa");
-                lineas.AddRange(DatosHotel.Habitaciones.Select(h => Csv(h.NumeroHabitacion) + "," + h.Piso + "," + Csv(h.CapacidadTipo) + "," + Csv(h.Calidad) + "," + Csv(h.Estado.ToString()) + "," + h.TarifaBase.ToString(CultureInfo.InvariantCulture)));
-            }
-            else
-            {
-                lineas.Add("Indicador,Valor");
-                var resumen = ObtenerResumenOperativo();
-                lineas.Add("Habitaciones," + resumen.TotalHabitaciones); lineas.Add("Ocupadas," + resumen.Ocupadas); lineas.Add("Disponibles," + resumen.Disponibles); lineas.Add("Llegadas," + resumen.Llegadas); lineas.Add("Salidas," + resumen.Salidas); lineas.Add("IngresosHoy," + resumen.IngresosHoy.ToString(CultureInfo.InvariantCulture));
-            }
-            File.WriteAllLines(archivo, lineas, new UTF8Encoding(true));
-            DatosHotel.EjecucionesReportes.Insert(0, new EjecucionReporteDemo { Reporte = reporte.Nombre, Fecha = DateTime.Now, Estado = "Generado (demo)", Archivo = archivo });
-        }
-
-        private static string Csv(string valor) { return "\"" + (valor ?? "").Replace("\"", "\"\"") + "\""; }
-
-        public DevolucionDemo CrearDevolucion(int transaccionId, decimal monto, string motivo)
-        {
-            var pago = DatosHotel.Transacciones.FirstOrDefault(t => t.Id == transaccionId && t.Abono > 0);
-            if (pago == null || monto <= 0 || monto > pago.Abono || string.IsNullOrWhiteSpace(motivo))
-                throw new InvalidOperationException("Selecciona un pago y proporciona motivo y un monto válido que no lo supere.");
-            var devolucion = new DevolucionDemo { Id = DatosHotel.Devoluciones.Count + 1, TransaccionId = transaccionId,
-                Monto = monto, Motivo = motivo.Trim(), Estado = "Registrada (demo)", Fecha = DateTime.Now };
-            DatosHotel.Devoluciones.Add(devolucion);
-            DatosHotel.Transacciones.Add(new Transaccion { Id = DatosHotel.Transacciones.Count + 1, FolioId = pago.FolioId,
-                Fecha = DateTime.Now, Concepto = "Devolución: " + motivo.Trim(), Cargo = monto, Cantidad = 1, Abono = 0m,
-                MetodoPago = pago.MetodoPago, Usuario = "Demo" });
-            DatosHotel.RecalcularSaldos();
-            return devolucion;
-        }
-
-        public EmpleadoDemo CrearEmpleado(string nombre, string apellido, string correo, string telefono)
-        {
-            if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(apellido)) throw new InvalidOperationException("Nombre y apellido son obligatorios.");
-            var e = new EmpleadoDemo { Id = DatosHotel.Empleados.Count + 1, Nombre = nombre.Trim(), Apellido = apellido.Trim(), Correo = correo ?? "", Telefono = telefono ?? "" };
-            DatosHotel.Empleados.Add(e); return e;
-        }
-
-        public void CrearRol(string nombre, string descripcion)
-        {
-            if (string.IsNullOrWhiteSpace(nombre)) throw new InvalidOperationException("El nombre del rol es obligatorio.");
-            if (DatosHotel.Roles.Any(r => r.Nombre.Equals(nombre.Trim(), StringComparison.CurrentCultureIgnoreCase))) throw new InvalidOperationException("Ese rol ya existe.");
-            DatosHotel.Roles.Add(new RolDemo { Nombre = nombre.Trim(), Descripcion = descripcion ?? "" });
-        }
-
-        public void AsignarRolEmpleado(int empleadoId, string rol)
-        {
-            var e = DatosHotel.Empleados.FirstOrDefault(x => x.Id == empleadoId);
-            if (e == null || !DatosHotel.Roles.Any(r => r.Nombre == rol)) throw new InvalidOperationException("Selecciona empleado y rol válidos.");
-            if (DatosHotel.AsignacionesRoles.Any(a => a.EmpleadoId == empleadoId && a.Rol == rol)) return;
-            DatosHotel.AsignacionesRoles.Add(new AsignacionRolDemo { EmpleadoId = empleadoId, Empleado = e.Nombre + " " + e.Apellido, Rol = rol });
-        }
-
-        public void CrearConceptoCargo(string nombre, string categoria)
-        {
-            if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(categoria)) throw new InvalidOperationException("Completa nombre y categoría.");
-            if (DatosHotel.ConceptosCargos.Any(c => c.Nombre.Equals(nombre.Trim(), StringComparison.CurrentCultureIgnoreCase))) throw new InvalidOperationException("Ese concepto ya existe.");
-            DatosHotel.ConceptosCargos.Add(new ConceptoCargoDemo { Nombre = nombre.Trim(), Categoria = categoria.Trim() });
-        }
-
-        public void CrearServicio(string nombre, string tipo, decimal precio, bool activo)
-        {
-            if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(tipo) || precio < 0) throw new InvalidOperationException("Completa nombre, tipo y precio válido.");
-            DatosHotel.Servicios.Add(new ServicioCatalogoDemo { Nombre = nombre.Trim(), Tipo = tipo.Trim(), Precio = precio, Activo = activo });
-        }
-
-        public void ProgramarCitaServicio(string codigoReserva, string servicio, DateTime fecha, int duracion)
-        {
-            if (!DatosHotel.Reservas.Any(r => r.CodigoReserva == codigoReserva && r.Estado == EstadoReserva.EnCurso) ||
-                !DatosHotel.Servicios.Any(s => s.Nombre == servicio && s.Activo) || duracion < 1)
-                throw new InvalidOperationException("Selecciona una estancia activa, un servicio disponible y duración positiva.");
-            DatosHotel.CitasServicios.Add(new CitaServicioDemo { Reserva = codigoReserva, Servicio = servicio, Fecha = fecha, Duracion = duracion, Estado = "Programada" });
-        }
-
-        public void ProgramarTraslado(string codigoReserva, string origen, string destino, DateTime fecha)
-        {
-            if (!DatosHotel.Reservas.Any(r => r.CodigoReserva == codigoReserva) || string.IsNullOrWhiteSpace(origen) || string.IsNullOrWhiteSpace(destino))
-                throw new InvalidOperationException("Indica una reserva, origen y destino.");
-            DatosHotel.Traslados.Add(new TrasladoDemo { Reserva = codigoReserva, Origen = origen.Trim(), Destino = destino.Trim(), Fecha = fecha });
-        }
-
-        public void CrearChecklist(string nombre, string descripcion)
-        {
-            if (string.IsNullOrWhiteSpace(nombre)) throw new InvalidOperationException("El nombre del checklist es obligatorio.");
-            DatosHotel.Checklists.Add(new ChecklistDemo { Id = DatosHotel.Checklists.Count + 1, Nombre = nombre.Trim(), Descripcion = descripcion ?? "" });
-        }
-
-        public void CrearItemChecklist(int checklistId, string descripcion)
-        {
-            var c = DatosHotel.Checklists.FirstOrDefault(x => x.Id == checklistId);
-            if (c == null || string.IsNullOrWhiteSpace(descripcion)) throw new InvalidOperationException("Selecciona checklist e indica la descripción del ítem.");
-            DatosHotel.ItemsChecklist.Add(new ChecklistItemDemo { ChecklistId = c.Id, Checklist = c.Nombre, Descripcion = descripcion.Trim(), Completado = false });
-        }
-
-        private static void RegistrarAuditoria(string cambio, string anterior, string nuevo)
-        {
-            DatosHotel.Auditoria.Add(new AuditoriaDemo { Usuario = "Demo", Cambio = cambio, Anterior = anterior, Nuevo = nuevo, Fecha = DateTime.Now });
-        }
-
-        public void RegistrarConsentimiento(Guid huespedId, string tipo, bool autorizado)
-        {
-            if (!DatosHotel.Huespedes.Any(h => h.Id == huespedId)) throw new InvalidOperationException("Selecciona un huésped válido.");
-            if (string.IsNullOrWhiteSpace(tipo)) throw new InvalidOperationException("Indica el tipo de consentimiento.");
-            DatosHotel.Consentimientos.Add(new ConsentimientoHuesped { Id = Guid.NewGuid(), HuespedId = huespedId,
-                Tipo = tipo.Trim(), Autorizado = autorizado, Fecha = DateTime.Now });
-        }
-
-        public Habitacion CrearHabitacion(string numero, int piso, string tipo, string calidad, decimal tarifa)
-        {
-            if (string.IsNullOrWhiteSpace(numero) || piso < 1 || string.IsNullOrWhiteSpace(tipo))
-                throw new InvalidOperationException("Número, piso y tipo son obligatorios.");
-            if (DatosHotel.Habitaciones.Any(h => h.NumeroHabitacion == numero.Trim()))
-                throw new InvalidOperationException("Ya existe una habitación con ese número.");
-            var habitacion = new Habitacion { Id = DatosHotel.Habitaciones.Count == 0 ? 1 : DatosHotel.Habitaciones.Max(h => h.Id) + 1,
-                NumeroHabitacion = numero.Trim(), Piso = piso, CapacidadTipo = tipo, Calidad = string.IsNullOrWhiteSpace(calidad) ? "Estándar" : calidad,
-                CapacidadOverride = DatosHotel.TiposHabitacion.FirstOrDefault(t => t.Nombre == tipo)?.Capacidad ?? 0,
-                TarifaBase = tarifa > 0 ? tarifa : 100m, Estado = EstadoHabitacion.Disponible, LibreDeHumo = true };
-            DatosHotel.Habitaciones.Add(habitacion);
-            if (!DatosHotel.Pisos.Contains(piso)) DatosHotel.Pisos.Add(piso);
-            return habitacion;
-        }
-
-        public void CambiarEstadoHabitacion(int id)
-        {
-            var h = DatosHotel.Habitaciones.FirstOrDefault(x => x.Id == id);
-            if (h == null) throw new InvalidOperationException("Selecciona una habitación.");
-            var estados = new[] { EstadoHabitacion.Disponible, EstadoHabitacion.Limpieza, EstadoHabitacion.Mantenimiento, EstadoHabitacion.FueraDeServicio };
-            int indice = Array.IndexOf(estados, h.Estado);
-            RegistrarEstado(h, estados[(indice + 1 + estados.Length) % estados.Length], "Cambio manual de inventario");
-        }
-
-        public void CambiarTipoHabitacion(int id, string tipo)
-        {
-            var h = DatosHotel.Habitaciones.FirstOrDefault(x => x.Id == id);
-            if (h == null) throw new InvalidOperationException("Selecciona una habitación.");
-            if (string.IsNullOrWhiteSpace(tipo)) throw new InvalidOperationException("Selecciona un tipo.");
-            h.CapacidadTipo = tipo;
-            var catalogo = DatosHotel.TiposHabitacion.FirstOrDefault(t => t.Nombre == tipo);
-            h.CapacidadOverride = catalogo == null ? 0 : catalogo.Capacidad;
-        }
-
-        public Reserva CrearReserva(Guid huespedId, int habitacionId, DateTime entrada, DateTime salida,
-                                    CanalReserva canal, decimal tarifa, string observaciones)
+        // La base no guarda la tarifa por reserva ni las observaciones: el folio usa la tarifa del tipo de habitación.
+        public Reserva CrearReserva(int huespedId, int habitacionId, DateTime entrada, DateTime salida,
+                                    CanalReserva canal, decimal tarifa, string observaciones, int personas = 1)
         {
             if (salida <= entrada)
                 throw new InvalidOperationException("La fecha de salida debe ser posterior a la de entrada.");
-            if (tarifa <= 0)
-                throw new InvalidOperationException("La tarifa aplicada debe ser mayor que cero.");
-            if (!HabitacionDisponible(habitacionId, entrada, salida, null))
-                throw new InvalidOperationException("La habitación no está disponible en el rango seleccionado.");
 
-            var anio = entrada.Year;
-            int siguiente = DatosHotel.Reservas.Count(r => r.CodigoReserva.StartsWith("CS-" + anio)) + 1;
-            string codigo = "CS-" + anio + "-" + siguiente.ToString("0000");
+            string error;
+            var creada = reservasBd.CrearPorIds(ActorId, huespedId, habitacionId, entrada, salida, NombreCanal(canal), personas, out error);
+            if (creada == null)
+                throw new InvalidOperationException(error);
 
-            var reserva = new Reserva
+            DatosHotel.Refrescar();
+            return new Reserva
             {
-                Id = Guid.NewGuid(),
-                CodigoReserva = codigo,
+                Id = creada.Id,
+                CodigoReserva = creada.Codigo,
                 HuespedId = huespedId,
                 HabitacionId = habitacionId,
                 Canal = canal,
@@ -789,105 +316,50 @@ namespace Crown__.Backend.Services
                 FechaCheckinEsperado = entrada.Date.AddHours(15),
                 FechaCheckoutEsperado = salida.Date.AddHours(12),
                 TarifaAplicada = tarifa,
-                CantidadPersonas = 1,
                 Observaciones = observaciones,
                 CreadaEl = DateTime.Now
             };
-
-            DatosHotel.Reservas.Add(reserva);
-            return reserva;
         }
 
-        public void CheckIn(Guid reservaId)
+        // Los canales Convenio y OTA no existen en la base: se registran como Agencia y Web.
+        private static string NombreCanal(CanalReserva canal)
         {
-            var reserva = DatosHotel.Reservas.First(r => r.Id == reservaId);
-            if (reserva.Estado != EstadoReserva.Confirmada)
-                throw new InvalidOperationException("Solo las reservas confirmadas pueden registrarse como llegada.");
-
-            reserva.Estado = EstadoReserva.EnCurso;
-
-            var habitacion = DatosHotel.Habitaciones.First(h => h.Id == reserva.HabitacionId);
-                RegistrarEstado(habitacion, EstadoHabitacion.Ocupada, "Check-in");
-
-            if (DatosHotel.Folios.All(f => f.ReservaId != reserva.Id))
+            switch (canal)
             {
-                var folio = new Folio
-                {
-                    Id = Guid.NewGuid(),
-                    ReservaId = reserva.Id,
-                    HuespedId = reserva.HuespedId,
-                    TipoFolio = "Individual",
-                    Estado = "Abierto",
-                    SaldoPendiente = reserva.Total
-                };
-                DatosHotel.Folios.Add(folio);
-
-                DatosHotel.Transacciones.Add(new Transaccion
-                {
-                    Id = DatosHotel.Transacciones.Count + 1,
-                    FolioId = folio.Id,
-                    Fecha = DateTime.Now,
-                    Concepto = "Hospedaje",
-                    Cargo = Math.Round(reserva.Total, 2),
-                    Abono = 0m,
-                    MetodoPago = "Pendiente",
-                    Usuario = "Recepción"
-                });
-                DatosHotel.RecalcularSaldos();
+                case CanalReserva.Convenio: return "Agencia";
+                case CanalReserva.OTA: return "Web";
+                case CanalReserva.Telefono: return "Teléfono";
+                default: return canal.ToString();
             }
         }
 
-        public void CheckOut(Guid reservaId)
+        public void CheckIn(int reservaId)
         {
-            var reserva = DatosHotel.Reservas.First(r => r.Id == reservaId);
-            if (reserva.Estado != EstadoReserva.EnCurso)
-                throw new InvalidOperationException("Solo las estancias en curso pueden registrarse como salida.");
-
-            var folio = DatosHotel.Folios.FirstOrDefault(f => f.ReservaId == reserva.Id);
-            if (folio != null && folio.SaldoPendiente > 0)
-            {
-                DatosHotel.Transacciones.Add(new Transaccion
-                {
-                    Id = DatosHotel.Transacciones.Count + 1,
-                    FolioId = folio.Id,
-                    Fecha = DateTime.Now,
-                    Concepto = "Hospedaje",
-                    Cargo = 0m,
-                    Abono = Math.Round(folio.SaldoPendiente, 2),
-                    MetodoPago = "Efectivo",
-                    Usuario = "Recepción"
-                });
-                DatosHotel.RecalcularSaldos();
-            }
-
-            if (folio != null)
-                folio.Estado = "Cerrado";
-
-            reserva.Estado = EstadoReserva.Finalizada;
-
-            var habitacion = DatosHotel.Habitaciones.First(h => h.Id == reserva.HabitacionId);
-            RegistrarEstado(habitacion, EstadoHabitacion.Limpieza, "Check-out");
+            Resolver(estanciasBd.HacerCheckIn(ActorId, ReservaRegistro.CodigoDe(reservaId)));
         }
 
-        public void Cancelar(Guid reservaId)
+        // Si queda saldo, se cobra en efectivo antes de registrar la salida.
+        public void CheckOut(int reservaId)
         {
-            var reserva = DatosHotel.Reservas.First(r => r.Id == reservaId);
-            if (reserva.Estado == EstadoReserva.Finalizada || reserva.Estado == EstadoReserva.Cancelada)
-                throw new InvalidOperationException("La reserva ya no puede cancelarse.");
+            DatosHotel.Refrescar();
+            string codigo = ReservaRegistro.CodigoDe(reservaId);
+            decimal saldo = SaldoReserva(reservaId);
+            if (saldo > 0)
+                Resolver(foliosBd.RegistrarPago(ActorId, codigo, saldo, "Efectivo", "Cobro al salir"));
 
-            bool estabaEnCasa = reserva.Estado == EstadoReserva.EnCurso;
-            reserva.Estado = EstadoReserva.Cancelada;
+            Resolver(estanciasBd.HacerCheckOut(ActorId, codigo));
+        }
 
-            var folio = DatosHotel.Folios.FirstOrDefault(f => f.ReservaId == reserva.Id);
-            if (folio != null)
-                folio.Estado = "Cerrado";
+        public void Cancelar(int reservaId)
+        {
+            Resolver(estanciasBd.Cancelar(ActorId, ReservaRegistro.CodigoDe(reservaId)));
+        }
 
-            if (estabaEnCasa)
-            {
-                var habitacion = DatosHotel.Habitaciones.First(h => h.Id == reserva.HabitacionId);
-                if (habitacion.Estado == EstadoHabitacion.Ocupada)
-                    RegistrarEstado(habitacion, EstadoHabitacion.Disponible, "Cancelación de estancia");
-            }
+        private static void Resolver(string error)
+        {
+            DatosHotel.Refrescar();
+            if (error != null)
+                throw new InvalidOperationException(error);
         }
 
         // ---------------------------------------------------------------- Ingresos
@@ -1033,7 +505,7 @@ namespace Crown__.Backend.Services
             }
         }
 
-        public decimal SaldoReserva(Guid reservaId)
+        public decimal SaldoReserva(int reservaId)
         {
             var folio = DatosHotel.Folios.FirstOrDefault(f => f.ReservaId == reservaId);
             return folio == null ? 0m : folio.SaldoPendiente;
@@ -1041,13 +513,13 @@ namespace Crown__.Backend.Services
 
         // ---------------------------------------------------------------- Utilidades
 
-        public static string NombreHuesped(Guid huespedId)
+        public static string NombreHuesped(int huespedId)
         {
             var huesped = DatosHotel.Huespedes.FirstOrDefault(h => h.Id == huespedId);
             return huesped == null ? "Huésped" : huesped.NombreCompleto;
         }
 
-        public static string NombreHuespedPorFolio(Guid folioId)
+        public static string NombreHuespedPorFolio(int folioId)
         {
             var folio = DatosHotel.Folios.FirstOrDefault(f => f.Id == folioId);
             return folio == null ? "—" : NombreHuesped(folio.HuespedId);
@@ -1059,7 +531,7 @@ namespace Crown__.Backend.Services
             return habitacion == null ? "—" : habitacion.NumeroHabitacion;
         }
 
-        public Huesped BuscarHuesped(Guid id)
+        public Huesped BuscarHuesped(int id)
         {
             return DatosHotel.Huespedes.FirstOrDefault(h => h.Id == id);
         }

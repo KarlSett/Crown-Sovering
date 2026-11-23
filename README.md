@@ -2,11 +2,10 @@
 
 Aplicación de escritorio para gestión hotelera, desarrollada en **WPF con C# y .NET Framework 4.7.2**.
 
-La interfaz incluye el acceso, el panel operativo y trece módulos administrativos. Las
-secciones de funcionamiento, reservas, habitaciones disponibles e ingresos cuentan con
-flujos operativos de demostración; huéspedes y el inventario básico permiten altas y
-cambios en memoria. La conexión a PostgreSQL y las operaciones CRUD de los módulos
-administrativos siguen pendientes; ver [docs/PENDIENTES.md](docs/PENDIENTES.md).
+La interfaz incluye el acceso, el panel operativo y módulos administrativos conectados a
+servicios y repositorios PostgreSQL. Se requiere configurar una base compatible para usar
+las operaciones reales. Ver [docs/PENDIENTES.md](docs/PENDIENTES.md) para los recursos y
+decisiones que aún debe aportar el equipo.
 
 ![Login en modo claro](docs/images/login-light.png)
 
@@ -34,8 +33,10 @@ git clone https://github.com/KarlSett/Crown-Sovering.git
 2. Abrir `Crown &.sln`.
 3. Seleccionar `Debug / Any CPU` e iniciar con **F5**.
 
-El proyecto no requiere paquetes NuGet ni credenciales. `BtnIngresar` y
-`BtnLoginSimulado` abren el panel con datos de demostración; no hay validación real.
+Restaura los paquetes NuGet declarados por el proyecto. Copia
+`Conexion.config.example` a `Conexion.config` y completa los valores locales antes de
+iniciar sesión. Ese archivo contiene credenciales y está excluido del control de versiones.
+El login consulta los usuarios de la base de datos.
 
 Desde una consola de desarrollador de Visual Studio:
 
@@ -49,19 +50,17 @@ msbuild '.\Crown &.sln' /t:Build /p:Configuration=Debug
 - Login con apariencia clara y oscura, navegación por teclado y estados visuales.
 - Fondo hotelero local con movimiento suave y pausa; MP4 local opcional.
 - Panel con barra lateral agrupada: Operación, Administración, Producto, Servicios y Configuración.
-- Cuatro roles de demostración (Administrador, Gerente, Recepcionista, Personal de servicios):
-  el menú muestra solo las pantallas de cada rol. La autorización real queda para el backend.
-- Trece pantallas de módulo con acciones de demostración en memoria para huéspedes,
-  inventario, estancias y llaves, cargos y facturas, caja, tarifas, convenios, limpieza,
-  consumos, configuración, personal, notificaciones y reportes CSV.
-- Las altas, filtros y operaciones principales se conservan durante la sesión; no persisten
-  después de cerrar la aplicación.
+- Roles y autorización conectados a la sesión autenticada; el servidor valida operaciones.
+- Módulos operativos con repositorios y servicios PostgreSQL para huéspedes, habitaciones,
+  reservas, estancias, folios, caja, tarifas, convenios, limpieza, consumos y configuración.
+- Los datos dependen de la base configurada y del esquema aplicado. No se incluye una
+  instancia PostgreSQL ni secretos de conexión.
 - Funcionamiento: ocupación, disponibilidad, llegadas, salidas, ingresos del día y movimientos.
 - Reservas: filtros, alta con validación de disponibilidad y operación de llegada/salida/cancelación.
 - Habitaciones: disponibilidad por fechas, tipo de capacidad y calidad.
 - Ingresos: cuentas de ingreso por concepto, medios de pago y detalle diario/semanal/trimestral.
-- Sin autenticación real ni persistencia entre sesiones. Los pendientes de producción y las
-  diferencias con el esquema están en [docs/PENDIENTES.md](docs/PENDIENTES.md).
+- Las imágenes finales y algunas políticas del hotel siguen pendientes en
+  [docs/PENDIENTES.md](docs/PENDIENTES.md).
 
 ## Organización
 

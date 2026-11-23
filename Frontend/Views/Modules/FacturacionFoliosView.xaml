@@ -1,8 +1,10 @@
 <UserControl x:Class="Crown__.Frontend.Views.Modules.FacturacionFoliosView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Loaded="OnLoaded">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Loaded="OnLoaded">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
@@ -10,22 +12,24 @@
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="Facturación" VerticalAlignment="Center" />
             <TextBlock Text="Buscar…" VerticalAlignment="Center" />
-            <TextBox x:Name="TxtBuscar" Width="180" TextChanged="OnBuscar" />
+            <TextBox x:Name="TxtBuscar" Width="180" TextChanged="OnBuscarCambia" />
             <Button Content="Buscar" Click="OnBuscar" />
-            <Button Content="Nuevo folio" Click="OnNuevoFolio" />
-            <Button Content="Transferir cargo" Click="OnTransferirCargo" />
-            <Button Content="Emitir factura" Click="OnEmitirFactura" />
-            <Button Content="Nota de crédito" Click="OnCrearNota" />
+            <Button x:Name="BtnNuevoFolio" Content="Nuevo folio" Click="OnNuevoFolio" IsEnabled="False" />
+            <Button x:Name="BtnTransferir" Content="Transferir cargo" Click="OnTransferir" IsEnabled="False" />
+            <Button x:Name="BtnEmitirFactura" Content="Emitir factura" Click="OnEmitirFactura" IsEnabled="False" />
+            <Button x:Name="BtnNotaCredito" Content="Nota de crédito" Click="OnNotaCredito" IsEnabled="False" />
         </StackPanel>
 
-        <Grid Grid.Row="1">
+        <TextBlock x:Name="TxtAviso" Grid.Row="1" Margin="0,4,0,4" />
+
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*" />
                 <ColumnDefinition Width="2*" />
             </Grid.ColumnDefinitions>
 
-            <GroupBox Header="Folios abiertos">
-                <ListBox x:Name="LstFolios" DisplayMemberPath="Texto" SelectionChanged="OnSeleccionFolio" />
+            <GroupBox Header="Folios">
+                <ListBox x:Name="ListaFolios" SelectionChanged="OnSeleccionFolio" />
             </GroupBox>
 
             <Grid Grid.Column="1">
@@ -47,7 +51,7 @@
                         <TextBlock Text="Huésped" VerticalAlignment="Center" />
                         <TextBox x:Name="TxtHuesped" Grid.Column="1" IsReadOnly="True" />
                         <TextBlock Grid.Column="2" Text="Estado" VerticalAlignment="Center" />
-                        <TextBox x:Name="TxtEstadoFolio" Grid.Column="3" IsReadOnly="True" />
+                        <TextBox x:Name="TxtEstado" Grid.Column="3" IsReadOnly="True" />
                         <TextBlock Grid.Column="4" Text="Saldo" VerticalAlignment="Center" />
                         <TextBox x:Name="TxtSaldo" Grid.Column="5" IsReadOnly="True" />
                     </Grid>
@@ -64,20 +68,21 @@
                                 <TextBlock Text="Concepto" VerticalAlignment="Center" />
                                 <ComboBox x:Name="CmbConcepto" Width="140" />
                                 <TextBlock Text="Descripción" VerticalAlignment="Center" />
-                                <TextBox x:Name="TxtDescripcionCargo" Width="200" />
+                                <TextBox x:Name="TxtDescripcion" Width="200" />
                                 <TextBlock Text="Cantidad" VerticalAlignment="Center" />
                                 <TextBox x:Name="TxtCantidad" Width="70" Text="1" />
                                 <TextBlock Text="Precio" VerticalAlignment="Center" />
                                 <TextBox x:Name="TxtPrecio" Width="90" />
-                                <Button Content="Agregar" Click="OnAgregarCargo" />
+                                <Button x:Name="BtnAgregarCargo" Content="Agregar" Click="OnAgregarCargo" IsEnabled="False" />
                             </StackPanel>
                             <DataGrid x:Name="GridCargos" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha, StringFormat={}{0:g}}" />
-                                    <DataGridTextColumn Header="Concepto" Binding="{Binding Concepto}" />
-                                    <DataGridTextColumn Header="Cantidad" Binding="{Binding Cantidad}" />
-                                    <DataGridTextColumn Header="Precio" Binding="{Binding Cargo}" />
-                                    <DataGridTextColumn Header="Importe" Binding="{Binding Cargo}" />
+                                    <DataGridTextColumn Header="Fecha" Binding="{Binding FechaTexto}" Width="*" />
+                                    <DataGridTextColumn Header="Concepto" Binding="{Binding Concepto}" Width="*" />
+                                    <DataGridTextColumn Header="Descripción" Binding="{Binding Descripcion}" Width="2*" />
+                                    <DataGridTextColumn Header="Cantidad" Binding="{Binding Cantidad}" Width="*" />
+                                    <DataGridTextColumn Header="Precio" Binding="{Binding PrecioTexto}" Width="*" />
+                                    <DataGridTextColumn Header="Importe" Binding="{Binding ImporteTexto}" Width="*" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>
@@ -91,29 +96,29 @@
                             </Grid.RowDefinitions>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                                <TextBox x:Name="TxtNuevoConcepto" Width="180" />
+                                <TextBox x:Name="TxtConceptoNombre" Width="180" />
                                 <TextBlock Text="Categoría" VerticalAlignment="Center" />
-                                <TextBox x:Name="TxtCategoriaConcepto" Width="150" />
-                                <Button Content="Guardar" Click="OnGuardarConcepto" />
+                                <TextBox x:Name="TxtConceptoCategoria" Width="150" />
+                                <Button x:Name="BtnGuardarConcepto" Content="Guardar" Click="OnGuardarConcepto" />
                             </StackPanel>
                             <DataGrid x:Name="GridConceptos" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Concepto" Binding="{Binding Nombre}" />
-                                    <DataGridTextColumn Header="Categoría" Binding="{Binding Categoria}" />
+                                    <DataGridTextColumn Header="Concepto" Binding="{Binding Nombre}" Width="*" />
+                                    <DataGridTextColumn Header="Categoría" Binding="{Binding Categoria}" Width="*" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>
                     </TabItem>
 
                     <TabItem Header="Facturas">
-                        <DataGrid x:Name="GridFacturas" AutoGenerateColumns="False" IsReadOnly="True">
+                        <DataGrid x:Name="GridFacturas" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Número" Binding="{Binding Numero}" />
-                                <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha, StringFormat={}{0:d}}" />
-                                <DataGridTextColumn Header="Subtotal" Binding="{Binding Subtotal}" />
-                                <DataGridTextColumn Header="Impuesto" Binding="{Binding Impuesto}" />
-                                <DataGridTextColumn Header="Total" Binding="{Binding Total}" />
-                                <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" />
+                                <DataGridTextColumn Header="Número" Binding="{Binding Numero}" Width="*" />
+                                <DataGridTextColumn Header="Fecha" Binding="{Binding FechaTexto}" Width="*" />
+                                <DataGridTextColumn Header="Subtotal" Binding="{Binding SubtotalTexto}" Width="*" />
+                                <DataGridTextColumn Header="Impuesto" Binding="{Binding ImpuestoTexto}" Width="*" />
+                                <DataGridTextColumn Header="Total" Binding="{Binding TotalTexto}" Width="*" />
+                                <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="*" />
                             </DataGrid.Columns>
                         </DataGrid>
                     </TabItem>
@@ -126,19 +131,19 @@
                             </Grid.RowDefinitions>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Factura" VerticalAlignment="Center" />
-                                <ComboBox x:Name="CmbFactura" Width="140" DisplayMemberPath="Numero" />
+                                <ComboBox x:Name="CmbFacturaNota" Width="170" />
                                 <TextBlock Text="Motivo" VerticalAlignment="Center" />
-                                <TextBox x:Name="TxtMotivoNC" Width="220" />
+                                <TextBox x:Name="TxtMotivoNota" Width="220" />
                                 <TextBlock Text="Monto" VerticalAlignment="Center" />
-                                <TextBox x:Name="TxtMontoNC" Width="90" />
-                                <Button Content="Crear" Click="OnGuardarNota" />
+                                <TextBox x:Name="TxtMontoNota" Width="90" />
+                                <Button x:Name="BtnCrearNota" Content="Crear" Click="OnNotaCredito" IsEnabled="False" />
                             </StackPanel>
                             <DataGrid x:Name="GridNotas" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Número" Binding="{Binding Numero}" />
-                                    <DataGridTextColumn Header="Factura" Binding="{Binding Factura}" />
-                                    <DataGridTextColumn Header="Motivo" Binding="{Binding Motivo}" />
-                                    <DataGridTextColumn Header="Monto" Binding="{Binding Monto}" />
+                                    <DataGridTextColumn Header="Número" Binding="{Binding Numero}" Width="*" />
+                                    <DataGridTextColumn Header="Factura" Binding="{Binding Factura}" Width="*" />
+                                    <DataGridTextColumn Header="Motivo" Binding="{Binding Motivo}" Width="2*" />
+                                    <DataGridTextColumn Header="Monto" Binding="{Binding MontoTexto}" Width="*" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>

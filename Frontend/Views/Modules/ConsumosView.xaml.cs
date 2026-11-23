@@ -1,108 +1,172 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Crown__.Backend.Data;
 using Crown__.Backend.Models;
 using Crown__.Backend.Services;
-using Crown__.Frontend.Controls;
 
 namespace Crown__.Frontend.Views.Modules
 {
+    /// <summary>Consumos de productos a la estancia, catálogo de servicios, citas, traslados e inventario.</summary>
     public partial class ConsumosView : UserControl
     {
-        private readonly ServicioHotel servicio = ServicioHotel.Instancia;
-        private sealed class ReservaOpcion { public Reserva Reserva { get; set; } public string Texto { get; set; } }
-        private sealed class ProductoOpcion { public ProductoDemo Producto { get; set; } public string Texto { get; set; } }
-        public ConsumosView() { InitializeComponent(); CmbTipoServicio.ItemsSource = new[] { "Spa", "Lavandería", "Traslado", "Gimnasio", "Otro" }; CmbTipoServicio.SelectedIndex = 0; }
+        private const decimal TasaImpuesto = 0.13m;
+
+        private readonly ServicioService servicio = new ServicioService();
+        private List<Producto> productos = new List<Producto>();
+        private decimal totalConsumo;
+
+        public ConsumosView()
+        {
+            InitializeComponent();
+            CmbServicioTipo.ItemsSource = new[] { "Spa", "Gimnasio", "Transporte", "Lavandería", "Otro" };
+            CmbServicioTipo.SelectedIndex = 0;
+            BtnNuevoProducto.Visibility = Sesion.Rol == Rol.Administrador || Sesion.Rol == Rol.Gerente ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private ReservaRegistro Estancia { get { return CmbEstancia.SelectedItem as ReservaRegistro; } }
+        private Producto Producto { get { return ListaProductos.SelectedItem as Producto; } }
+
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            CmbEstancia.ItemsSource = DatosHotel.Reservas.Where(r => r.Estado == EstadoReserva.EnCurso)
-                .Select(r => new ReservaOpcion { Reserva = r, Texto = r.CodigoReserva + " · " + ServicioHotel.NombreHuesped(r.HuespedId) + " · Hab. " + ServicioHotel.NumeroHabitacion(r.HabitacionId) }).ToList();
-            if (CmbEstancia.Items.Count > 0) CmbEstancia.SelectedIndex = 0;
-            CargarProductos(); CargarConsumos();
-            GridServicios.ItemsSource = DatosHotel.Servicios;
-            GridCitas.ItemsSource = DatosHotel.CitasServicios;
-            GridTraslados.ItemsSource = DatosHotel.Traslados;
+            Cargar();
         }
-        private void CargarProductos()
+
+        public void Cargar()
         {
-            string q = (TxtBuscar.Text ?? "").Trim();
-            LstProductos.ItemsSource = DatosHotel.Productos.Where(p => p.Activo && (q.Length == 0 || p.Nombre.IndexOf(q, StringComparison.CurrentCultureIgnoreCase) >= 0))
-                .Select(p => new ProductoOpcion { Producto = p, Texto = p.Nombre + " · " + p.Precio.ToString("0.00") + " · stock " + p.Stock }).ToList();
+            try
+            {
+                int anterior = Estancia == null ? 0 : Estancia.Id;
+                var alojados = new ReservaService().Listar().Where(r => r.Estado == "Check-In").ToList();
+                CmbEstancia.ItemsSource = alojados;
+                CmbEstancia.SelectedItem = alojados.FirstOrDefault(r => r.Id == anterior) ?? alojados.FirstOrDefault();
+
+                // los insumos de cocina no se cobran a un huésped
+                productos = servicio.Productos().Where(p => p.Categoria != "Insumo").ToList();
+                FiltrarProductos();
+                GridServicios.ItemsSource = servicio.Servicios();
+                GridCitas.ItemsSource = servicio.Citas();
+                GridTraslados.ItemsSource = new TrasladoService().Todos();
+                GridInventario.ItemsSource = servicio.MovimientosInventario();
+                TxtAviso.Text = alojados.Count == 0 ? "No hay huéspedes alojados: los consumos se cargan a estancias en curso." : string.Empty;
+            }
+            catch (Exception ex)
+            {
+                TxtAviso.Text = "No se pudo leer la base de datos: " + ex.Message;
+            }
+            MostrarConsumo();
         }
-        private void CargarConsumos()
+
+        private void FiltrarProductos()
         {
-            var r = (CmbEstancia.SelectedItem as ReservaOpcion)?.Reserva;
-            var consumos = r == null ? new System.Collections.Generic.List<ConsumoDemo>() : DatosHotel.Consumos.Where(c => c.ReservaId == r.Id).ToList();
-            GridConsumos.ItemsSource = consumos;
-            decimal subtotal = consumos.Sum(c => c.Total);
-            TxtSubtotal.Text = subtotal.ToString("0.00"); TxtImpuesto.Text = "0.00"; TxtTotal.Text = subtotal.ToString("0.00");
+            string buscado = (TxtBuscar.Text ?? string.Empty).Trim().ToLowerInvariant();
+            ListaProductos.ItemsSource = productos.Where(p => buscado.Length == 0 || p.Nombre.ToLowerInvariant().Contains(buscado)).ToList();
+            ListaProductos.DisplayMemberPath = null;
         }
-        private void OnBuscar(object sender, TextChangedEventArgs e) { if (IsLoaded) CargarProductos(); }
-        private void OnEstancia(object sender, SelectionChangedEventArgs e) { if (IsLoaded) CargarConsumos(); }
-        private void OnProducto(object sender, SelectionChangedEventArgs e) { }
-        private void OnNuevoProducto(object sender, RoutedEventArgs e)
+
+        private void OnBuscarCambia(object sender, TextChangedEventArgs e) { if (IsLoaded) FiltrarProductos(); }
+        private void OnEstanciaCambia(object sender, SelectionChangedEventArgs e) { MostrarConsumo(); }
+
+        private void MostrarConsumo()
         {
-            var d = DialogoRapido.Mostrar(Window.GetWindow(this), "Nuevo producto", "Nombre", "Precio unitario", "Stock inicial");
-            if (d == null) return;
-            decimal precio; int stock;
-            if (!decimal.TryParse(d[1], NumberStyles.Number, CultureInfo.CurrentCulture, out precio) || !int.TryParse(d[2], out stock))
-            { MessageBox.Show("Precio o stock no válidos.", "Productos", MessageBoxButton.OK, MessageBoxImage.Information); return; }
-            try { servicio.CrearProducto(d[0], precio, stock); CargarProductos(); }
-            catch (InvalidOperationException ex) { MessageBox.Show(ex.Message, "Productos", MessageBoxButton.OK, MessageBoxImage.Information); }
+            var estancia = Estancia;
+            totalConsumo = 0;
+            GridConsumo.ItemsSource = null;
+            if (estancia != null)
+            {
+                try
+                {
+                    var lineas = servicio.Consumos(estancia.Id);
+                    GridConsumo.ItemsSource = lineas;
+                    totalConsumo = lineas.Sum(l => l.Total);
+                }
+                catch (Exception ex) { TxtAviso.Text = "No se pudo leer el consumo: " + ex.Message; }
+            }
+
+            decimal impuesto = Math.Round(totalConsumo * TasaImpuesto / (1 + TasaImpuesto), 2);
+            TxtSubtotal.Text = Formato.Moneda(totalConsumo - impuesto);
+            TxtImpuesto.Text = Formato.Moneda(impuesto);
+            TxtTotal.Text = Formato.Moneda(totalConsumo);
+            BtnCobrar.IsEnabled = estancia != null && totalConsumo > 0;
         }
+
+        private void Aplicar(Func<string> operacion, string exito)
+        {
+            string error;
+            try { error = operacion(); }
+            catch (Exception ex) { error = "No se pudo guardar.\n" + ex.Message; }
+
+            if (error != null) { MessageBox.Show(error, "Consumos y servicios", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+            Backend.Data.DatosHotel.Refrescar();
+            Cargar();
+            TxtAviso.Text = exito;
+        }
+
         private void OnRegistrarConsumo(object sender, RoutedEventArgs e)
         {
-            var r = (CmbEstancia.SelectedItem as ReservaOpcion)?.Reserva;
-            var p = (LstProductos.SelectedItem as ProductoOpcion)?.Producto;
-            if (r == null || p == null) { MessageBox.Show("Selecciona una estancia y un producto.", "Consumos", MessageBoxButton.OK, MessageBoxImage.Information); return; }
-            var d = DialogoRapido.Mostrar(Window.GetWindow(this), "Registrar consumo", "Cantidad (disponible: " + p.Stock + ")");
-            if (d == null) return;
             int cantidad;
-            if (!int.TryParse(d[0], out cantidad)) { MessageBox.Show("La cantidad no es válida.", "Consumos", MessageBoxButton.OK, MessageBoxImage.Information); return; }
-            try { servicio.RegistrarConsumo(r.Id, p.Id, cantidad); CargarProductos(); CargarConsumos(); }
-            catch (InvalidOperationException ex) { MessageBox.Show(ex.Message, "Consumos", MessageBoxButton.OK, MessageBoxImage.Information); }
+            if (Estancia == null || Producto == null || !int.TryParse(TxtCantidad.Text, out cantidad))
+            {
+                MessageBox.Show("Elige la estancia, un producto del catálogo y escribe la cantidad.", "Consumos y servicios", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+            var estancia = Estancia;
+            var producto = Producto;
+            Aplicar(() => servicio.ConsumirProducto(Sesion.UsuarioId.ToString(), estancia.Codigo, producto.Id, cantidad),
+                    "Consumo cargado al folio · " + producto.Nombre + " x" + cantidad);
         }
+
+        // El consumo ya está en el folio; cobrar registra el pago en efectivo de ese importe.
         private void OnCobrar(object sender, RoutedEventArgs e)
         {
-            var r = (CmbEstancia.SelectedItem as ReservaOpcion)?.Reserva;
-            if (r == null) return;
-            if (!DatosHotel.TurnoCajaAbierto) { MessageBox.Show("Abre un turno de caja antes de cobrar.", "Consumos", MessageBoxButton.OK, MessageBoxImage.Information); return; }
-            var folio = DatosHotel.Folios.FirstOrDefault(f => f.ReservaId == r.Id && f.Estado == "Abierto");
-            if (folio == null || folio.SaldoPendiente <= 0) { MessageBox.Show("El folio no tiene saldo pendiente.", "Consumos", MessageBoxButton.OK, MessageBoxImage.Information); return; }
-            var d = DialogoRapido.Mostrar(Window.GetWindow(this), "Cobrar folio", "Método de pago (Efectivo, Tarjeta, Transferencia)");
-            if (d == null) return;
-            try { servicio.RegistrarPago(folio.Id, folio.SaldoPendiente, d[0]); MessageBox.Show("Pago registrado.", "Consumos", MessageBoxButton.OK, MessageBoxImage.Information); }
-            catch (InvalidOperationException ex) { MessageBox.Show(ex.Message, "Consumos", MessageBoxButton.OK, MessageBoxImage.Information); }
+            var estancia = Estancia;
+            if (estancia == null) return;
+            if (MessageBox.Show("¿Cobrar Bs " + totalConsumo.ToString("0.00", CultureInfo.InvariantCulture) + " en efectivo?", "Consumos y servicios",
+                                MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
+            decimal total = totalConsumo;
+            Aplicar(() => servicio.CobrarConsumo(Sesion.UsuarioId.ToString(), estancia.Codigo, total), "Cobro registrado.");
         }
+
+        private void OnNuevoProducto(object sender, RoutedEventArgs e)
+        {
+            var ventana = new Window { Title = "Nuevo producto", Width = 340, Height = 330, ResizeMode = ResizeMode.NoResize,
+                                       WindowStartupLocation = WindowStartupLocation.CenterOwner, Owner = Window.GetWindow(this) };
+            var panel = new StackPanel { Margin = new Thickness(16) };
+            var nombre = new TextBox(); var categoria = new TextBox(); var precio = new TextBox(); var stock = new TextBox { Text = "0" };
+            foreach (var par in new[] { Tuple.Create("Nombre", nombre), Tuple.Create("Categoría", categoria), Tuple.Create("Precio (Bs)", precio), Tuple.Create("Stock inicial", stock) })
+            {
+                panel.Children.Add(new TextBlock { Text = par.Item1 });
+                panel.Children.Add(par.Item2);
+            }
+            var guardar = new Button { Content = "Guardar", IsDefault = true, Margin = new Thickness(0, 10, 0, 0) };
+            guardar.Click += (s, a) => ventana.DialogResult = true;
+            panel.Children.Add(guardar);
+            ventana.Content = panel;
+            if (ventana.ShowDialog() != true) return;
+
+            decimal valor;
+            int existencias;
+            if (!decimal.TryParse(precio.Text.Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out valor) || !int.TryParse(stock.Text, out existencias))
+            {
+                MessageBox.Show("Escribe el precio y el stock como números.", "Nuevo producto", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            Aplicar(() => servicio.NuevoProducto(Sesion.UsuarioId.ToString(), nombre.Text, categoria.Text, valor, existencias), "Producto creado.");
+        }
+
         private void OnGuardarServicio(object sender, RoutedEventArgs e)
         {
             decimal precio;
-            if (!decimal.TryParse(TxtPrecioServicio.Text, NumberStyles.Number, CultureInfo.CurrentCulture, out precio)) { MessageBox.Show("El precio no es válido.", "Servicios", MessageBoxButton.OK, MessageBoxImage.Information); return; }
-            try { servicio.CrearServicio(TxtNombreServicio.Text, CmbTipoServicio.SelectedItem as string, precio, ChkServicioActivo.IsChecked == true); TxtNombreServicio.Clear(); TxtPrecioServicio.Clear(); GridServicios.ItemsSource = null; GridServicios.ItemsSource = DatosHotel.Servicios; }
-            catch (InvalidOperationException ex) { MessageBox.Show(ex.Message, "Servicios", MessageBoxButton.OK, MessageBoxImage.Information); }
-        }
-        private void OnProgramarCita(object sender, RoutedEventArgs e)
-        {
-            var d = DialogoRapido.Mostrar(Window.GetWindow(this), "Programar cita", "Código de estancia activa", "Servicio", "Fecha y hora (AAAA-MM-DD HH:MM)", "Duración en minutos");
-            if (d == null) return;
-            DateTime fecha; int minutos;
-            if (!DateTime.TryParse(d[2], CultureInfo.CurrentCulture, DateTimeStyles.None, out fecha) || !int.TryParse(d[3], out minutos))
-            { MessageBox.Show("Fecha u duración inválida.", "Citas", MessageBoxButton.OK, MessageBoxImage.Information); return; }
-            try { servicio.ProgramarCitaServicio(d[0], d[1], fecha, minutos); GridCitas.ItemsSource = null; GridCitas.ItemsSource = DatosHotel.CitasServicios.ToList(); }
-            catch (InvalidOperationException ex) { MessageBox.Show(ex.Message, "Citas", MessageBoxButton.OK, MessageBoxImage.Information); }
-        }
-        private void OnProgramarTraslado(object sender, RoutedEventArgs e)
-        {
-            var d = DialogoRapido.Mostrar(Window.GetWindow(this), "Programar traslado", "Código de reserva", "Origen", "Destino", "Fecha y hora");
-            if (d == null) return;
-            DateTime fecha;
-            if (!DateTime.TryParse(d[3], CultureInfo.CurrentCulture, DateTimeStyles.None, out fecha))
-            { MessageBox.Show("La fecha no es válida.", "Traslados", MessageBoxButton.OK, MessageBoxImage.Information); return; }
-            try { servicio.ProgramarTraslado(d[0], d[1], d[2], fecha); GridTraslados.ItemsSource = null; GridTraslados.ItemsSource = DatosHotel.Traslados.ToList(); }
-            catch (InvalidOperationException ex) { MessageBox.Show(ex.Message, "Traslados", MessageBoxButton.OK, MessageBoxImage.Information); }
+            if (!decimal.TryParse((TxtServicioPrecio.Text ?? string.Empty).Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out precio))
+            {
+                MessageBox.Show("Escribe el precio como número, por ejemplo 65.", "Servicios", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            Aplicar(() => servicio.NuevoServicio(Sesion.UsuarioId.ToString(), TxtServicioNombre.Text, CmbServicioTipo.SelectedItem as string, precio, ChkServicioActivo.IsChecked == true), "Servicio guardado.");
+            TxtServicioNombre.Clear();
+            TxtServicioPrecio.Clear();
         }
     }
 }

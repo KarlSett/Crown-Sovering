@@ -1,8 +1,10 @@
 <UserControl x:Class="Crown__.Frontend.Views.Modules.ConsumosView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Loaded="OnLoaded">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Loaded="OnLoaded">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="200" />
@@ -11,12 +13,16 @@
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="Consumos y servicios" VerticalAlignment="Center" />
             <TextBlock Text="Estancia" VerticalAlignment="Center" />
-            <ComboBox x:Name="CmbEstancia" Width="220" DisplayMemberPath="Texto" SelectionChanged="OnEstancia" />
-            <Button Content="Nuevo producto" Click="OnNuevoProducto" />
+            <ComboBox x:Name="CmbEstancia" Width="260" SelectionChanged="OnEstanciaCambia" />
+            <Button x:Name="BtnNuevoProducto" Content="Nuevo producto" Click="OnNuevoProducto" />
+            <TextBlock Text="Cantidad" VerticalAlignment="Center" />
+            <TextBox x:Name="TxtCantidad" Width="50" Text="1" />
             <Button Content="Registrar consumo" Click="OnRegistrarConsumo" />
         </StackPanel>
 
-        <Grid Grid.Row="1">
+        <TextBlock x:Name="TxtAviso" Grid.Row="1" Margin="0,4,0,4" />
+
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*" />
                 <ColumnDefinition Width="2*" />
@@ -30,9 +36,9 @@
                     </Grid.RowDefinitions>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Buscar…" VerticalAlignment="Center" />
-                        <TextBox x:Name="TxtBuscar" Width="140" TextChanged="OnBuscar" />
+                        <TextBox x:Name="TxtBuscar" Width="140" TextChanged="OnBuscarCambia" />
                     </StackPanel>
-                    <ListBox x:Name="LstProductos" Grid.Row="1" DisplayMemberPath="Texto" SelectionChanged="OnProducto" />
+                    <ListBox x:Name="ListaProductos" Grid.Row="1" />
                 </Grid>
             </GroupBox>
 
@@ -42,12 +48,12 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <GroupBox Header="Consumo de la estancia">
-                    <DataGrid x:Name="GridConsumos" AutoGenerateColumns="False" IsReadOnly="True">
+                    <DataGrid x:Name="GridConsumo" AutoGenerateColumns="False" IsReadOnly="True">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Producto" Binding="{Binding Producto}" />
-                            <DataGridTextColumn Header="Cantidad" Binding="{Binding Cantidad}" />
-                            <DataGridTextColumn Header="Precio" Binding="{Binding Precio}" />
-                            <DataGridTextColumn Header="Total" Binding="{Binding Total}" />
+                            <DataGridTextColumn Header="Producto" Binding="{Binding Producto}" Width="2*" />
+                            <DataGridTextColumn Header="Cantidad" Binding="{Binding Cantidad}" Width="*" />
+                            <DataGridTextColumn Header="Precio" Binding="{Binding PrecioTexto}" Width="*" />
+                            <DataGridTextColumn Header="Total" Binding="{Binding TotalTexto}" Width="*" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </GroupBox>
@@ -64,17 +70,17 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Subtotal" VerticalAlignment="Center" />
                         <TextBox x:Name="TxtSubtotal" Grid.Column="1" IsReadOnly="True" />
-                        <TextBlock Grid.Column="2" Text="Impuesto" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="2" Text="Impuesto (13 %)" VerticalAlignment="Center" />
                         <TextBox x:Name="TxtImpuesto" Grid.Column="3" IsReadOnly="True" />
                         <TextBlock Grid.Column="4" Text="Total" VerticalAlignment="Center" />
                         <TextBox x:Name="TxtTotal" Grid.Column="5" IsReadOnly="True" />
-                        <Button Grid.Column="6" Content="Cobrar saldo" Click="OnCobrar" />
+                        <Button x:Name="BtnCobrar" Grid.Column="6" Content="Cobrar" Click="OnCobrar" IsEnabled="False" />
                     </Grid>
                 </GroupBox>
             </Grid>
         </Grid>
 
-        <TabControl Grid.Row="2">
+        <TabControl Grid.Row="3">
             <TabItem Header="Servicios">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -83,41 +89,58 @@
                     </Grid.RowDefinitions>
                     <WrapPanel>
                         <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                        <TextBox x:Name="TxtNombreServicio" Width="160" />
+                        <TextBox x:Name="TxtServicioNombre" Width="160" />
                         <TextBlock Text="Tipo" VerticalAlignment="Center" />
-                        <ComboBox x:Name="CmbTipoServicio" Width="120" />
+                        <ComboBox x:Name="CmbServicioTipo" Width="120" />
                         <TextBlock Text="Precio" VerticalAlignment="Center" />
-                        <TextBox x:Name="TxtPrecioServicio" Width="80" />
-                        <CheckBox x:Name="ChkServicioActivo" Content="Activo" VerticalAlignment="Center" IsChecked="True" />
+                        <TextBox x:Name="TxtServicioPrecio" Width="80" />
+                        <CheckBox x:Name="ChkServicioActivo" Content="Activo" IsChecked="True" VerticalAlignment="Center" />
                         <Button Content="Guardar" Click="OnGuardarServicio" />
                     </WrapPanel>
                     <DataGrid x:Name="GridServicios" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Servicio" Binding="{Binding Nombre}" />
-                            <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" />
-                            <DataGridTextColumn Header="Precio" Binding="{Binding Precio}" />
-                            <DataGridTextColumn Header="Activo" Binding="{Binding Activo}" />
+                            <DataGridTextColumn Header="Servicio" Binding="{Binding Nombre}" Width="2*" />
+                            <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" Width="*" />
+                            <DataGridTextColumn Header="Precio" Binding="{Binding PrecioTexto}" Width="*" />
+                            <DataGridTextColumn Header="Activo" Binding="{Binding ActivoTexto}" Width="*" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
             </TabItem>
 
             <TabItem Header="Citas">
-                <Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions><Button Content="Programar cita" Click="OnProgramarCita" HorizontalAlignment="Left"/><DataGrid x:Name="GridCitas" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True"><DataGrid.Columns><DataGridTextColumn Header="Reserva" Binding="{Binding Reserva}"/><DataGridTextColumn Header="Servicio" Binding="{Binding Servicio}"/><DataGridTextColumn Header="Fecha y hora" Binding="{Binding Fecha, StringFormat={}{0:g}}"/><DataGridTextColumn Header="Duración (min)" Binding="{Binding Duracion}"/><DataGridTextColumn Header="Estado" Binding="{Binding Estado}"/></DataGrid.Columns></DataGrid></Grid>
+                <DataGrid x:Name="GridCitas" AutoGenerateColumns="False" IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Reserva" Binding="{Binding Reserva}" Width="*" />
+                        <DataGridTextColumn Header="Huésped" Binding="{Binding Huesped}" Width="2*" />
+                        <DataGridTextColumn Header="Fecha y hora" Binding="{Binding FechaTexto}" Width="*" />
+                        <DataGridTextColumn Header="Duración (min)" Binding="{Binding Duracion}" Width="*" />
+                        <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
             </TabItem>
 
             <TabItem Header="Traslados">
-                <Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions><Button Content="Programar traslado" Click="OnProgramarTraslado" HorizontalAlignment="Left"/><DataGrid x:Name="GridTraslados" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True"><DataGrid.Columns><DataGridTextColumn Header="Reserva" Binding="{Binding Reserva}"/><DataGridTextColumn Header="Origen" Binding="{Binding Origen}"/><DataGridTextColumn Header="Destino" Binding="{Binding Destino}"/><DataGridTextColumn Header="Fecha y hora" Binding="{Binding Fecha, StringFormat={}{0:g}}"/></DataGrid.Columns></DataGrid></Grid>
+                <DataGrid x:Name="GridTraslados" AutoGenerateColumns="False" IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Huésped" Binding="{Binding Cliente}" Width="2*" />
+                        <DataGridTextColumn Header="Hab." Binding="{Binding Habitacion}" Width="*" />
+                        <DataGridTextColumn Header="Origen" Binding="{Binding Origen}" Width="2*" />
+                        <DataGridTextColumn Header="Destino" Binding="{Binding Destino}" Width="2*" />
+                        <DataGridTextColumn Header="Fecha y hora" Binding="{Binding FechaHora, StringFormat=dd/MM HH:mm}" Width="*" />
+                        <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
             </TabItem>
 
             <TabItem Header="Movimientos de inventario">
-                <DataGrid AutoGenerateColumns="False">
+                <DataGrid x:Name="GridInventario" AutoGenerateColumns="False" IsReadOnly="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Producto" />
-                        <DataGridTextColumn Header="Tipo" />
-                        <DataGridTextColumn Header="Cantidad" />
-                        <DataGridTextColumn Header="Motivo" />
-                        <DataGridTextColumn Header="Fecha" />
+                        <DataGridTextColumn Header="Producto" Binding="{Binding Producto}" Width="2*" />
+                        <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" Width="*" />
+                        <DataGridTextColumn Header="Cantidad" Binding="{Binding Cantidad}" Width="*" />
+                        <DataGridTextColumn Header="Motivo" Binding="{Binding Motivo}" Width="2*" />
+                        <DataGridTextColumn Header="Fecha" Binding="{Binding FechaTexto}" Width="*" />
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>

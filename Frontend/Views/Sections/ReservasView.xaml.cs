@@ -116,7 +116,7 @@ namespace Crown__.Frontend.Views.Sections
                                 " · " + reserva.Noches + " noches · " + reserva.Total;
             BtnCheckIn.IsEnabled = reserva.EstadoCrudo == "Confirmada";
             BtnCheckOut.IsEnabled = reserva.EstadoCrudo == "EnCurso";
-            BtnCancelarReserva.IsEnabled = reserva.EstadoCrudo == "Confirmada" || reserva.EstadoCrudo == "EnCurso";
+            BtnCancelarReserva.IsEnabled = reserva.EstadoCrudo == "Confirmada";
         }
 
         private void OnCheckIn(object sender, RoutedEventArgs e)

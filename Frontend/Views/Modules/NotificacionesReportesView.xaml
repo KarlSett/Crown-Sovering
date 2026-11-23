@@ -1,7 +1,8 @@
 <UserControl x:Class="Crown__.Frontend.Views.Modules.NotificacionesReportesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Loaded="OnLoaded">
-    <TabControl x:Name="TabsNotificaciones">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Loaded="OnLoaded">
+    <TabControl>
         <TabItem Header="Bandeja de notificaciones">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -10,7 +11,7 @@
                 </Grid.ColumnDefinitions>
 
                 <GroupBox Header="Notificaciones">
-                    <ListBox x:Name="LstNotificaciones" DisplayMemberPath="Titulo" SelectionChanged="OnSeleccionNotificacion" />
+                    <ListBox x:Name="ListaNotificaciones" SelectionChanged="OnSeleccion" />
                 </GroupBox>
 
                 <Grid Grid.Column="1">
@@ -23,18 +24,19 @@
                     <GroupBox Header="Mensaje">
                         <StackPanel>
                             <TextBlock Text="Título" />
-                            <TextBox x:Name="TxtTituloNotificacion" IsReadOnly="True" />
+                            <TextBox x:Name="TxtTitulo" IsReadOnly="True" />
                             <TextBlock Text="Mensaje" />
-                            <TextBox x:Name="TxtMensajeNotificacion" Height="80" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" />
+                            <TextBox x:Name="TxtMensaje" Height="80" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" />
                         </StackPanel>
                     </GroupBox>
 
                     <GroupBox Grid.Row="1" Header="Destinatarios">
                         <DataGrid x:Name="GridDestinatarios" AutoGenerateColumns="False" IsReadOnly="True">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Rol" Binding="{Binding Rol}" />
-                                <DataGridTextColumn Header="Enviada" Binding="{Binding Fecha, StringFormat={}{0:g}}" />
-                                <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" />
+                                <DataGridTextColumn Header="Usuario" Binding="{Binding Usuario}" Width="*" />
+                                <DataGridTextColumn Header="Enviada" Binding="{Binding EnviadaTexto}" Width="*" />
+                                <DataGridTextColumn Header="Recibida" Binding="{Binding RecibidaTexto}" Width="*" />
+                                <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="*" />
                             </DataGrid.Columns>
                         </DataGrid>
                     </GroupBox>
@@ -42,11 +44,13 @@
                     <GroupBox Grid.Row="2" Header="Nueva notificación">
                         <StackPanel>
                             <WrapPanel>
+                                <TextBlock Text="Título" VerticalAlignment="Center" />
+                                <TextBox x:Name="TxtNuevoTitulo" Width="200" />
                                 <TextBlock Text="Rol" VerticalAlignment="Center" />
                                 <ComboBox x:Name="CmbRol" Width="160" />
                                 <Button Content="Enviar" Click="OnEnviar" />
                             </WrapPanel>
-                            <TextBox x:Name="TxtNuevaNotificacion" Height="50" AcceptsReturn="True" />
+                            <TextBox x:Name="TxtNuevoMensaje" Height="50" AcceptsReturn="True" TextWrapping="Wrap" />
                         </StackPanel>
                     </GroupBox>
                 </Grid>
@@ -61,26 +65,26 @@
                 </Grid.RowDefinitions>
                 <WrapPanel>
                     <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                    <TextBox x:Name="TxtNombreReporte" Width="160" />
+                    <TextBox x:Name="TxtReporteNombre" Width="160" />
                     <TextBlock Text="Tipo" VerticalAlignment="Center" />
-                    <ComboBox x:Name="CmbTipoReporte" Width="120" />
+                    <ComboBox x:Name="CmbTipo" Width="120" />
                     <TextBlock Text="Formato" VerticalAlignment="Center" />
                     <ComboBox x:Name="CmbFormato" Width="100" />
                     <TextBlock Text="Frecuencia" VerticalAlignment="Center" />
                     <ComboBox x:Name="CmbFrecuencia" Width="120" />
                     <TextBlock Text="Correo" VerticalAlignment="Center" />
-                    <TextBox x:Name="TxtCorreoReporte" Width="160" />
-                    <CheckBox x:Name="ChkReporteActivo" Content="Activo" VerticalAlignment="Center" IsChecked="True" />
+                    <TextBox x:Name="TxtCorreo" Width="160" />
+                    <CheckBox x:Name="ChkActivo" Content="Activo" IsChecked="True" VerticalAlignment="Center" />
                     <Button Content="Guardar" Click="OnGuardarReporte" />
                 </WrapPanel>
-                <DataGrid x:Name="GridReportes" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="OnSeleccionReporte">
+                <DataGrid x:Name="GridReportes" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Reporte" Binding="{Binding Nombre}" />
-                        <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" />
-                        <DataGridTextColumn Header="Formato" Binding="{Binding Formato}" />
-                        <DataGridTextColumn Header="Frecuencia" Binding="{Binding Frecuencia}" />
-                        <DataGridTextColumn Header="Correo" Binding="{Binding Correo}" />
-                        <DataGridTextColumn Header="Activo" Binding="{Binding Activo}" />
+                        <DataGridTextColumn Header="Reporte" Binding="{Binding Nombre}" Width="*" />
+                        <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" Width="*" />
+                        <DataGridTextColumn Header="Formato" Binding="{Binding Formato}" Width="*" />
+                        <DataGridTextColumn Header="Frecuencia" Binding="{Binding Frecuencia}" Width="*" />
+                        <DataGridTextColumn Header="Correo" Binding="{Binding Correo}" Width="*" />
+                        <DataGridTextColumn Header="Activo" Binding="{Binding ActivoTexto}" Width="*" />
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
@@ -94,21 +98,21 @@
                 </Grid.RowDefinitions>
                 <WrapPanel>
                     <TextBlock Text="Reporte" VerticalAlignment="Center" />
-                    <ComboBox x:Name="CmbEjecutarReporte" Width="180" />
+                    <ComboBox x:Name="CmbReporteEjecucion" Width="180" />
                     <TextBlock Text="Estado" VerticalAlignment="Center" />
-                    <ComboBox Width="120" />
+                    <ComboBox x:Name="CmbEstadoEjecucion" Width="120" />
                     <TextBlock Text="Desde" VerticalAlignment="Center" />
-                    <DatePicker />
+                    <DatePicker x:Name="DpDesde" />
                     <TextBlock Text="Hasta" VerticalAlignment="Center" />
-                    <DatePicker />
-                    <Button Content="Ejecutar seleccionado" Click="OnEjecutarReporte" />
+                    <DatePicker x:Name="DpHasta" />
+                    <Button Content="Buscar" Click="OnBuscarEjecuciones" />
                 </WrapPanel>
                 <DataGrid x:Name="GridEjecuciones" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Reporte" Binding="{Binding Reporte}" />
-                        <DataGridTextColumn Header="Ejecutado" Binding="{Binding Fecha, StringFormat={}{0:g}}" />
-                        <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" />
-                        <DataGridTextColumn Header="Archivo" Binding="{Binding Archivo}" />
+                        <DataGridTextColumn Header="Reporte" Binding="{Binding Reporte}" Width="*" />
+                        <DataGridTextColumn Header="Ejecutado" Binding="{Binding EjecutadoTexto}" Width="*" />
+                        <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="*" />
+                        <DataGridTextColumn Header="Archivo" Binding="{Binding Archivo}" Width="2*" />
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

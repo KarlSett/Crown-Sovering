@@ -1,8 +1,10 @@
 <UserControl x:Class="Crown__.Frontend.Views.Modules.LimpiezaView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Loaded="OnLoaded">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Loaded="OnLoaded">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="2*" />
             <RowDefinition Height="*" />
@@ -11,30 +13,24 @@
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="Limpieza y mantenimiento" VerticalAlignment="Center" />
             <Button Content="Nueva tarea" Click="OnNuevaTarea" />
-            <Button Content="Registrar incidencia" Click="OnIncidencia" />
-            <Button Content="Nueva orden" Click="OnNuevaOrden" />
-            <Button Content="Avanzar seleccionada" Click="OnAvanzar" />
+            <Button x:Name="BtnAvanzar" Content="Avanzar tarea" Click="OnAvanzar" IsEnabled="False" />
+            <Button Content="Registrar incidencia" Click="OnNuevaIncidencia" />
         </StackPanel>
 
-        <Grid Grid.Row="1">
+        <TextBlock x:Name="TxtAviso" Grid.Row="1" Margin="0,4,0,4" />
+
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-
-            <GroupBox Header="Pendientes">
-                <ListBox x:Name="LstPendientes" DisplayMemberPath="Etiqueta" SelectionChanged="OnSeleccionTarea" />
-            </GroupBox>
-            <GroupBox Grid.Column="1" Header="En curso">
-                <ListBox x:Name="LstEnCurso" DisplayMemberPath="Etiqueta" SelectionChanged="OnSeleccionTarea" />
-            </GroupBox>
-            <GroupBox Grid.Column="2" Header="Completadas">
-                <ListBox x:Name="LstCompletadas" DisplayMemberPath="Etiqueta" SelectionChanged="OnSeleccionTarea" />
-            </GroupBox>
+            <GroupBox Header="Pendientes"><ListBox x:Name="ListaPendientes" SelectionChanged="OnSeleccionTarea" /></GroupBox>
+            <GroupBox Grid.Column="1" Header="En curso"><ListBox x:Name="ListaEnCurso" SelectionChanged="OnSeleccionTarea" /></GroupBox>
+            <GroupBox Grid.Column="2" Header="Completadas"><ListBox x:Name="ListaCompletadas" SelectionChanged="OnSeleccionTarea" /></GroupBox>
         </Grid>
 
-        <TabControl Grid.Row="2">
+        <TabControl Grid.Row="3">
             <TabItem Header="Checklists">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -43,15 +39,16 @@
                     </Grid.RowDefinitions>
                     <WrapPanel>
                         <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                        <TextBox x:Name="TxtChecklist" Width="170" />
+                        <TextBox x:Name="TxtChecklistNombre" Width="170" />
                         <TextBlock Text="Descripción" VerticalAlignment="Center" />
-                        <TextBox x:Name="TxtDescripcionChecklist" Width="230" />
+                        <TextBox x:Name="TxtChecklistDescripcion" Width="230" />
                         <Button Content="Guardar" Click="OnGuardarChecklist" />
                     </WrapPanel>
                     <DataGrid x:Name="GridChecklists" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Checklist" Binding="{Binding Nombre}" />
-                            <DataGridTextColumn Header="Descripción" Binding="{Binding Descripcion}" />
+                            <DataGridTextColumn Header="Checklist" Binding="{Binding Nombre}" Width="*" />
+                            <DataGridTextColumn Header="Descripción" Binding="{Binding Descripcion}" Width="2*" />
+                            <DataGridTextColumn Header="Ítems" Binding="{Binding Items}" Width="*" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -65,63 +62,113 @@
                     </Grid.RowDefinitions>
                     <WrapPanel>
                         <TextBlock Text="Checklist" VerticalAlignment="Center" />
-                        <ComboBox x:Name="CmbChecklist" Width="180" DisplayMemberPath="Nombre" />
+                        <ComboBox x:Name="CmbChecklist" Width="180" />
                         <TextBlock Text="Descripción" VerticalAlignment="Center" />
-                        <TextBox x:Name="TxtItemChecklist" Width="280" />
-                        <Button Content="Guardar" Click="OnGuardarItemChecklist" />
+                        <TextBox x:Name="TxtItemDescripcion" Width="280" />
+                        <Button Content="Guardar" Click="OnGuardarItem" />
                     </WrapPanel>
-                    <DataGrid x:Name="GridItemsChecklist" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="False">
+                    <DataGrid x:Name="GridItems" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Checklist" Binding="{Binding Checklist}" />
-                            <DataGridTextColumn Header="Descripción" Binding="{Binding Descripcion}" />
-                            <DataGridCheckBoxColumn Header="Completado" Binding="{Binding Completado, UpdateSourceTrigger=PropertyChanged}" />
+                            <DataGridTextColumn Header="Checklist" Binding="{Binding Checklist}" Width="*" />
+                            <DataGridTextColumn Header="Descripción" Binding="{Binding Descripcion}" Width="2*" />
+                            <DataGridTextColumn Header="Completado" Binding="{Binding Completado}" Width="*" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
             </TabItem>
 
             <TabItem Header="Inspecciones">
-                <DataGrid AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Tarea" />
-                        <DataGridTextColumn Header="Empleado" />
-                        <DataGridTextColumn Header="Resultado" />
-                        <DataGridTextColumn Header="Fecha" />
-                    </DataGrid.Columns>
-                </DataGrid>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <WrapPanel>
+                        <TextBlock Text="Tarea" VerticalAlignment="Center" />
+                        <ComboBox x:Name="CmbTareaInspeccion" Width="230" />
+                        <TextBlock Text="Empleado" VerticalAlignment="Center" />
+                        <ComboBox x:Name="CmbEmpleadoInspeccion" Width="150" />
+                        <TextBlock Text="Resultado" VerticalAlignment="Center" />
+                        <ComboBox x:Name="CmbResultado" Width="100" />
+                        <TextBlock Text="Observaciones" VerticalAlignment="Center" />
+                        <TextBox x:Name="TxtObservaciones" Width="180" />
+                        <Button Content="Registrar" Click="OnRegistrarInspeccion" />
+                    </WrapPanel>
+                    <DataGrid x:Name="GridInspecciones" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Tarea" Binding="{Binding Tarea}" Width="*" />
+                            <DataGridTextColumn Header="Empleado" Binding="{Binding Empleado}" Width="*" />
+                            <DataGridTextColumn Header="Resultado" Binding="{Binding Resultado}" Width="*" />
+                            <DataGridTextColumn Header="Observaciones" Binding="{Binding Observaciones}" Width="2*" />
+                            <DataGridTextColumn Header="Fecha" Binding="{Binding FechaTexto}" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </TabItem>
 
             <TabItem Header="Incidencias">
-                <DataGrid AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Habitación" />
-                        <DataGridTextColumn Header="Tipo" />
-                        <DataGridTextColumn Header="Descripción" />
-                        <DataGridTextColumn Header="Estado" />
-                    </DataGrid.Columns>
-                </DataGrid>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Button Content="Resolver incidencia seleccionada" Click="OnResolver" HorizontalAlignment="Left" />
+                    <DataGrid x:Name="GridIncidencias" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Habitación" Binding="{Binding Habitacion}" Width="*" />
+                            <DataGridTextColumn Header="Severidad" Binding="{Binding Prioridad}" Width="*" />
+                            <DataGridTextColumn Header="Descripción" Binding="{Binding Descripcion}" Width="3*" />
+                            <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </TabItem>
 
             <TabItem Header="Órdenes de mantenimiento">
-                <DataGrid AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Orden" />
-                        <DataGridTextColumn Header="Incidencia" />
-                        <DataGridTextColumn Header="Empleado" />
-                        <DataGridTextColumn Header="Estado" />
-                    </DataGrid.Columns>
-                </DataGrid>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <WrapPanel>
+                        <TextBlock Text="Asignar la orden seleccionada a" VerticalAlignment="Center" />
+                        <ComboBox x:Name="CmbEmpleadoOrden" Width="180" />
+                        <Button Content="Asignar" Click="OnAsignarOrden" />
+                    </WrapPanel>
+                    <DataGrid x:Name="GridOrdenes" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Orden" Binding="{Binding OrdenTexto}" Width="*" />
+                            <DataGridTextColumn Header="Incidencia" Binding="{Binding Incidencia}" Width="3*" />
+                            <DataGridTextColumn Header="Empleado" Binding="{Binding Empleado}" Width="*" />
+                            <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </TabItem>
 
             <TabItem Header="Objetos olvidados">
-                <DataGrid AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Habitación" />
-                        <DataGridTextColumn Header="Descripción" />
-                        <DataGridTextColumn Header="Encontrado" />
-                        <DataGridTextColumn Header="Estado" />
-                    </DataGrid.Columns>
-                </DataGrid>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <WrapPanel>
+                        <TextBlock Text="Habitación" VerticalAlignment="Center" />
+                        <ComboBox x:Name="CmbHabitacionObjeto" Width="100" />
+                        <TextBlock Text="Descripción" VerticalAlignment="Center" />
+                        <TextBox x:Name="TxtObjeto" Width="240" />
+                        <Button Content="Registrar" Click="OnRegistrarObjeto" />
+                        <Button Content="Marcar como entregado" Click="OnEntregarObjeto" />
+                    </WrapPanel>
+                    <DataGrid x:Name="GridObjetos" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Habitación" Binding="{Binding Habitacion}" Width="*" />
+                            <DataGridTextColumn Header="Descripción" Binding="{Binding Descripcion}" Width="3*" />
+                            <DataGridTextColumn Header="Encontrado" Binding="{Binding EncontradoTexto}" Width="*" />
+                            <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

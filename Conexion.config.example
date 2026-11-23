@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<appSettings>
+  <add key="Db.Host" value="PON_AQUI_EL_HOST" />
+  <add key="Db.Port" value="5432" />
+  <add key="Db.Database" value="PON_AQUI_LA_BASE" />
+  <add key="Db.Username" value="PON_AQUI_EL_USUARIO" />
+  <add key="Db.Password" value="PON_AQUI_LA_CONTRASENA" />
+</appSettings>

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,60 +9,141 @@ using Crown__.Frontend.Views.Dialogs;
 
 namespace Crown__.Frontend.Views.Modules
 {
+    /// <summary>Huéspedes y consentimientos de datos. El alta y la edición se hacen en una ventana emergente.</summary>
     public partial class HuespedesView : UserControl
     {
-        private readonly ServicioHotel servicio = ServicioHotel.Instancia;
-        private bool cargando;
+        private readonly ClientesService servicio = new ClientesService();
+        private List<ClienteVista> todos = new List<ClienteVista>();
+
         public HuespedesView()
         {
             InitializeComponent();
-            CmbConsentimiento.ItemsSource = new[] { "Tratamiento de datos", "Comunicaciones", "Marketing" };
+            CmbConsentimiento.ItemsSource = ClientesService.TiposDeConsentimiento;
             CmbConsentimiento.SelectedIndex = 0;
+            DpConsentimiento.SelectedDate = DateTime.Today;
         }
-        private void OnLoaded(object sender, RoutedEventArgs e) { Cargar(); }
-        private void Cargar()
+
+        private ClienteVista Seleccionado
         {
-            var actual = LstHuespedes.SelectedItem as Huesped;
-            cargando = true;
-            LstHuespedes.ItemsSource = servicio.ListarHuespedes().Where(h => string.IsNullOrWhiteSpace(TxtBuscar.Text) ||
-                h.NombreCompleto.IndexOf(TxtBuscar.Text, StringComparison.CurrentCultureIgnoreCase) >= 0 ||
-                (h.NumeroDocumento ?? "").IndexOf(TxtBuscar.Text, StringComparison.CurrentCultureIgnoreCase) >= 0).ToList();
-            if (actual != null) LstHuespedes.SelectedItem = LstHuespedes.Items.Cast<Huesped>().FirstOrDefault(h => h.Id == actual.Id);
-            cargando = false;
-            MostrarSeleccion();
+            get { return ListaHuespedes.SelectedItem as ClienteVista; }
         }
-        private void OnBuscar(object sender, TextChangedEventArgs e) { if (IsLoaded) Cargar(); }
-        private void OnBuscarClick(object sender, RoutedEventArgs e) { Cargar(); }
-        private void OnSeleccionHuesped(object sender, SelectionChangedEventArgs e) { if (!cargando) MostrarSeleccion(); }
-        private void MostrarSeleccion()
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            var h = LstHuespedes.SelectedItem as Huesped;
-            TxtNombres.Text = h == null ? "" : h.Nombres;
-            TxtApellidos.Text = h == null ? "" : h.Apellidos;
-            TxtDocumento.Text = h == null ? "" : h.NumeroDocumento;
-            TxtCorreo.Text = h == null ? "" : h.Correo;
-            TxtTelefono.Text = h == null ? "" : h.Telefono;
-            DpNacimiento.SelectedDate = h == null ? (DateTime?)null : h.FechaNacimiento;
-            GridConsentimientos.ItemsSource = h == null ? null : servicio.ListarConsentimientos(h.Id);
+            Cargar();
         }
+
+        public void Cargar()
+        {
+            try
+            {
+                todos = servicio.Listar();
+                TxtAviso.Text = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                todos = new List<ClienteVista>();
+                TxtAviso.Text = "No se pudo leer la base de datos: " + ex.Message;
+            }
+            Filtrar();
+        }
+
+        private void Filtrar()
+        {
+            var anterior = Seleccionado;
+            string buscado = (TxtBuscar.Text ?? string.Empty).Trim().ToLowerInvariant();
+            ListaHuespedes.ItemsSource = todos
+                .Where(c => buscado.Length == 0 || c.ToString().ToLowerInvariant().Contains(buscado)
+                            || (c.Telefono ?? string.Empty).Contains(buscado) || (c.Email ?? string.Empty).ToLowerInvariant().Contains(buscado))
+                .ToList();
+            if (anterior != null)
+                ListaHuespedes.SelectedItem = ((IEnumerable<ClienteVista>)ListaHuespedes.ItemsSource).FirstOrDefault(c => c.Id == anterior.Id);
+            if (ListaHuespedes.SelectedItem == null)
+                MostrarFicha(null);
+        }
+
+        private void OnBuscar(object sender, RoutedEventArgs e) { Filtrar(); }
+        private void OnBuscarCambia(object sender, TextChangedEventArgs e) { if (IsLoaded) Filtrar(); }
+
+        private void OnSeleccion(object sender, SelectionChangedEventArgs e)
+        {
+            MostrarFicha(Seleccionado);
+        }
+
+        private void MostrarFicha(ClienteVista c)
+        {
+            TxtNombre.Text = c == null ? string.Empty : c.Nombre;
+            TxtApellidos.Text = c == null ? string.Empty : c.Apellidos;
+            TxtDocumento.Text = c == null ? string.Empty : c.Documento;
+            TxtCorreo.Text = c == null ? string.Empty : c.Email;
+            TxtTelefono.Text = c == null ? string.Empty : c.Telefono;
+            TxtNacimiento.Text = c == null || !c.FechaNacimiento.HasValue ? string.Empty : c.FechaNacimiento.Value.ToString("dd/MM/yyyy");
+            BtnEditar.IsEnabled = c != null;
+            BtnEliminar.IsEnabled = c != null;
+            BtnGuardarConsentimiento.IsEnabled = c != null;
+            CargarConsentimientos(c);
+        }
+
+        private void CargarConsentimientos(ClienteVista c)
+        {
+            if (c == null) { GridConsentimientos.ItemsSource = null; return; }
+            try { GridConsentimientos.ItemsSource = servicio.Consentimientos(c.Id); }
+            catch (Exception ex) { TxtAviso.Text = "No se pudieron leer los consentimientos: " + ex.Message; }
+        }
+
         private void OnNuevoHuesped(object sender, RoutedEventArgs e)
         {
-            var w = new NuevoHuespedWindow { Owner = Window.GetWindow(this) };
-            if (w.ShowDialog() == true) { Cargar(); LstHuespedes.SelectedItem = LstHuespedes.Items.Cast<Huesped>().FirstOrDefault(h => h.Id == w.HuespedCreado.Id); }
+            Abrir(null);
         }
+
         private void OnEditar(object sender, RoutedEventArgs e)
         {
-            var h = LstHuespedes.SelectedItem as Huesped;
-            if (h == null) { MessageBox.Show("Selecciona un huésped.", "Huéspedes", MessageBoxButton.OK, MessageBoxImage.Information); return; }
-            try { servicio.ActualizarHuesped(h.Id, TxtNombres.Text, TxtApellidos.Text, TxtDocumento.Text, TxtCorreo.Text, TxtTelefono.Text, DpNacimiento.SelectedDate); Cargar(); }
-            catch (InvalidOperationException ex) { MessageBox.Show(ex.Message, "Huéspedes", MessageBoxButton.OK, MessageBoxImage.Information); }
+            if (Seleccionado != null) Abrir(Seleccionado);
         }
+
+        private void Abrir(ClienteVista cliente)
+        {
+            var ventana = new NuevoHuespedWindow(cliente) { Owner = Window.GetWindow(this) };
+            if (ventana.ShowDialog() != true) return;
+
+            Cargar();
+            if (ventana.IdGuardado > 0)
+                ListaHuespedes.SelectedItem = ((IEnumerable<ClienteVista>)ListaHuespedes.ItemsSource).FirstOrDefault(c => c.Id == ventana.IdGuardado);
+            TxtAviso.Text = "Huésped guardado.";
+        }
+
+        private void OnEliminar(object sender, RoutedEventArgs e)
+        {
+            var c = Seleccionado;
+            if (c == null) return;
+            if (MessageBox.Show("¿Eliminar a " + c.NombreCompleto + "? Esta acción no se puede deshacer.", "Eliminar huésped",
+                                MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
+
+            string error;
+            try { error = servicio.Eliminar(Sesion.UsuarioId.ToString(), c); }
+            catch (Exception ex) { error = "No se pudo eliminar.\n" + ex.Message; }
+
+            if (error != null) { MessageBox.Show(error, "Eliminar huésped", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+            Cargar();
+            TxtAviso.Text = "Huésped eliminado.";
+        }
+
         private void OnGuardarConsentimiento(object sender, RoutedEventArgs e)
         {
-            var h = LstHuespedes.SelectedItem as Huesped;
-            if (h == null) { MessageBox.Show("Selecciona un huésped.", "Consentimientos", MessageBoxButton.OK, MessageBoxImage.Information); return; }
-            try { servicio.RegistrarConsentimiento(h.Id, CmbConsentimiento.SelectedItem as string, ChkConsentimiento.IsChecked == true); GridConsentimientos.ItemsSource = servicio.ListarConsentimientos(h.Id); }
-            catch (InvalidOperationException ex) { MessageBox.Show(ex.Message, "Consentimientos", MessageBoxButton.OK, MessageBoxImage.Information); }
+            var c = Seleccionado;
+            if (c == null) return;
+
+            string error;
+            try
+            {
+                error = servicio.GuardarConsentimiento(Sesion.UsuarioId.ToString(), c.Id, CmbConsentimiento.SelectedItem as string,
+                                                       ChkAutorizado.IsChecked == true, DpConsentimiento.SelectedDate ?? DateTime.Today);
+            }
+            catch (Exception ex) { error = "No se pudo guardar.\n" + ex.Message; }
+
+            if (error != null) { MessageBox.Show(error, "Consentimiento", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+            CargarConsentimientos(c);
+            TxtAviso.Text = "Consentimiento registrado.";
         }
     }
 }
