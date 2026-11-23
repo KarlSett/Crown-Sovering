@@ -15,7 +15,7 @@
             <Setter Property="Foreground" Value="{DynamicResource UI.Text}" />
         </Style>
     </Page.Style>
-    <!-- Frontend only: no credentials are validated, saved, or sent. -->
+    <!-- La cuenta de acceso rápido es la cuenta de demostración creada por el script semilla. -->
     <Grid Background="{Binding Background, RelativeSource={RelativeSource AncestorType=Page}}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.52*" />
@@ -137,10 +137,11 @@
                         <Button x:Name="BtnLoginSimulado" Visibility="Collapsed" Content="Inicio de sesión simulado" Click="OnIngresar"
                                 Style="{StaticResource HotelSecondaryButton}" Margin="0,12,0,0"
                                 KeyboardNavigation.TabIndex="6" />
-                        <Button x:Name="BtnAccesoAdmin" Visibility="Collapsed" Content="Entrar como administrador" Click="OnAccesoAdmin"
+                        <Button x:Name="BtnAccesoAdmin" Content="Acceso rápido · Administrador" Click="OnAccesoAdmin"
                                 Style="{StaticResource HotelSecondaryButton}" Margin="0,10,0,0"
                                 KeyboardNavigation.TabIndex="7"
-                                ToolTip="Acceso de demostración con todos los módulos del sistema" />
+                                AutomationProperties.Name="Acceso rápido como administrador de demostración"
+                                ToolTip="Usa la cuenta admin creada por datos_iniciales.sql. Cambia su contraseña antes de usar una base de producción." />
                     </StackPanel>
                 </Grid>
             </ScrollViewer>

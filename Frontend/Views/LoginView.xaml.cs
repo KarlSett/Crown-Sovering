@@ -93,11 +93,22 @@ namespace Crown__.Frontend.Views
 
         private void OnIngresar(object sender, RoutedEventArgs e)
         {
+            IniciarSesion(TxtUsuario.Text, TxtContrasena.Password, false);
+        }
+
+        private void OnAccesoAdmin(object sender, RoutedEventArgs e)
+        {
+            // Credential for the administrator demo account created by datos_iniciales.sql.
+            IniciarSesion("admin", "Admin#2026", true);
+        }
+
+        private void IniciarSesion(string usuario, string contrasena, bool accesoRapidoAdmin)
+        {
             ResultadoLogin resultado;
             try
             {
                 Mouse.OverrideCursor = Cursors.Wait;
-                resultado = new AuthService().Ingresar(TxtUsuario.Text, TxtContrasena.Password);
+                resultado = new AuthService().Ingresar(usuario, contrasena);
             }
             catch (Exception ex)
             {
@@ -112,7 +123,10 @@ namespace Crown__.Frontend.Views
 
             if (!resultado.Exito)
             {
-                MessageBox.Show(resultado.Mensaje, "Inicio de sesión", MessageBoxButton.OK, MessageBoxImage.Warning);
+                string mensaje = resultado.Mensaje;
+                if (accesoRapidoAdmin)
+                    mensaje += "\n\nEl acceso rápido requiere que scripts/datos_iniciales.sql haya creado la cuenta admin con su contraseña inicial.";
+                MessageBox.Show(mensaje, "Inicio de sesión", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -121,10 +135,6 @@ namespace Crown__.Frontend.Views
 
             if (NavigationService != null)
                 NavigationService.Navigate(new Uri("/Frontend/Views/DashboardView.xaml", UriKind.Relative));
-        }
-
-        private void OnAccesoAdmin(object sender, RoutedEventArgs e)
-        {
         }
 
         private void OnMotionToggle(object sender, RoutedEventArgs e)
