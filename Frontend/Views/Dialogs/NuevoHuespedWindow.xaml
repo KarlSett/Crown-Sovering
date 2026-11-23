@@ -5,18 +5,18 @@
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
     <StackPanel Margin="16">
         <TextBlock Text="Nombre" />
-        <TextBox />
+        <TextBox x:Name="TxtNombres" />
         <TextBlock Text="Apellidos" />
-        <TextBox />
+        <TextBox x:Name="TxtApellidos" />
         <TextBlock Text="Documento" />
-        <TextBox />
+        <TextBox x:Name="TxtDocumento" />
         <TextBlock Text="Correo" />
-        <TextBox />
+        <TextBox x:Name="TxtCorreo" />
         <TextBlock Text="Teléfono" />
-        <TextBox />
+        <TextBox x:Name="TxtTelefono" />
         <TextBlock Text="Fecha de nacimiento" />
-        <DatePicker />
-        <CheckBox Content="Autoriza el tratamiento de datos" />
+        <DatePicker x:Name="DpNacimiento" />
+        <CheckBox x:Name="ChkAutoriza" Content="Autoriza el tratamiento de datos" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="Cancelar" Click="OnCancelar" />
             <Button Content="Guardar" IsDefault="True" Click="OnGuardar" />

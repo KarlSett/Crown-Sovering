@@ -5,13 +5,13 @@
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
     <StackPanel Margin="16">
         <TextBlock Text="Número" />
-        <TextBox />
+        <TextBox x:Name="TxtNumero" />
         <TextBlock Text="Piso" />
-        <ComboBox />
+        <ComboBox x:Name="CmbPiso" />
         <TextBlock Text="Tipo de habitación" />
-        <ComboBox />
-        <TextBlock Text="Estado" />
-        <ComboBox />
+        <ComboBox x:Name="CmbTipo" />
+        <TextBlock Text="Calidad" />
+        <ComboBox x:Name="CmbCalidad" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="Cancelar" Click="OnCancelar" />
             <Button Content="Guardar" IsDefault="True" Click="OnGuardar" />

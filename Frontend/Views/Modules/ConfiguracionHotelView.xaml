@@ -1,6 +1,6 @@
 <UserControl x:Class="Crown__.Frontend.Views.Modules.ConfiguracionHotelView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Loaded="OnLoaded">
     <TabControl TabStripPlacement="Left">
         <TabItem Header="Hotel">
             <GroupBox Header="Datos del hotel">
@@ -18,18 +18,18 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                    <TextBox Grid.Column="1" />
+                    <TextBox x:Name="TxtNombreHotel" Grid.Column="1" />
                     <TextBlock Grid.Column="2" Text="Categoría" VerticalAlignment="Center" />
-                    <ComboBox Grid.Column="3" />
+                    <ComboBox x:Name="CmbCategoria" Grid.Column="3" />
                     <TextBlock Grid.Row="1" Text="Dirección" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="1" Grid.Column="1" />
+                    <TextBox x:Name="TxtDireccion" Grid.Row="1" Grid.Column="1" />
                     <TextBlock Grid.Row="1" Grid.Column="2" Text="Teléfono" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="1" Grid.Column="3" />
+                    <TextBox x:Name="TxtTelefono" Grid.Row="1" Grid.Column="3" />
                     <TextBlock Grid.Row="2" Text="Correo" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="2" Grid.Column="1" />
+                    <TextBox x:Name="TxtCorreo" Grid.Row="2" Grid.Column="1" />
                     <TextBlock Grid.Row="3" Text="Moneda" VerticalAlignment="Center" />
-                    <ComboBox Grid.Row="3" Grid.Column="1" />
-                    <Button Grid.Row="3" Grid.Column="3" Content="Guardar" />
+                    <ComboBox x:Name="CmbMoneda" Grid.Row="3" Grid.Column="1" />
+                    <Button Grid.Row="3" Grid.Column="3" Content="Guardar" Click="OnGuardarHotel" />
                 </Grid>
             </GroupBox>
         </TabItem>
@@ -42,16 +42,16 @@
                 </Grid.RowDefinitions>
                 <WrapPanel>
                     <TextBlock Text="Clave" VerticalAlignment="Center" />
-                    <TextBox Width="160" />
+                    <TextBox x:Name="TxtClave" Width="160" />
                     <TextBlock Text="Valor" VerticalAlignment="Center" />
-                    <TextBox Width="240" />
-                    <Button Content="Guardar" />
+                    <TextBox x:Name="TxtValor" Width="240" />
+                    <Button Content="Guardar" Click="OnGuardarConfiguracion" />
                 </WrapPanel>
-                <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                <DataGrid x:Name="GridConfiguraciones" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Clave" />
-                        <DataGridTextColumn Header="Valor" />
-                        <DataGridTextColumn Header="Actualizado" />
+                        <DataGridTextColumn Header="Clave" Binding="{Binding Clave}" />
+                        <DataGridTextColumn Header="Valor" Binding="{Binding Valor}" />
+                        <DataGridTextColumn Header="Actualizado" Binding="{Binding Fecha, StringFormat={}{0:g}}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
@@ -65,18 +65,18 @@
                 </Grid.RowDefinitions>
                 <WrapPanel>
                     <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                    <TextBox Width="160" />
+                    <TextBox x:Name="TxtPolitica" Width="160" />
                     <TextBlock Text="Valor" VerticalAlignment="Center" />
-                    <TextBox Width="180" />
+                    <TextBox x:Name="TxtValorPolitica" Width="180" />
                     <TextBlock Text="Descripción" VerticalAlignment="Center" />
-                    <TextBox Width="200" />
-                    <Button Content="Guardar" />
+                    <TextBox x:Name="TxtDescripcionPolitica" Width="200" />
+                    <Button Content="Guardar" Click="OnGuardarPolitica" />
                 </WrapPanel>
-                <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                <DataGrid x:Name="GridPoliticas" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Nombre" />
-                        <DataGridTextColumn Header="Valor" />
-                        <DataGridTextColumn Header="Descripción" />
+                        <DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}" />
+                        <DataGridTextColumn Header="Valor" Binding="{Binding Valor}" />
+                        <DataGridTextColumn Header="Descripción" Binding="{Binding Descripcion}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
@@ -90,17 +90,17 @@
                 </Grid.RowDefinitions>
                 <WrapPanel>
                     <TextBlock Text="Nombre" VerticalAlignment="Center" />
-                    <TextBox Width="160" />
+                    <TextBox x:Name="TxtImpuesto" Width="160" />
                     <TextBlock Text="Porcentaje" VerticalAlignment="Center" />
-                    <TextBox Width="80" />
-                    <CheckBox Content="Activo" VerticalAlignment="Center" />
-                    <Button Content="Guardar" />
+                    <TextBox x:Name="TxtPorcentaje" Width="80" />
+                    <CheckBox x:Name="ChkImpuestoActivo" Content="Activo" VerticalAlignment="Center" IsChecked="True" />
+                    <Button Content="Guardar" Click="OnGuardarImpuesto" />
                 </WrapPanel>
-                <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                <DataGrid x:Name="GridImpuestos" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Nombre" />
-                        <DataGridTextColumn Header="Porcentaje" />
-                        <DataGridTextColumn Header="Activo" />
+                        <DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}" />
+                        <DataGridTextColumn Header="Porcentaje" Binding="{Binding Porcentaje}" />
+                        <DataGridTextColumn Header="Activo" Binding="{Binding Activo}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
@@ -108,11 +108,9 @@
 
         <TabItem Header="Módulos">
             <GroupBox Header="Módulos contratados">
-                <DataGrid AutoGenerateColumns="False">
+                <DataGrid x:Name="GridModulos" AutoGenerateColumns="False" IsReadOnly="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Módulo" />
-                        <DataGridTextColumn Header="Descripción" />
-                        <DataGridTextColumn Header="Activo" />
+                        <DataGridTextColumn Header="Módulo" Binding="{Binding}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </GroupBox>
@@ -126,20 +124,20 @@
                 </Grid.RowDefinitions>
                 <WrapPanel>
                     <TextBlock Text="Usuario" VerticalAlignment="Center" />
-                    <TextBox Width="150" />
+                    <TextBox x:Name="TxtFiltroAudit" Width="150" />
                     <TextBlock Text="Desde" VerticalAlignment="Center" />
                     <DatePicker />
                     <TextBlock Text="Hasta" VerticalAlignment="Center" />
                     <DatePicker />
-                    <Button Content="Buscar" />
+                    <Button Content="Buscar" Click="OnBuscarAuditoria" />
                 </WrapPanel>
-                <DataGrid Grid.Row="1" AutoGenerateColumns="False">
+                <DataGrid x:Name="GridAuditoria" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Fecha" />
-                        <DataGridTextColumn Header="Usuario" />
-                        <DataGridTextColumn Header="Cambio" />
-                        <DataGridTextColumn Header="Valor anterior" />
-                        <DataGridTextColumn Header="Valor nuevo" />
+                        <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha, StringFormat={}{0:g}}" />
+                        <DataGridTextColumn Header="Usuario" Binding="{Binding Usuario}" />
+                        <DataGridTextColumn Header="Cambio" Binding="{Binding Cambio}" />
+                        <DataGridTextColumn Header="Valor anterior" Binding="{Binding Anterior}" />
+                        <DataGridTextColumn Header="Valor nuevo" Binding="{Binding Nuevo}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

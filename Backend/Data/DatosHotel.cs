@@ -18,12 +18,48 @@ namespace Crown__.Backend.Data
 
         public static List<Habitacion> Habitaciones { get; private set; }
         public static List<Huesped> Huespedes { get; private set; }
+        public static List<ConsentimientoHuesped> Consentimientos { get; private set; }
+        public static List<TareaOperativa> Tareas { get; private set; }
+        public static List<FacturaDemo> Facturas { get; private set; }
+        public static List<NotaCreditoDemo> NotasCredito { get; private set; }
+        public static List<LlaveDemo> Llaves { get; private set; }
+        public static List<BloqueoHabitacionDemo> BloqueosHabitacion { get; private set; }
+        public static List<HistorialHabitacionDemo> HistorialHabitaciones { get; private set; }
+        public static List<TipoHabitacionDemo> TiposHabitacion { get; private set; }
+        public static List<int> Pisos { get; private set; }
+        public static List<ProductoDemo> Productos { get; private set; }
+        public static List<ConsumoDemo> Consumos { get; private set; }
+        public static List<ConvenioDemo> Convenios { get; private set; }
+        public static List<TemporadaDemo> Temporadas { get; private set; }
+        public static List<PaqueteDemo> Paquetes { get; private set; }
+        public static List<PromocionDemo> Promociones { get; private set; }
+        public static List<ConfiguracionDemo> Configuraciones { get; private set; }
+        public static List<PoliticaDemo> Politicas { get; private set; }
+        public static List<ImpuestoDemo> Impuestos { get; private set; }
+        public static List<AuditoriaDemo> Auditoria { get; private set; }
+        public static List<DevolucionDemo> Devoluciones { get; private set; }
+        public static List<NotificacionDemo> Notificaciones { get; private set; }
+        public static List<ReporteProgramadoDemo> ReportesProgramados { get; private set; }
+        public static List<EjecucionReporteDemo> EjecucionesReportes { get; private set; }
+        public static List<EmpleadoDemo> Empleados { get; private set; }
+        public static List<RolDemo> Roles { get; private set; }
+        public static List<AsignacionRolDemo> AsignacionesRoles { get; private set; }
+        public static List<ConceptoCargoDemo> ConceptosCargos { get; private set; }
+        public static List<ServicioCatalogoDemo> Servicios { get; private set; }
+        public static List<CitaServicioDemo> CitasServicios { get; private set; }
+        public static List<TrasladoDemo> Traslados { get; private set; }
+        public static List<ChecklistDemo> Checklists { get; private set; }
+        public static List<ChecklistItemDemo> ItemsChecklist { get; private set; }
         public static List<Reserva> Reservas { get; private set; }
         public static List<Folio> Folios { get; private set; }
         public static List<Transaccion> Transacciones { get; private set; }
         public static List<CierreCaja> CierresCaja { get; private set; }
-        public static string NombreHotel { get; private set; }
-        public static string Moneda { get; private set; }
+        public static string NombreHotel { get; set; }
+        public static string Moneda { get; set; }
+        public static string Direccion { get; set; }
+        public static string TelefonoHotel { get; set; }
+        public static string EmailHotel { get; set; }
+        public static int Categoria { get; set; }
 
         private static int correlativoReservas;
         private static int correlativoTransacciones;
@@ -33,7 +69,9 @@ namespace Crown__.Backend.Data
             "Hospedaje", "Restaurante", "Spa", "Lavandería", "Minibar", "Estacionamiento"
         };
 
-        public static readonly string[] MetodosPago = { "Efectivo", "Tarjeta", "Transferencia" };
+        public static readonly List<string> MetodosPago = new List<string> { "Efectivo", "Tarjeta", "Transferencia" };
+        public static bool TurnoCajaAbierto { get; set; }
+        public static DateTime? AperturaCaja { get; set; }
 
         public static void Inicializar()
         {
@@ -44,9 +82,33 @@ namespace Crown__.Backend.Data
 
                 NombreHotel = "Crown & Sovereign";
                 Moneda = "USD";
+                Direccion = ""; TelefonoHotel = ""; EmailHotel = ""; Categoria = 4;
 
                 Habitaciones = new List<Habitacion>();
                 Huespedes = new List<Huesped>();
+                Consentimientos = new List<ConsentimientoHuesped>();
+                Tareas = new List<TareaOperativa>();
+                Facturas = new List<FacturaDemo>();
+                NotasCredito = new List<NotaCreditoDemo>();
+                Llaves = new List<LlaveDemo>();
+                BloqueosHabitacion = new List<BloqueoHabitacionDemo>(); HistorialHabitaciones = new List<HistorialHabitacionDemo>();
+                TiposHabitacion = new List<TipoHabitacionDemo> { new TipoHabitacionDemo { Nombre = "Sencilla", Capacidad = 2 }, new TipoHabitacionDemo { Nombre = "Doble", Capacidad = 4 }, new TipoHabitacionDemo { Nombre = "Familiar", Capacidad = 6 }, new TipoHabitacionDemo { Nombre = "Suite", Capacidad = 3 } };
+                Pisos = new List<int> { 1, 2, 3, 4 };
+                Productos = new List<ProductoDemo>();
+                Consumos = new List<ConsumoDemo>();
+                Convenios = new List<ConvenioDemo>();
+                Temporadas = new List<TemporadaDemo>();
+                Paquetes = new List<PaqueteDemo>();
+                Promociones = new List<PromocionDemo>();
+                Configuraciones = new List<ConfiguracionDemo>(); Politicas = new List<PoliticaDemo>();
+                Impuestos = new List<ImpuestoDemo>(); Auditoria = new List<AuditoriaDemo>();
+                Devoluciones = new List<DevolucionDemo>();
+                Notificaciones = new List<NotificacionDemo>(); ReportesProgramados = new List<ReporteProgramadoDemo>(); EjecucionesReportes = new List<EjecucionReporteDemo>();
+                Empleados = new List<EmpleadoDemo>(); Roles = new List<RolDemo> { new RolDemo { Nombre = "Administrador", Descripcion = "Administración general" }, new RolDemo { Nombre = "Gerente", Descripcion = "Gestión hotelera" }, new RolDemo { Nombre = "Recepcionista", Descripcion = "Recepción y reservas" }, new RolDemo { Nombre = "Personal de servicios", Descripcion = "Operación de servicios" } }; AsignacionesRoles = new List<AsignacionRolDemo>();
+                ConceptosCargos = CuentasIngreso.Select(x => new ConceptoCargoDemo { Nombre = x, Categoria = "Ingreso" }).ToList(); Servicios = new List<ServicioCatalogoDemo>(); CitasServicios = new List<CitaServicioDemo>(); Traslados = new List<TrasladoDemo>(); Checklists = new List<ChecklistDemo>(); ItemsChecklist = new List<ChecklistItemDemo>();
+                Productos.Add(new ProductoDemo { Id = 1, Nombre = "Agua mineral", Precio = 3m, Stock = 48, Activo = true });
+                Productos.Add(new ProductoDemo { Id = 2, Nombre = "Minibar · selección", Precio = 8.5m, Stock = 24, Activo = true });
+                Productos.Add(new ProductoDemo { Id = 3, Nombre = "Lavandería · unidad", Precio = 5m, Stock = 100, Activo = true });
                 Reservas = new List<Reserva>();
                 Folios = new List<Folio>();
                 Transacciones = new List<Transaccion>();
@@ -59,9 +121,18 @@ namespace Crown__.Backend.Data
                 CrearFoliosYTransacciones(rnd);
                 CrearCierresCaja();
                 AjustarEstadosHabitaciones();
+                SembrarTareas();
 
                 inicializado = true;
             }
+        }
+
+        private static void SembrarTareas()
+        {
+            Tareas.Add(new TareaOperativa { Id = 1, Habitacion = "101", Tipo = "Limpieza", Descripcion = "Preparar habitación", Estado = "Pendiente", Fecha = DateTime.Today });
+            Tareas.Add(new TareaOperativa { Id = 2, Habitacion = "204", Tipo = "Inspección", Descripcion = "Revisión de salida", Estado = "Pendiente", Fecha = DateTime.Today });
+            Tareas.Add(new TareaOperativa { Id = 3, Habitacion = "305", Tipo = "Limpieza", Descripcion = "Servicio de estancia", Estado = "En curso", Fecha = DateTime.Today });
+            Tareas.Add(new TareaOperativa { Id = 4, Habitacion = "102", Tipo = "Limpieza", Descripcion = "Habitación lista", Estado = "Completada", Fecha = DateTime.Today });
         }
 
         private static void CrearHabitaciones(Random rnd)

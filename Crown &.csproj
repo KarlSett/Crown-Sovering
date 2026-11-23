@@ -104,6 +104,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Frontend\Controls\SectionCard.cs" />
+    <Compile Include="Frontend\Controls\DialogoRapido.cs" />
     <Compile Include="Frontend\Controls\StatusBadge.xaml.cs">
       <DependentUpon>StatusBadge.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -301,6 +302,7 @@
     <None Include="docs\DESIGN.md" />
     <None Include="docs\INTEGRACION_BACKEND.md" />
     <None Include="docs\MODULOS_Y_ROLES.md" />
+    <None Include="docs\PENDIENTES.md" />
     <None Include="Backend\Repositories\README.md" />
     <None Include="Frontend\Assets\crown_logo.svg" />
     <Resource Include="Frontend\Assets\hospitality-lobby.png" />

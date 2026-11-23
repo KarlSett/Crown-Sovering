@@ -3,8 +3,9 @@
 ## Punto de partida
 
 La interfaz funciona con datos de demostración en memoria (`Backend/Data/DatosHotel`) y
-no hay autenticación real: `BtnIngresar` y `BtnLoginSimulado` navegan al panel. El esquema
-PostgreSQL de referencia ya está reflejado en `Backend/Models/Entidades.cs`.
+no hay autenticación real: `BtnIngresar` y `BtnLoginSimulado` navegan al panel. `Entidades.cs`
+es un modelo de demo, no un mapeo completo del esquema PostgreSQL; las diferencias y
+decisiones pendientes están en `docs/PENDIENTES.md`.
 
 Página de acceso: `Frontend/Views/LoginView.xaml` (clase
 `Crown__.Frontend.Views.LoginView`), cargada en el Frame `LoginFrame` de
@@ -69,6 +70,12 @@ Para conectar PostgreSQL:
 El `Crown &.csproj` usa formato clásico de .NET Framework: registrar explícitamente los
 archivos nuevos (`Compile`, `Page`). Mantener la versión objetivo 4.7.2 hasta acordar una
 migración.
+
+## Estado de implementación
+
+Los flujos principales de operación, reservas, disponibilidad e ingresos funcionan con
+datos de demo. Huéspedes, consentimientos e inventario básico ya tienen acciones en memoria.
+Las demás pantallas de módulo siguen siendo maquetas y sus operaciones están pendientes.
 
 ## Validación inicial
 

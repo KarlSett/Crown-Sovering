@@ -2,10 +2,11 @@
 
 Aplicación de escritorio para gestión hotelera, desarrollada en **WPF con C# y .NET Framework 4.7.2**.
 
-La interfaz incluye el acceso, el panel operativo y las secciones de **funcionamiento,
-reservas, habitaciones disponibles y cuentas de ingreso** (resúmenes diario, semanal y
-trimestral). Los datos provienen de un almacén de demostración en memoria; la conexión a
-PostgreSQL queda pendiente.
+La interfaz incluye el acceso, el panel operativo y trece módulos administrativos. Las
+secciones de funcionamiento, reservas, habitaciones disponibles e ingresos cuentan con
+flujos operativos de demostración; huéspedes y el inventario básico permiten altas y
+cambios en memoria. La conexión a PostgreSQL y las operaciones CRUD de los módulos
+administrativos siguen pendientes; ver [docs/PENDIENTES.md](docs/PENDIENTES.md).
 
 ![Login en modo claro](docs/images/login-light.png)
 
@@ -50,14 +51,17 @@ msbuild '.\Crown &.sln' /t:Build /p:Configuration=Debug
 - Panel con barra lateral agrupada: Operación, Administración, Producto, Servicios y Configuración.
 - Cuatro roles de demostración (Administrador, Gerente, Recepcionista, Personal de servicios):
   el menú muestra solo las pantallas de cada rol. La autorización real queda para el backend.
-- Trece pantallas de módulo, entre ellas Huéspedes, Inventario, Estancias, Facturación,
-  Pagos, Tarifas, Convenios, Limpieza, Consumos, Configuración y Seguridad.
-- Altas en ventanas emergentes (huésped, habitación, reserva); sin persistencia todavía.
+- Trece pantallas de módulo con acciones de demostración en memoria para huéspedes,
+  inventario, estancias y llaves, cargos y facturas, caja, tarifas, convenios, limpieza,
+  consumos, configuración, personal, notificaciones y reportes CSV.
+- Las altas, filtros y operaciones principales se conservan durante la sesión; no persisten
+  después de cerrar la aplicación.
 - Funcionamiento: ocupación, disponibilidad, llegadas, salidas, ingresos del día y movimientos.
 - Reservas: filtros, alta con validación de disponibilidad y operación de llegada/salida/cancelación.
 - Habitaciones: disponibilidad por fechas, tipo de capacidad y calidad.
 - Ingresos: cuentas de ingreso por concepto, medios de pago y detalle diario/semanal/trimestral.
-- Sin autenticación real, persistencia ni conexión a base de datos.
+- Sin autenticación real ni persistencia entre sesiones. Los pendientes de producción y las
+  diferencias con el esquema están en [docs/PENDIENTES.md](docs/PENDIENTES.md).
 
 ## Organización
 

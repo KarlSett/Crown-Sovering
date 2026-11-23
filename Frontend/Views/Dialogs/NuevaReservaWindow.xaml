@@ -5,21 +5,21 @@
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
     <StackPanel Margin="16">
         <TextBlock Text="Huésped principal" />
-        <ComboBox />
+        <ComboBox x:Name="CmbHuesped" />
         <TextBlock Text="Canal" />
-        <ComboBox />
+        <ComboBox x:Name="CmbCanal" />
         <TextBlock Text="Entrada" />
-        <DatePicker />
+        <DatePicker x:Name="DpEntrada" SelectedDateChanged="OnFechasCambian" />
         <TextBlock Text="Salida" />
-        <DatePicker />
+        <DatePicker x:Name="DpSalida" SelectedDateChanged="OnFechasCambian" />
         <TextBlock Text="Personas" />
-        <TextBox />
+        <TextBox x:Name="TxtPersonas" Text="1" />
         <TextBlock Text="Habitación" />
-        <ComboBox />
+        <ComboBox x:Name="CmbHabitacion" SelectionChanged="OnHabitacion" />
         <TextBlock Text="Tarifa por noche" />
-        <TextBox />
+        <TextBox x:Name="TxtTarifa" IsReadOnly="True" />
         <TextBlock Text="Observaciones" />
-        <TextBox Height="50" AcceptsReturn="True" />
+        <TextBox x:Name="TxtObservaciones" Height="50" AcceptsReturn="True" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="Cancelar" Click="OnCancelar" />
             <Button Content="Guardar" IsDefault="True" Click="OnGuardar" />
