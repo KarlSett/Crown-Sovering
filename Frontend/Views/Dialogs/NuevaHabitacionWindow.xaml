@@ -10,8 +10,6 @@
         <ComboBox x:Name="CmbPiso" />
         <TextBlock Text="Tipo de habitación" />
         <ComboBox x:Name="CmbTipo" />
-        <TextBlock Text="Calidad" />
-        <ComboBox x:Name="CmbCalidad" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="Cancelar" Click="OnCancelar" />
             <Button Content="Guardar" IsDefault="True" Click="OnGuardar" />
