@@ -55,6 +55,16 @@ namespace Crown__.Frontend.Views.Modules
             Mostrar();
         }
 
+        public void EnfocarLlegadas()
+        {
+            TabsFlujo.SelectedIndex = 0;
+        }
+
+        public void EnfocarSalidas()
+        {
+            TabsFlujo.SelectedIndex = 2;
+        }
+
         private bool Coincide(ReservaRegistro r)
         {
             string buscado = (TxtBuscar.Text ?? string.Empty).Trim().ToLowerInvariant();

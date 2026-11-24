@@ -48,56 +48,60 @@
                 <ScrollViewer Grid.Row="1" Margin="0,20,0,12" VerticalScrollBarVisibility="Auto"
                               HorizontalScrollBarVisibility="Disabled" Focusable="False">
                     <StackPanel>
-                        <TextBlock Text="Operación" Style="{StaticResource EyebrowText}"
+                        <TextBlock Text="GENERAL" Style="{StaticResource EyebrowText}"
                                    Foreground="{DynamicResource UI.SidebarMuted}" Margin="12,0,0,8" />
                         <RadioButton x:Name="NavFuncionamiento" Style="{StaticResource NavItem}" GroupName="Navegacion"
-                                     Content="Funcionamiento" Tag="funcionamiento" IsChecked="True" Checked="OnNavChecked" />
-                        <RadioButton x:Name="NavReservas" Style="{StaticResource NavItem}" GroupName="Navegacion"
-                                     Content="Reservas" Tag="reservas" Checked="OnNavChecked" />
-                        <RadioButton x:Name="NavHabitaciones" Style="{StaticResource NavItem}" GroupName="Navegacion"
-                                     Content="Habitaciones disponibles" Tag="habitaciones" Checked="OnNavChecked" />
-                        <RadioButton x:Name="NavIngresos" Style="{StaticResource NavItem}" GroupName="Navegacion"
-                                     Content="Cuentas de ingreso" Tag="ingresos" Checked="OnNavChecked" />
+                                     Content="Resumen" Tag="funcionamiento" IsChecked="True" Checked="OnNavChecked" />
 
-                        <StackPanel x:Name="GrupoAdministracion">
-                            <TextBlock Text="Administración" Style="{StaticResource EyebrowText}"
+                        <StackPanel x:Name="GrupoRecepcion">
+                            <TextBlock Text="RECEPCIÓN" Style="{StaticResource EyebrowText}"
                                        Foreground="{DynamicResource UI.SidebarMuted}" Margin="12,18,0,8" />
+                            <RadioButton x:Name="NavReservas" Style="{StaticResource NavItem}" GroupName="Navegacion"
+                                         Content="Reservas" Tag="reservas" Checked="OnNavChecked" />
+                            <RadioButton x:Name="NavCheckIn" Style="{StaticResource NavItem}" GroupName="Navegacion"
+                                         Content="Check-in · llegadas" Tag="checkin" Checked="OnNavChecked" />
+                            <RadioButton x:Name="NavCheckOut" Style="{StaticResource NavItem}" GroupName="Navegacion"
+                                         Content="Check-out · salidas" Tag="checkout" Checked="OnNavChecked" />
+                            <RadioButton x:Name="NavHabitaciones" Style="{StaticResource NavItem}" GroupName="Navegacion"
+                                         Content="Disponibilidad" Tag="habitaciones" Checked="OnNavChecked" />
                             <RadioButton x:Name="NavHuespedes" Style="{StaticResource NavItem}" GroupName="Navegacion"
                                          Content="Huéspedes" Tag="huespedes" Checked="OnNavChecked" />
-                            <RadioButton x:Name="NavInventario" Style="{StaticResource NavItem}" GroupName="Navegacion"
-                                         Content="Inventario" Tag="inventario" Checked="OnNavChecked" />
                             <RadioButton x:Name="NavEstancias" Style="{StaticResource NavItem}" GroupName="Navegacion"
                                          Content="Estancias y llaves" Tag="estancias" Checked="OnNavChecked" />
                             <RadioButton x:Name="NavFacturacion" Style="{StaticResource NavItem}" GroupName="Navegacion"
-                                         Content="Facturación" Tag="facturacion" Checked="OnNavChecked" />
+                                         Content="Cuentas y facturas" Tag="facturacion" Checked="OnNavChecked" />
                             <RadioButton x:Name="NavPagos" Style="{StaticResource NavItem}" GroupName="Navegacion"
-                                         Content="Pagos y caja" Tag="pagos" Checked="OnNavChecked" />
+                                         Content="Cobros y caja" Tag="pagos" Checked="OnNavChecked" />
                             <RadioButton x:Name="NavReservasAdmin" Style="{StaticResource NavItem}" GroupName="Navegacion"
-                                         Content="Reservas avanzadas" Tag="reservasadmin" Checked="OnNavChecked" />
-                            <RadioButton x:Name="NavNotificaciones" Style="{StaticResource NavItem}" GroupName="Navegacion"
-                                         Content="Notificaciones" Tag="notificaciones" Checked="OnNavChecked" />
-                        </StackPanel>
-
-                        <StackPanel x:Name="GrupoProducto">
-                            <TextBlock Text="Producto" Style="{StaticResource EyebrowText}"
-                                       Foreground="{DynamicResource UI.SidebarMuted}" Margin="12,18,0,8" />
-                            <RadioButton x:Name="NavTarifas" Style="{StaticResource NavItem}" GroupName="Navegacion"
-                                         Content="Tarifas" Tag="tarifas" Checked="OnNavChecked" />
-                            <RadioButton x:Name="NavConvenios" Style="{StaticResource NavItem}" GroupName="Navegacion"
-                                         Content="Convenios" Tag="convenios" Checked="OnNavChecked" />
+                                         Content="Grupos y solicitudes" Tag="reservasadmin" Checked="OnNavChecked" />
                         </StackPanel>
 
                         <StackPanel x:Name="GrupoServicios">
-                            <TextBlock Text="Servicios" Style="{StaticResource EyebrowText}"
+                            <TextBlock Text="SERVICIOS Y OPERACIÓN" Style="{StaticResource EyebrowText}"
                                        Foreground="{DynamicResource UI.SidebarMuted}" Margin="12,18,0,8" />
                             <RadioButton x:Name="NavLimpieza" Style="{StaticResource NavItem}" GroupName="Navegacion"
                                          Content="Limpieza y mantenimiento" Tag="limpieza" Checked="OnNavChecked" />
                             <RadioButton x:Name="NavConsumos" Style="{StaticResource NavItem}" GroupName="Navegacion"
-                                         Content="Consumos y servicios" Tag="consumos" Checked="OnNavChecked" />
+                                         Content="Servicios e inventario" Tag="consumos" Checked="OnNavChecked" />
+                        </StackPanel>
+
+                        <StackPanel x:Name="GrupoNegocio">
+                            <TextBlock x:Name="TxtGrupoNegocio" Text="GESTIÓN DEL HOTEL" Style="{StaticResource EyebrowText}"
+                                       Foreground="{DynamicResource UI.SidebarMuted}" Margin="12,18,0,8" />
+                            <RadioButton x:Name="NavIngresos" Style="{StaticResource NavItem}" GroupName="Navegacion"
+                                         Content="Ingresos y ocupación" Tag="ingresos" Checked="OnNavChecked" />
+                            <RadioButton x:Name="NavInventario" Style="{StaticResource NavItem}" GroupName="Navegacion"
+                                         Content="Habitaciones y pisos" Tag="inventario" Checked="OnNavChecked" />
+                            <RadioButton x:Name="NavTarifas" Style="{StaticResource NavItem}" GroupName="Navegacion"
+                                         Content="Tarifas y promociones" Tag="tarifas" Checked="OnNavChecked" />
+                            <RadioButton x:Name="NavConvenios" Style="{StaticResource NavItem}" GroupName="Navegacion"
+                                         Content="Convenios corporativos" Tag="convenios" Checked="OnNavChecked" />
+                            <RadioButton x:Name="NavNotificaciones" Style="{StaticResource NavItem}" GroupName="Navegacion"
+                                         Content="Reportes y avisos" Tag="notificaciones" Checked="OnNavChecked" />
                         </StackPanel>
 
                         <StackPanel x:Name="GrupoConfiguracion">
-                            <TextBlock Text="Configuración" Style="{StaticResource EyebrowText}"
+                            <TextBlock Text="SISTEMA" Style="{StaticResource EyebrowText}"
                                        Foreground="{DynamicResource UI.SidebarMuted}" Margin="12,18,0,8" />
                             <RadioButton x:Name="NavConfiguracion" Style="{StaticResource NavItem}" GroupName="Navegacion"
                                          Content="Configuración del hotel" Tag="configuracion" Checked="OnNavChecked" />
@@ -155,23 +159,6 @@
 
             <!-- Cada entrada de la barra lateral tiene su propia vista. -->
             <Grid x:Name="ViewHost" Grid.Row="1" Margin="0,16,0,0">
-                <sections:FuncionamientoView x:Name="VistaFuncionamiento" Visibility="Collapsed" />
-                <sections:ReservasView x:Name="VistaReservas" Visibility="Collapsed" />
-                <sections:HabitacionesView x:Name="VistaHabitaciones" Visibility="Collapsed" />
-                <sections:IngresosView x:Name="VistaIngresos" Visibility="Collapsed" />
-                <modules:HuespedesView x:Name="VistaHuespedes" Visibility="Collapsed" />
-                <modules:HabitacionesGestionView x:Name="VistaInventario" Visibility="Collapsed" />
-                <modules:EstanciasView x:Name="VistaEstancias" Visibility="Collapsed" />
-                <modules:FacturacionFoliosView x:Name="VistaFacturacion" Visibility="Collapsed" />
-                <modules:PagosCajaView x:Name="VistaPagos" Visibility="Collapsed" />
-                <modules:ReservasGestionView x:Name="VistaReservasAdmin" Visibility="Collapsed" />
-                <modules:NotificacionesReportesView x:Name="VistaNotificaciones" Visibility="Collapsed" />
-                <modules:TarifasView x:Name="VistaTarifas" Visibility="Collapsed" />
-                <modules:ConveniosView x:Name="VistaConvenios" Visibility="Collapsed" />
-                <modules:LimpiezaView x:Name="VistaLimpieza" Visibility="Collapsed" />
-                <modules:ConsumosView x:Name="VistaConsumos" Visibility="Collapsed" />
-                <modules:ConfiguracionHotelView x:Name="VistaConfiguracion" Visibility="Collapsed" />
-                <modules:SeguridadView x:Name="VistaSeguridad" Visibility="Collapsed" />
             </Grid>
         </Grid>
     </Grid>

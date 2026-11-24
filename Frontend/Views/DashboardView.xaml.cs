@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using Crown__.Backend.Models;
+using Crown__.Frontend.Views.Modules;
 using Crown__.Frontend.Views.Sections;
 
 namespace Crown__.Frontend.Views
@@ -15,36 +16,72 @@ namespace Crown__.Frontend.Views
     {
         private static readonly Dictionary<string, Rol[]> Permisos = new Dictionary<string, Rol[]>
         {
-            { "funcionamiento", new[] { Rol.Administrador, Rol.Gerente, Rol.Recepcionista } },
-            { "reservas", new[] { Rol.Administrador, Rol.Gerente, Rol.Recepcionista } },
-            { "habitaciones", new[] { Rol.Administrador, Rol.Gerente, Rol.Recepcionista } },
-            { "ingresos", new[] { Rol.Administrador, Rol.Gerente } },
-            { "huespedes", new[] { Rol.Administrador, Rol.Gerente, Rol.Recepcionista } },
+            { "funcionamiento", new[] { Rol.Administrador, Rol.Gerente, Rol.Recepcionista, Rol.Servicios } },
+            { "reservas", new[] { Rol.Gerente, Rol.Recepcionista } },
+            { "checkin", new[] { Rol.Recepcionista } },
+            { "checkout", new[] { Rol.Recepcionista } },
+            { "habitaciones", new[] { Rol.Gerente, Rol.Recepcionista } },
+            { "ingresos", new[] { Rol.Gerente } },
+            { "huespedes", new[] { Rol.Recepcionista } },
             { "inventario", new[] { Rol.Administrador, Rol.Gerente } },
-            { "estancias", new[] { Rol.Administrador, Rol.Gerente, Rol.Recepcionista } },
-            { "facturacion", new[] { Rol.Administrador, Rol.Gerente, Rol.Recepcionista } },
-            { "pagos", new[] { Rol.Administrador, Rol.Gerente, Rol.Recepcionista } },
-            { "reservasadmin", new[] { Rol.Administrador, Rol.Gerente, Rol.Recepcionista } },
+            { "estancias", new[] { Rol.Recepcionista } },
+            { "facturacion", new[] { Rol.Gerente, Rol.Recepcionista } },
+            { "pagos", new[] { Rol.Gerente, Rol.Recepcionista } },
+            { "reservasadmin", new[] { Rol.Gerente, Rol.Recepcionista } },
             { "notificaciones", new[] { Rol.Administrador, Rol.Gerente } },
-            { "tarifas", new[] { Rol.Administrador, Rol.Gerente } },
-            { "convenios", new[] { Rol.Administrador, Rol.Gerente } },
-            { "limpieza", new[] { Rol.Administrador, Rol.Servicios } },
-            { "consumos", new[] { Rol.Administrador, Rol.Recepcionista, Rol.Servicios } },
+            { "tarifas", new[] { Rol.Gerente } },
+            { "convenios", new[] { Rol.Gerente } },
+            { "limpieza", new[] { Rol.Servicios, Rol.Gerente } },
+            { "consumos", new[] { Rol.Servicios, Rol.Recepcionista, Rol.Gerente } },
             { "configuracion", new[] { Rol.Administrador } },
             { "seguridad", new[] { Rol.Administrador } }
         };
 
         private bool cargando = true;
+        private readonly Dictionary<string, UserControl> vistas = new Dictionary<string, UserControl>();
+
+        private FuncionamientoView VistaFuncionamiento { get { return ObtenerVista<FuncionamientoView>("funcionamiento"); } }
+        private ReservasView VistaReservas { get { return ObtenerVista<ReservasView>("reservas"); } }
+        private HabitacionesView VistaHabitaciones { get { return ObtenerVista<HabitacionesView>("habitaciones"); } }
+        private IngresosView VistaIngresos { get { return ObtenerVista<IngresosView>("ingresos"); } }
+        private HuespedesView VistaHuespedes { get { return ObtenerVista<HuespedesView>("huespedes"); } }
+        private HabitacionesGestionView VistaInventario { get { return ObtenerVista<HabitacionesGestionView>("inventario"); } }
+        private EstanciasView VistaEstancias { get { return ObtenerVista<EstanciasView>("estancias"); } }
+        private FacturacionFoliosView VistaFacturacion { get { return ObtenerVista<FacturacionFoliosView>("facturacion"); } }
+        private PagosCajaView VistaPagos { get { return ObtenerVista<PagosCajaView>("pagos"); } }
+        private ReservasGestionView VistaReservasAdmin { get { return ObtenerVista<ReservasGestionView>("reservasadmin"); } }
+        private NotificacionesReportesView VistaNotificaciones { get { return ObtenerVista<NotificacionesReportesView>("notificaciones"); } }
+        private TarifasView VistaTarifas { get { return ObtenerVista<TarifasView>("tarifas"); } }
+        private ConveniosView VistaConvenios { get { return ObtenerVista<ConveniosView>("convenios"); } }
+        private LimpiezaView VistaLimpieza { get { return ObtenerVista<LimpiezaView>("limpieza"); } }
+        private ConsumosView VistaConsumos { get { return ObtenerVista<ConsumosView>("consumos"); } }
+        private ConfiguracionHotelView VistaConfiguracion { get { return ObtenerVista<ConfiguracionHotelView>("configuracion"); } }
+        private SeguridadView VistaSeguridad { get { return ObtenerVista<SeguridadView>("seguridad"); } }
 
         public DashboardView()
         {
             InitializeComponent();
         }
 
+        private T ObtenerVista<T>(string clave) where T : UserControl, new()
+        {
+            UserControl vista;
+            if (!vistas.TryGetValue(clave, out vista))
+            {
+                vista = new T { Visibility = Visibility.Collapsed };
+                vistas.Add(clave, vista);
+                ViewHost.Children.Add(vista);
+                var reservas = vista as ReservasView;
+                if (reservas != null) reservas.CambiosRealizados += OnCambiosRealizados;
+            }
+            return (T)vista;
+        }
+
         private void AplicarSesion()
         {
             TxtSesionUsuario.Text = Sesion.NombreRol;
             TxtSesionDetalle.Text = Sesion.NombreUsuario ?? "Sin sesión";
+            TxtGrupoNegocio.Text = Sesion.Rol == Rol.Administrador ? "INFRAESTRUCTURA Y SISTEMA" : "GESTIÓN DEL HOTEL";
 
             AplicarPermisos();
         }
@@ -53,6 +90,8 @@ namespace Crown__.Frontend.Views
         {
             AplicarPermiso("funcionamiento", NavFuncionamiento);
             AplicarPermiso("reservas", NavReservas);
+            AplicarPermiso("checkin", NavCheckIn);
+            AplicarPermiso("checkout", NavCheckOut);
             AplicarPermiso("habitaciones", NavHabitaciones);
             AplicarPermiso("ingresos", NavIngresos);
 
@@ -71,10 +110,10 @@ namespace Crown__.Frontend.Views
             AplicarPermiso("configuracion", NavConfiguracion);
             AplicarPermiso("seguridad", NavSeguridad);
 
-            GrupoAdministracion.Visibility = VisibleGroup(NavHuespedes, NavInventario, NavEstancias,
-                NavFacturacion, NavPagos, NavReservasAdmin, NavNotificaciones);
-            GrupoProducto.Visibility = VisibleGroup(NavTarifas, NavConvenios);
+            GrupoRecepcion.Visibility = VisibleGroup(NavReservas, NavCheckIn, NavCheckOut, NavHabitaciones,
+                NavHuespedes, NavEstancias, NavFacturacion, NavPagos, NavReservasAdmin);
             GrupoServicios.Visibility = VisibleGroup(NavLimpieza, NavConsumos);
+            GrupoNegocio.Visibility = VisibleGroup(NavIngresos, NavInventario, NavTarifas, NavConvenios, NavNotificaciones);
             GrupoConfiguracion.Visibility = VisibleGroup(NavConfiguracion, NavSeguridad);
         }
 
@@ -102,12 +141,12 @@ namespace Crown__.Frontend.Views
 
         private string SeccionInicial()
         {
+            if (Sesion.Rol == Rol.Recepcionista)
+                return "checkin";
+            if (Sesion.Rol == Rol.Servicios)
+                return "limpieza";
             if (Puede("funcionamiento"))
                 return "funcionamiento";
-            if (Puede("limpieza"))
-                return "limpieza";
-            if (Puede("consumos"))
-                return "consumos";
             return "reservas";
         }
 
@@ -116,6 +155,8 @@ namespace Crown__.Frontend.Views
             switch (seccion)
             {
                 case "reservas": return NavReservas;
+                case "checkin": return NavCheckIn;
+                case "checkout": return NavCheckOut;
                 case "habitaciones": return NavHabitaciones;
                 case "ingresos": return NavIngresos;
                 case "huespedes": return NavHuespedes;
@@ -140,8 +181,6 @@ namespace Crown__.Frontend.Views
             AplicarSesion();
 
             TxtFecha.Text = Formato.DiaDeSemana(DateTime.Today);
-
-            VistaReservas.CambiosRealizados += OnCambiosRealizados;
 
             string inicial = SeccionInicial();
             NavDe(inicial).IsChecked = true;
@@ -193,94 +232,95 @@ namespace Crown__.Frontend.Views
             if (string.IsNullOrEmpty(seccion))
                 return;
 
-            VistaFuncionamiento.Visibility = Visible(seccion, "funcionamiento");
-            VistaReservas.Visibility = Visible(seccion, "reservas");
-            VistaHabitaciones.Visibility = Visible(seccion, "habitaciones");
-            VistaIngresos.Visibility = Visible(seccion, "ingresos");
+            string claveVista = seccion == "checkin" || seccion == "checkout" ? "estancias" : seccion;
+            bool vistaYaCreada = vistas.ContainsKey(claveVista);
 
-            VistaHuespedes.Visibility = Visible(seccion, "huespedes");
-            VistaInventario.Visibility = Visible(seccion, "inventario");
-            VistaEstancias.Visibility = Visible(seccion, "estancias");
-            VistaFacturacion.Visibility = Visible(seccion, "facturacion");
-            VistaPagos.Visibility = Visible(seccion, "pagos");
-            VistaReservasAdmin.Visibility = Visible(seccion, "reservasadmin");
-            VistaNotificaciones.Visibility = Visible(seccion, "notificaciones");
+            foreach (var vista in vistas.Values)
+                vista.Visibility = Visibility.Collapsed;
 
-            VistaTarifas.Visibility = Visible(seccion, "tarifas");
-            VistaConvenios.Visibility = Visible(seccion, "convenios");
-            VistaLimpieza.Visibility = Visible(seccion, "limpieza");
-            VistaConsumos.Visibility = Visible(seccion, "consumos");
-            VistaConfiguracion.Visibility = Visible(seccion, "configuracion");
-            VistaSeguridad.Visibility = Visible(seccion, "seguridad");
+            UserControl activa = ObtenerPorClave(seccion);
+            activa.Visibility = Visibility.Visible;
+
+            var estancias = activa as EstanciasView;
+            if (estancias != null && seccion == "checkin") estancias.EnfocarLlegadas();
+            if (estancias != null && seccion == "checkout") estancias.EnfocarSalidas();
 
             switch (seccion)
             {
                 case "funcionamiento":
-                    Recargar(VistaFuncionamiento.Cargar);
+                    RecargarSiNecesario(vistaYaCreada, true, VistaFuncionamiento.Cargar);
                     break;
                 case "reservas":
                     Titulo("Reservas", "Consulta, crea y opera las reservas del hotel.");
-                    Recargar(VistaReservas.Cargar);
+                    RecargarSiNecesario(vistaYaCreada, false, VistaReservas.Cargar);
+                    break;
+                case "checkin":
+                    Titulo("Check-in · llegadas", "Atiende las llegadas previstas y registra la entrada de cada huésped.");
+                    RecargarSiNecesario(vistaYaCreada, false, VistaEstancias.Cargar);
+                    break;
+                case "checkout":
+                    Titulo("Check-out · salidas", "Revisa saldos y llaves para cerrar cada estancia.");
+                    RecargarSiNecesario(vistaYaCreada, false, VistaEstancias.Cargar);
                     break;
                 case "habitaciones":
                     Titulo("Habitaciones disponibles", "Disponibilidad por fechas, tipo de capacidad y calidad.");
-                    Recargar(VistaHabitaciones.Cargar);
+                    RecargarSiNecesario(vistaYaCreada, false, VistaHabitaciones.Cargar);
                     break;
                 case "ingresos":
                     Titulo("Cuentas de ingreso", "Resumen diario, semanal y trimestral de las cuentas del hotel.");
-                    Recargar(VistaIngresos.Cargar);
+                    RecargarSiNecesario(vistaYaCreada, false, VistaIngresos.Cargar);
                     break;
                 case "huespedes":
                     Titulo("Huéspedes", "Perfiles de huéspedes y consentimientos de datos.");
-                    Recargar(VistaHuespedes.Cargar);
+                    RecargarSiNecesario(vistaYaCreada, false, VistaHuespedes.Cargar);
                     break;
                 case "inventario":
                     Titulo("Inventario de habitaciones", "Habitaciones, pisos, tipos, historial y bloqueos.");
-                    Recargar(VistaInventario.Cargar);
+                    RecargarSiNecesario(vistaYaCreada, false, VistaInventario.Cargar);
                     break;
                 case "estancias":
-                    Titulo("Estancias y llaves", "Check-in, check-out y control de llaves.");
-                    Recargar(VistaEstancias.Cargar);
+                    Titulo("Estancias y llaves", "Consulta huéspedes alojados, llaves y cambios de habitación.");
+                    RecargarSiNecesario(vistaYaCreada, false, VistaEstancias.Cargar);
                     break;
                 case "facturacion":
                     Titulo("Facturación", "Folios, cargos, facturas y notas de crédito.");
-                    Recargar(VistaFacturacion.Cargar);
+                    RecargarSiNecesario(vistaYaCreada, false, VistaFacturacion.Cargar);
                     break;
                 case "pagos":
                     Titulo("Pagos y caja", "Cobros, devoluciones, turnos y cierre de caja.");
-                    Recargar(VistaPagos.Cargar);
+                    RecargarSiNecesario(vistaYaCreada, false, VistaPagos.Cargar);
                     break;
                 case "reservasadmin":
                     Titulo("Reservas · administración", "Canales, grupos, lista de espera y solicitudes especiales.");
-                    Recargar(VistaReservasAdmin.Cargar);
+                    RecargarSiNecesario(vistaYaCreada, false, VistaReservasAdmin.Cargar);
                     break;
                 case "notificaciones":
                     Titulo("Notificaciones y reportes", "Avisos internos y reportes programados.");
-                    Recargar(VistaNotificaciones.Cargar);
+                    RecargarSiNecesario(vistaYaCreada, false, VistaNotificaciones.Cargar);
                     break;
                 case "tarifas":
                     Titulo("Tarifas y promociones", "Tarifas por tipo de habitación, temporadas, paquetes y promociones.");
-                    Recargar(VistaTarifas.Cargar);
+                    RecargarSiNecesario(vistaYaCreada, false, VistaTarifas.Cargar);
                     break;
                 case "convenios":
                     Titulo("Convenios corporativos", "Empresas, tarifas preferenciales y límites de crédito.");
-                    Recargar(VistaConvenios.Cargar);
+                    RecargarSiNecesario(vistaYaCreada, false, VistaConvenios.Cargar);
                     break;
                 case "limpieza":
                     Titulo("Limpieza y mantenimiento", "Tareas, inspecciones, incidencias y objetos olvidados.");
-                    Recargar(VistaLimpieza.Cargar);
+                    RecargarSiNecesario(vistaYaCreada, false, VistaLimpieza.Cargar);
                     break;
                 case "consumos":
                     Titulo("Consumos y servicios", "Productos, inventario, consumos y servicios del hotel.");
-                    Recargar(VistaConsumos.Cargar);
+                    RecargarSiNecesario(vistaYaCreada, false, VistaConsumos.Cargar);
                     break;
                 case "configuracion":
                     Titulo("Configuración del hotel", "Datos del hotel, parámetros, políticas, impuestos y módulos.");
-                    Recargar(VistaConfiguracion.Cargar);
+                    RecargarSiNecesario(vistaYaCreada, false, VistaConfiguracion.Cargar);
                     break;
                 case "seguridad":
                     Titulo("Seguridad y personal", "Empleados, usuarios, roles y asignaciones.");
-                    Recargar(VistaSeguridad.Cargar);
+                    RecargarSiNecesario(vistaYaCreada, false, VistaSeguridad.Cargar);
                     break;
                 default:
                     Titulo("Funcionamiento", "Ocupación, llegadas, salidas y movimientos del día.");
@@ -288,9 +328,38 @@ namespace Crown__.Frontend.Views
             }
         }
 
-        private static Visibility Visible(string seccion, string clave)
+        private void RecargarSiNecesario(bool vistaYaCreada, bool noTieneCargaAutomatica, Action cargar)
         {
-            return seccion == clave ? Visibility.Visible : Visibility.Collapsed;
+            // New module controls load their initial data from their WPF Loaded event.
+            // Reused controls refresh explicitly when the user returns to them.
+            if (vistaYaCreada || noTieneCargaAutomatica)
+                Recargar(cargar);
+        }
+
+        private UserControl ObtenerPorClave(string clave)
+        {
+            switch (clave)
+            {
+                case "reservas": return VistaReservas;
+                case "habitaciones": return VistaHabitaciones;
+                case "ingresos": return VistaIngresos;
+                case "huespedes": return VistaHuespedes;
+                case "inventario": return VistaInventario;
+                case "estancias":
+                case "checkin":
+                case "checkout": return VistaEstancias;
+                case "facturacion": return VistaFacturacion;
+                case "pagos": return VistaPagos;
+                case "reservasadmin": return VistaReservasAdmin;
+                case "notificaciones": return VistaNotificaciones;
+                case "tarifas": return VistaTarifas;
+                case "convenios": return VistaConvenios;
+                case "limpieza": return VistaLimpieza;
+                case "consumos": return VistaConsumos;
+                case "configuracion": return VistaConfiguracion;
+                case "seguridad": return VistaSeguridad;
+                default: return VistaFuncionamiento;
+            }
         }
 
         private void Titulo(string titulo, string subtitulo)
