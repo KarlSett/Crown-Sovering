@@ -16,7 +16,7 @@ namespace Crown__.Frontend.Views
     {
         private static readonly Dictionary<string, Rol[]> Permisos = new Dictionary<string, Rol[]>
         {
-            { "funcionamiento", new[] { Rol.Administrador, Rol.Gerente, Rol.Recepcionista, Rol.Servicios } },
+            { "funcionamiento", new[] { Rol.Gerente, Rol.Recepcionista } },
             { "reservas", new[] { Rol.Gerente, Rol.Recepcionista } },
             { "checkin", new[] { Rol.Recepcionista } },
             { "checkout", new[] { Rol.Recepcionista } },
@@ -141,6 +141,8 @@ namespace Crown__.Frontend.Views
 
         private string SeccionInicial()
         {
+            if (Sesion.Rol == Rol.Administrador)
+                return "configuracion";
             if (Sesion.Rol == Rol.Recepcionista)
                 return "checkin";
             if (Sesion.Rol == Rol.Servicios)
