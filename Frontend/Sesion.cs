@@ -19,19 +19,22 @@ namespace Crown__.Frontend
         public static Rol Rol { get; set; } = Rol.Recepcionista;
         public static int UsuarioId { get; private set; }
         public static string NombreUsuario { get; private set; }
+        public static bool VistaCompletaDev { get; private set; }
 
-        /// <summary>Abre el entorno local de desarrollo con la cuenta admin creada por los datos semilla.</summary>
+        /// <summary>Abre el entorno de desarrollo con la cuenta admin.vista de la base de desarrollo actual.</summary>
         public static void IniciarAdminRapidoDev()
         {
-            UsuarioId = 1;
-            NombreUsuario = "admin · acceso rápido dev";
+            UsuarioId = 24;
+            NombreUsuario = "admin · acceso rápido · vista completa dev";
             Rol = Rol.Administrador;
+            VistaCompletaDev = true;
             Crown__.Backend.Services.ServicioHotel.ActorId = UsuarioId.ToString();
         }
 
         /// <summary>Guarda al usuario autenticado; el backend recibe su identificador en cada operación.</summary>
         public static void Iniciar(Crown__.Backend.Models.Usuario usuario)
         {
+            VistaCompletaDev = false;
             UsuarioId = usuario.Id;
             NombreUsuario = usuario.NombreCompleto;
             switch (usuario.Rol)
@@ -46,6 +49,7 @@ namespace Crown__.Frontend
 
         public static void Cerrar()
         {
+            VistaCompletaDev = false;
             UsuarioId = 0;
             NombreUsuario = null;
             Crown__.Backend.Services.ServicioHotel.ActorId = null;

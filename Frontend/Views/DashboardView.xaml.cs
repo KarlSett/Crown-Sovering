@@ -119,6 +119,9 @@ namespace Crown__.Frontend.Views
 
         private bool Puede(string seccion)
         {
+            if (Sesion.VistaCompletaDev)
+                return Permisos.ContainsKey(seccion);
+
             Rol[] roles;
             return Permisos.TryGetValue(seccion, out roles) && Array.IndexOf(roles, Sesion.Rol) >= 0;
         }
