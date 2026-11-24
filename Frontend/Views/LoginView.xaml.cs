@@ -20,6 +20,11 @@ namespace Crown__.Frontend.Views
         public LoginView()
         {
             InitializeComponent();
+#if DEBUG
+            BtnAccesoAdmin.Visibility = Visibility.Visible;
+#else
+            BtnAccesoAdmin.Visibility = Visibility.Collapsed;
+#endif
             AddPosterAnimation(ScaleTransform.ScaleXProperty);
             AddPosterAnimation(ScaleTransform.ScaleYProperty);
         }
@@ -98,8 +103,15 @@ namespace Crown__.Frontend.Views
 
         private void OnAccesoAdmin(object sender, RoutedEventArgs e)
         {
-            // Credential for the administrator demo account created by datos_iniciales.sql.
-            IniciarSesion("admin", "Admin#2026", true);
+#if DEBUG
+            // Local development shortcut. Backend operations still verify that seed user ID 1 has Admin role.
+            Sesion.IniciarAdminRapidoDev();
+            if (NavigationService != null)
+                NavigationService.Navigate(new Uri("/Frontend/Views/DashboardView.xaml", UriKind.Relative));
+#else
+            MessageBox.Show("El acceso rápido solo está disponible en compilaciones de desarrollo.",
+                            "Inicio de sesión", MessageBoxButton.OK, MessageBoxImage.Information);
+#endif
         }
 
         private void IniciarSesion(string usuario, string contrasena, bool accesoRapidoAdmin)

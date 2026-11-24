@@ -141,7 +141,7 @@
                                 Style="{StaticResource HotelSecondaryButton}" Margin="0,10,0,0"
                                 KeyboardNavigation.TabIndex="7"
                                 AutomationProperties.Name="Acceso rápido como administrador de demostración"
-                                ToolTip="Usa la cuenta admin creada por datos_iniciales.sql. Cambia su contraseña antes de usar una base de producción." />
+                                ToolTip="Abre las vistas de administrador al instante en desarrollo. Las acciones de base siguen verificando la cuenta admin de semilla." />
                     </StackPanel>
                 </Grid>
             </ScrollViewer>

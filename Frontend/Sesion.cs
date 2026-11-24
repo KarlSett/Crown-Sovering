@@ -20,6 +20,15 @@ namespace Crown__.Frontend
         public static int UsuarioId { get; private set; }
         public static string NombreUsuario { get; private set; }
 
+        /// <summary>Abre el entorno local de desarrollo con la cuenta admin creada por los datos semilla.</summary>
+        public static void IniciarAdminRapidoDev()
+        {
+            UsuarioId = 1;
+            NombreUsuario = "admin · acceso rápido dev";
+            Rol = Rol.Administrador;
+            Crown__.Backend.Services.ServicioHotel.ActorId = UsuarioId.ToString();
+        }
+
         /// <summary>Guarda al usuario autenticado; el backend recibe su identificador en cada operación.</summary>
         public static void Iniciar(Crown__.Backend.Models.Usuario usuario)
         {
